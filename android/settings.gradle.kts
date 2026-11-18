@@ -1,1 +1,1 @@
-rootProject.name = "webm_texture"
+rootProject.name = "animated_stickers"

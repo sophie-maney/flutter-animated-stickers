@@ -57,8 +57,7 @@ build/
 /test/
 /pigeons/
 /ffigen.yaml
-/android/src/test/
-# iOS reads the xcframework through the ios/webm_texture/Frameworks symlink,
+# iOS reads the xcframework through the ios/animated_stickers/Frameworks symlink,
 # which pub resolves, so a second copy would only double the size.
 /third_party/prebuilt/ios/
 # docs/ holds ADRs, spike reports and the cache format; pub warns about the

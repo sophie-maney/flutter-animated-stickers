@@ -2,7 +2,7 @@
 // See also: https://pub.dev/packages/pigeon
 @file:Suppress("UNCHECKED_CAST", "ArrayInDataClass")
 
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.util.Log
 import io.flutter.plugin.common.BasicMessageChannel
@@ -284,7 +284,7 @@ data class AnimationSourceMessage (
 }
 
 /**
- * What [WebmTextureHostApi.createAnimation] returns.
+ * What [StickersHostApi.createAnimation] returns.
  *
  * Generated class from Pigeon that represents data sent in messages.
  */
@@ -455,7 +455,7 @@ data class AnimationErrorMessage (
 }
 
 /**
- * Layout of an atlas's pages ([WebmTextureHostApi.createAtlas]; see
+ * Layout of an atlas's pages ([StickersHostApi.createAtlas]; see
  * `wt_atlas_options` in `wt_api.h`).
  *
  * Generated class from Pigeon that represents data sent in messages.
@@ -649,10 +649,10 @@ data class AtlasPageMessage (
  * Generated class from Pigeon that represents data sent in messages.
  */
 data class AtlasLayoutMessage (
-  /** [WebmTextureHostApi.attachToAtlas]: one per animation, in order. */
+  /** [StickersHostApi.attachToAtlas]: one per animation, in order. */
   val slots: List<AtlasSlotMessage>,
   /**
-   * [WebmTextureHostApi.detachFromAtlas]: each animation's new texture of
+   * [StickersHostApi.detachFromAtlas]: each animation's new texture of
    * its own, in order (textureId -1 for an unknown animation).
    */
   val handles: List<AnimationHandleMessage>,
@@ -665,7 +665,7 @@ data class AtlasLayoutMessage (
   /**
    * Textures this call replaced (a page's previous size, an animation's own
    * texture when it entered the atlas). They hold their last frame until
-   * Dart calls [WebmTextureHostApi.releaseTextures], which it does once no
+   * Dart calls [StickersHostApi.releaseTextures], which it does once no
    * widget draws them any more.
    */
   val retiredTextureIds: List<Long>
@@ -713,7 +713,7 @@ data class AtlasLayoutMessage (
 }
 
 /**
- * One atlas page's state and memory ([WebmTextureHostApi.atlasStats]).
+ * One atlas page's state and memory ([StickersHostApi.atlasStats]).
  *
  * Generated class from Pigeon that represents data sent in messages.
  */
@@ -804,7 +804,7 @@ data class AtlasPageStatsMessage (
 }
 
 /**
- * [WebmTextureHostApi.atlasStats].
+ * [StickersHostApi.atlasStats].
  *
  * Generated class from Pigeon that represents data sent in messages.
  */
@@ -989,7 +989,7 @@ val MessagesPigeonMethodCodec = StandardMethodCodec(MessagesPigeonCodec())
  *
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
-interface WebmTextureHostApi {
+interface StickersHostApi {
   /**
    * Creates the decoder and a platform texture sized to the bucket
    * ([bucketW] x [bucketH] physical pixels). The texture shows frame 0 and
@@ -1084,7 +1084,7 @@ interface WebmTextureHostApi {
   /**
    * Sets the directory for the frame cache and returns the one in use, an
    * absolute path. With a null [directory] nothing changes: the result is
-   * the current one, which starts as `webm_texture` under the app's cache
+   * the current one, which starts as `animated_stickers` under the app's cache
    * directory (`Context.cacheDir` on Android, `Library/Caches` on iOS).
    *
    * The directory is created when the first animation needs it, and only
@@ -1096,16 +1096,16 @@ interface WebmTextureHostApi {
   fun configureCache(directory: String?): String
 
   companion object {
-    /** The codec used by WebmTextureHostApi. */
+    /** The codec used by StickersHostApi. */
     val codec: MessageCodec<Any?> by lazy {
       MessagesPigeonCodec()
     }
-    /** Sets up an instance of `WebmTextureHostApi` to handle messages through the `binaryMessenger`. */
+    /** Sets up an instance of `StickersHostApi` to handle messages through the `binaryMessenger`. */
     @JvmOverloads
-    fun setUp(binaryMessenger: BinaryMessenger, api: WebmTextureHostApi?, messageChannelSuffix: String = "") {
+    fun setUp(binaryMessenger: BinaryMessenger, api: StickersHostApi?, messageChannelSuffix: String = "") {
       val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAnimation$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.createAnimation$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1128,7 +1128,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setActive$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.setActive$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1147,7 +1147,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setPriority$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.setPriority$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1166,7 +1166,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.seekToFrame$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.seekToFrame$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1185,7 +1185,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.dispose$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.dispose$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1203,7 +1203,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.deviceSignals$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.deviceSignals$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
@@ -1218,7 +1218,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setSchedulerOptions$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.setSchedulerOptions$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1238,7 +1238,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAtlas$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.createAtlas$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1255,7 +1255,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.attachToAtlas$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.attachToAtlas$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1273,7 +1273,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.detachFromAtlas$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.detachFromAtlas$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1290,7 +1290,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.releaseTextures$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.releaseTextures$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1308,7 +1308,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasShownTextures$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasShownTextures$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1326,7 +1326,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasStats$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasStats$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1343,7 +1343,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.disposeAtlas$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.disposeAtlas$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1360,7 +1360,7 @@ interface WebmTextureHostApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.configureCache$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.animated_stickers.StickersHostApi.configureCache$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
@@ -1425,7 +1425,7 @@ class StreamErrorsEventChannel(messenger: BinaryMessenger, instanceName: String 
   private val channel: EventChannel
 
   init {
-    var channelName = "dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamErrors"
+    var channelName = "dev.flutter.pigeon.animated_stickers.StickersEvents.streamErrors"
     if (instanceName.isNotEmpty()) {
       channelName += ".$instanceName"
     }
@@ -1470,7 +1470,7 @@ class StreamDeviceSignalsEventChannel(messenger: BinaryMessenger, instanceName: 
   private val channel: EventChannel
 
   init {
-    var channelName = "dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamDeviceSignals"
+    var channelName = "dev.flutter.pigeon.animated_stickers.StickersEvents.streamDeviceSignals"
     if (instanceName.isNotEmpty()) {
       channelName += ".$instanceName"
     }

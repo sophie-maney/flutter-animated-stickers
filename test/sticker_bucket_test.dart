@@ -1,7 +1,7 @@
 import 'dart:ui' show Size;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_bucket.dart';
+import 'package:animated_stickers/src/sticker_bucket.dart';
 
 void main() {
   group('roundUp', () {

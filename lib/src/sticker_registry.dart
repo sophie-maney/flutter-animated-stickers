@@ -250,15 +250,15 @@ class StickerRegistry {
   /// An animation nobody holds is kept for [gracePeriod] before the platform
   /// disposes it, so scrolling back doesn't recreate it.
   StickerRegistry({
-    WebmTextureHostApi? host,
+    StickersHostApi? host,
     this.gracePeriod = const Duration(seconds: 2),
     this.beforeCreate,
-  }) : _host = host ?? WebmTextureHostApi();
+  }) : _host = host ?? StickersHostApi();
 
-  final WebmTextureHostApi _host;
+  final StickersHostApi _host;
 
   /// The platform API animations are created through.
-  WebmTextureHostApi get host => _host;
+  StickersHostApi get host => _host;
 
   /// Awaited before each platform creation: the tier's scheduler options must
   /// be in place before the first animation plays.

@@ -178,7 +178,7 @@ final class BytesFetchResult extends StickerFetchResult {
 ///
 /// The plugin ships no HTTP client. An app implements this over its own
 /// (with its own caching, auth and retries) and registers it with
-/// `WebmStickers.fetcher`.
+/// `Stickers.fetcher`.
 abstract interface class StickerFetcher {
   /// Fetches the sticker at [url], sending [headers] if given.
   ///

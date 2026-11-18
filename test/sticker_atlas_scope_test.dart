@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_atlas_scope.dart';
-import 'package:webm_texture/src/sticker_registry.dart';
-import 'package:webm_texture/src/sticker_runtime.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/src/sticker_atlas_scope.dart';
+import 'package:animated_stickers/src/sticker_registry.dart';
+import 'package:animated_stickers/src/sticker_runtime.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'fake_host.dart';
 
@@ -50,7 +50,7 @@ void main() {
     ),
   );
 
-  Widget sticker(String path, {Key? key}) => WebmSticker(
+  Widget sticker(String path, {Key? key}) => Sticker(
     key: key,
     source: StickerSource.file(path),
     width: 64,

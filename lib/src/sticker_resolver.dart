@@ -31,7 +31,9 @@ class StickerResolver {
   final LinkedHashMap<StickerSource, Future<ResolvedSticker>> _cache =
       LinkedHashMap();
 
-  static final Expando<String> _hashes = Expando('webm_texture content hash');
+  static final Expando<String> _hashes = Expando(
+    'animated_stickers content hash',
+  );
 
   /// Resolves [source]. Concurrent calls for an equal source share one load.
   /// Failures aren't cached, so a retry fetches again.
@@ -85,7 +87,7 @@ class StickerResolver {
         if (fetcher == null) {
           throw StateError(
             'StickerSource.network needs a StickerFetcher: set '
-            'WebmStickers.fetcher before showing "$url".',
+            'Stickers.fetcher before showing "$url".',
           );
         }
         final result = await fetcher.fetch(Uri.parse(url), headers: headers);

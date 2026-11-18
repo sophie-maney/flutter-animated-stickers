@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_visibility.dart';
+import 'package:animated_stickers/src/sticker_visibility.dart';
 
 void main() {
   Widget app(Widget child) =>

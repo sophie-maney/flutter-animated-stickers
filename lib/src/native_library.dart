@@ -8,9 +8,9 @@ import 'sticker_info.dart';
 
 /// Loads the native core and checks its ABI version.
 ///
-/// - Android: `libwebm_texture.so`, built by android/CMakeLists.txt.
+/// - Android: `libanimated_stickers.so`, built by android/CMakeLists.txt.
 /// - iOS: the core is linked into the app, so its symbols are in the process.
-/// - Elsewhere (host tests only): the path in `WEBM_TEXTURE_LIB`, built by
+/// - Elsewhere (host tests only): the path in `ANIMATED_STICKERS_LIB`, built by
 ///   tool/build_host_ffi_lib.sh.
 ///
 /// Each isolate that calls this gets its own [WtBindings]; the library itself
@@ -18,15 +18,15 @@ import 'sticker_info.dart';
 WtBindings loadBindings() {
   final DynamicLibrary lib;
   if (Platform.isAndroid) {
-    lib = DynamicLibrary.open('libwebm_texture.so');
+    lib = DynamicLibrary.open('libanimated_stickers.so');
   } else if (Platform.isIOS) {
     lib = DynamicLibrary.process();
   } else {
-    final path = Platform.environment['WEBM_TEXTURE_LIB'];
+    final path = Platform.environment['ANIMATED_STICKERS_LIB'];
     if (path == null) {
       throw UnsupportedError(
-        'webm_texture supports Android and iOS. For host tests set '
-        'WEBM_TEXTURE_LIB (see tool/build_host_ffi_lib.sh).',
+        'animated_stickers supports Android and iOS. For host tests set '
+        'ANIMATED_STICKERS_LIB (see tool/build_host_ffi_lib.sh).',
       );
     }
     lib = DynamicLibrary.open(path);

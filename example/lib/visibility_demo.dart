@@ -1,8 +1,8 @@
-// A 200-item list of `WebmSticker`s with a debug overlay that counts the
+// A 200-item list of `Sticker`s with a debug overlay that counts the
 // stickers reporting active (T2.5). Only the rows on screen should count.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 /// Playable corpus files, cycled through the list.
 const _assets = [
@@ -84,7 +84,7 @@ class _Row extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Row(
       children: [
-        WebmSticker(
+        Sticker(
           source: source,
           width: 80,
           height: 80,
@@ -103,7 +103,7 @@ class _Row extends StatelessWidget {
   );
 }
 
-/// Shows [WebmStickers.debugActiveCount].
+/// Shows [Stickers.debugActiveCount].
 class _ActiveCounter extends StatelessWidget {
   const _ActiveCounter();
 
@@ -117,7 +117,7 @@ class _ActiveCounter extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: ValueListenableBuilder<int>(
-          valueListenable: WebmStickers.debugActiveCount,
+          valueListenable: Stickers.debugActiveCount,
           builder: (_, n, _) => Text(
             'active $n',
             key: const Key('activeCount'),

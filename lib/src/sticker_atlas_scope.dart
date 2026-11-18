@@ -11,14 +11,14 @@ import 'sticker_registry.dart';
 import 'sticker_runtime.dart';
 import 'sticker_visibility.dart';
 
-/// Draws the [WebmSticker]s below it through a few shared atlas textures
+/// Draws the [Sticker]s below it through a few shared atlas textures
 /// instead of a texture each: the way to show many stickers at once, such as
 /// a grid or a picker.
 ///
 /// ```dart
 /// StickerAtlasScope(
 ///   child: GridView.builder(
-///     itemBuilder: (context, i) => WebmSticker(source: sources[i]),
+///     itemBuilder: (context, i) => Sticker(source: sources[i]),
 ///   ),
 /// )
 /// ```
@@ -310,7 +310,7 @@ class StickerAtlasController implements StickerAtlasHost {
     this.pollInterval = const Duration(milliseconds: 16),
   });
 
-  final WebmTextureHostApi _host;
+  final StickersHostApi _host;
 
   /// Page width in physical pixels.
   final int width;
@@ -424,7 +424,7 @@ class StickerAtlasController implements StickerAtlasHost {
           FlutterErrorDetails(
             exception: e,
             stack: stack,
-            library: 'webm_texture',
+            library: 'animated_stickers',
             context: ErrorDescription('in a StickerAtlasScope platform call'),
           ),
         );

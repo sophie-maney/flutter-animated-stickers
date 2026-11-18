@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_registry.dart';
-import 'package:webm_texture/src/sticker_runtime.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/src/sticker_registry.dart';
+import 'package:animated_stickers/src/sticker_runtime.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'fake_fetcher.dart';
 import 'fake_host.dart';
@@ -99,10 +99,10 @@ void main() {
     double size = 100,
     bool autoplay = true,
     bool loop = true,
-    WebmStickerController? controller,
+    StickerController? controller,
     Widget? placeholder,
     StickerErrorWidgetBuilder? errorBuilder,
-  }) => WebmSticker(
+  }) => Sticker(
     key: key,
     source: StickerSource.file(path),
     width: size,
@@ -134,7 +134,7 @@ void main() {
       expect(find.text('wait'), findsNothing);
       final texture = tester.widget<Texture>(find.byType(Texture));
       expect(texture.textureId, 101);
-      expect(tester.getSize(find.byType(WebmSticker)), const Size(100, 100));
+      expect(tester.getSize(find.byType(Sticker)), const Size(100, 100));
       await finish(tester);
     });
 
@@ -154,12 +154,12 @@ void main() {
       await tester.pumpWidget(
         app(
           const Center(
-            child: WebmSticker(source: StickerSource.file('/wide'), width: 90),
+            child: Sticker(source: StickerSource.file('/wide'), width: 90),
           ),
         ),
       );
       await settle(tester);
-      expect(tester.getSize(find.byType(WebmSticker)), const Size(90, 60));
+      expect(tester.getSize(find.byType(Sticker)), const Size(90, 60));
       await finish(tester);
     });
 
@@ -257,10 +257,10 @@ void main() {
       await tester.pumpWidget(app(Center(child: sticker('/a'))));
       await settle(tester);
       expect(playing(), {1});
-      expect(WebmStickers.debugActiveCount.value, 1);
+      expect(Stickers.debugActiveCount.value, 1);
       await finish(tester);
       expect(playing(), isEmpty);
-      expect(WebmStickers.debugActiveCount.value, 0);
+      expect(Stickers.debugActiveCount.value, 0);
     });
 
     testWidgets('the counter can drive a widget while a list scrolls', (
@@ -274,7 +274,7 @@ void main() {
           Column(
             children: [
               ValueListenableBuilder<int>(
-                valueListenable: WebmStickers.debugActiveCount,
+                valueListenable: Stickers.debugActiveCount,
                 builder: (_, n, _) => Text('active $n'),
               ),
               Expanded(
@@ -301,7 +301,7 @@ void main() {
       await tester.pumpWidget(app(const SizedBox()));
       await settle(tester);
       expect(tester.takeException(), isNull);
-      expect(WebmStickers.debugActiveCount.value, 0);
+      expect(Stickers.debugActiveCount.value, 0);
       await finish(tester);
     });
 
@@ -326,20 +326,20 @@ void main() {
         for (final id in playing()) host.created[id - 1].$1,
       };
       expect(playingKeys(), {for (var i = 0; i < 6; i++) 'file:/$i'});
-      expect(WebmStickers.debugActiveCount.value, 6);
+      expect(Stickers.debugActiveCount.value, 6);
 
       // Half an item: 0 is half visible, 6 starts to show.
       controller.jumpTo(550);
       await settle(tester);
       await settle(tester);
       expect(playingKeys(), {for (var i = 5; i < 12; i++) 'file:/$i'});
-      expect(WebmStickers.debugActiveCount.value, 7);
+      expect(Stickers.debugActiveCount.value, 7);
 
       controller.jumpTo(5000);
       await settle(tester);
       await settle(tester);
       expect(playingKeys(), {for (var i = 50; i < 56; i++) 'file:/$i'});
-      expect(WebmStickers.debugActiveCount.value, 6);
+      expect(Stickers.debugActiveCount.value, 6);
       await finish(tester);
     });
 
@@ -426,11 +426,11 @@ void main() {
       await tester.pumpWidget(build(900));
       await settle(tester);
       expect(playing(), {1});
-      expect(WebmStickers.debugActiveCount.value, 1);
+      expect(Stickers.debugActiveCount.value, 1);
       await tester.pumpWidget(build(200));
       await settle(tester);
       expect(playing(), {1});
-      expect(WebmStickers.debugActiveCount.value, 2);
+      expect(Stickers.debugActiveCount.value, 2);
       expect(host.activeCalls, [(1, true)]);
       await finish(tester);
     });
@@ -553,7 +553,7 @@ void main() {
     testWidgets('the controller pauses and plays its own animation', (
       tester,
     ) async {
-      final controller = WebmStickerController();
+      final controller = StickerController();
       await tester.pumpWidget(
         app(
           Row(
@@ -579,7 +579,7 @@ void main() {
     });
 
     testWidgets('a controller starting paused does not play', (tester) async {
-      final controller = WebmStickerController(playing: false);
+      final controller = StickerController(playing: false);
       await tester.pumpWidget(
         app(Center(child: sticker('/a', controller: controller))),
       );
@@ -595,9 +595,9 @@ void main() {
     testWidgets('a controller change during the probe still loads', (
       tester,
     ) async {
-      final controller = WebmStickerController();
+      final controller = StickerController();
       probeGate = Completer<void>();
-      Widget build(WebmStickerController? c) =>
+      Widget build(StickerController? c) =>
           app(Center(child: sticker('/a', controller: c)));
       await tester.pumpWidget(build(null));
       await tester.pump();
@@ -614,8 +614,8 @@ void main() {
     testWidgets('adding a controller moves to a private animation', (
       tester,
     ) async {
-      final controller = WebmStickerController(playing: false);
-      Widget build(WebmStickerController? c) =>
+      final controller = StickerController(playing: false);
+      Widget build(StickerController? c) =>
           app(Center(child: sticker('/a', controller: c)));
       await tester.pumpWidget(build(null));
       await settle(tester);
@@ -660,7 +660,7 @@ void main() {
     testWidgets('stickers on one controller split by loop mode', (
       tester,
     ) async {
-      final controller = WebmStickerController();
+      final controller = StickerController();
       await tester.pumpWidget(
         app(
           Row(
@@ -697,7 +697,7 @@ void main() {
       tester,
     ) async {
       probes['/b'] = _info(512, 512); // 30 frames, like '/a'.
-      final controller = WebmStickerController(playing: false);
+      final controller = StickerController(playing: false);
       await tester.pumpWidget(
         app(
           Row(
@@ -730,7 +730,7 @@ void main() {
     testWidgets('a seek before the animation is ready applies once it is', (
       tester,
     ) async {
-      final controller = WebmStickerController(playing: false);
+      final controller = StickerController(playing: false);
       host.gate = Completer<void>();
       await tester.pumpWidget(
         app(Center(child: sticker('/a', controller: controller))),
@@ -751,8 +751,8 @@ void main() {
     testWidgets('a removed sticker no longer follows the controller', (
       tester,
     ) async {
-      final controller = WebmStickerController();
-      Widget build(WebmStickerController? c) =>
+      final controller = StickerController();
+      Widget build(StickerController? c) =>
           app(Center(child: sticker('/a', controller: c)));
       await tester.pumpWidget(build(controller));
       await settle(tester);
@@ -783,7 +783,7 @@ void main() {
       Key? key,
       String? stickerKey,
       StickerErrorWidgetBuilder? errorBuilder,
-    }) => WebmSticker(
+    }) => Sticker(
       key: key,
       source: StickerSource.network(url, key: stickerKey),
       width: 100,
@@ -908,7 +908,7 @@ void main() {
     });
 
     testWidgets('a bytes sticker is keyed by content hash', (tester) async {
-      Widget bytes(List<int> data) => WebmSticker(
+      Widget bytes(List<int> data) => Sticker(
         source: StickerSource.bytes(Uint8List.fromList(data)),
         width: 100,
         height: 100,

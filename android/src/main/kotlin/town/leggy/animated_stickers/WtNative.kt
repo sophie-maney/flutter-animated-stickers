@@ -1,15 +1,15 @@
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.view.Surface
 
 /**
  * JNI bindings to the texture glue in `src/main/cpp/jni_bridge.cc`, which
- * lives in `libwebm_texture.so` next to the core (the same library Dart opens
+ * lives in `libanimated_stickers.so` next to the core (the same library Dart opens
  * over FFI).
  */
 internal object WtNative {
     init {
-        System.loadLibrary("webm_texture")
+        System.loadLibrary("animated_stickers")
     }
 
     // Indices into nativeCreate's `out` array.

@@ -72,8 +72,8 @@ jobs:
       - name: Dry run and archive
         id: archive
         run: |
-          fvm dart run tool/vendor_prebuilts.dart archive --out build/release/webm_texture.tar.gz
-          echo "sha256=$(sha256sum build/release/webm_texture.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          fvm dart run tool/vendor_prebuilts.dart archive --out build/release/animated_stickers.tar.gz
+          echo "sha256=$(sha256sum build/release/animated_stickers.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: pana
         run: |
@@ -122,8 +122,8 @@ jobs:
 
       - name: Verify the archive is the one that was checked
         run: |
-          echo "${{ needs.build.outputs.archive-sha256 }}  release/webm_texture.tar.gz" | sha256sum -c -
-          mkdir -p "$RUNNER_TEMP/pkg" && tar -xzf release/webm_texture.tar.gz -C "$RUNNER_TEMP/pkg"
+          echo "${{ needs.build.outputs.archive-sha256 }}  release/animated_stickers.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/pkg" && tar -xzf release/animated_stickers.tar.gz -C "$RUNNER_TEMP/pkg"
 
       - name: Install fvm
         run: |

@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sha1.dart';
-import 'package:webm_texture/src/sticker_resolver.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/src/sha1.dart';
+import 'package:animated_stickers/src/sticker_resolver.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'fake_fetcher.dart';
 

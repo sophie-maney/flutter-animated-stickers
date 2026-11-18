@@ -248,7 +248,7 @@ struct AnimationSourceMessage: Hashable, CustomStringConvertible {
   }
 }
 
-/// What [WebmTextureHostApi.createAnimation] returns.
+/// What [StickersHostApi.createAnimation] returns.
 ///
 /// Generated class from Pigeon that represents data sent in messages.
 struct AnimationHandleMessage: Hashable, CustomStringConvertible {
@@ -413,7 +413,7 @@ struct AnimationErrorMessage: Hashable, CustomStringConvertible {
   }
 }
 
-/// Layout of an atlas's pages ([WebmTextureHostApi.createAtlas]; see
+/// Layout of an atlas's pages ([StickersHostApi.createAtlas]; see
 /// `wt_atlas_options` in `wt_api.h`).
 ///
 /// Generated class from Pigeon that represents data sent in messages.
@@ -602,9 +602,9 @@ struct AtlasPageMessage: Hashable, CustomStringConvertible {
 ///
 /// Generated class from Pigeon that represents data sent in messages.
 struct AtlasLayoutMessage: Hashable, CustomStringConvertible {
-  /// [WebmTextureHostApi.attachToAtlas]: one per animation, in order.
+  /// [StickersHostApi.attachToAtlas]: one per animation, in order.
   var slots: [AtlasSlotMessage]
-  /// [WebmTextureHostApi.detachFromAtlas]: each animation's new texture of
+  /// [StickersHostApi.detachFromAtlas]: each animation's new texture of
   /// its own, in order (textureId -1 for an unknown animation).
   var handles: [AnimationHandleMessage]
   /// Every page of the atlases involved that has a texture, after the call.
@@ -613,7 +613,7 @@ struct AtlasLayoutMessage: Hashable, CustomStringConvertible {
   var pages: [AtlasPageMessage]
   /// Textures this call replaced (a page's previous size, an animation's own
   /// texture when it entered the atlas). They hold their last frame until
-  /// Dart calls [WebmTextureHostApi.releaseTextures], which it does once no
+  /// Dart calls [StickersHostApi.releaseTextures], which it does once no
   /// widget draws them any more.
   var retiredTextureIds: [Int64]
 
@@ -660,7 +660,7 @@ struct AtlasLayoutMessage: Hashable, CustomStringConvertible {
   }
 }
 
-/// One atlas page's state and memory ([WebmTextureHostApi.atlasStats]).
+/// One atlas page's state and memory ([StickersHostApi.atlasStats]).
 ///
 /// Generated class from Pigeon that represents data sent in messages.
 struct AtlasPageStatsMessage: Hashable, CustomStringConvertible {
@@ -755,7 +755,7 @@ struct AtlasPageStatsMessage: Hashable, CustomStringConvertible {
   }
 }
 
-/// [WebmTextureHostApi.atlasStats].
+/// [StickersHostApi.atlasStats].
 ///
 /// Generated class from Pigeon that represents data sent in messages.
 struct AtlasStatsMessage: Hashable, CustomStringConvertible {
@@ -912,7 +912,7 @@ var messagesPigeonMethodCodec = FlutterStandardMethodCodec(readerWriter: Message
 /// thread and must not decode; decoding happens on native worker threads.
 ///
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
-protocol WebmTextureHostApi {
+protocol StickersHostApi {
   /// Creates the decoder and a platform texture sized to the bucket
   /// ([bucketW] x [bucketH] physical pixels). The texture shows frame 0 and
   /// stays inactive until [setActive].
@@ -984,7 +984,7 @@ protocol WebmTextureHostApi {
   func disposeAtlas(atlasId: Int64) throws -> AtlasLayoutMessage
   /// Sets the directory for the frame cache and returns the one in use, an
   /// absolute path. With a null [directory] nothing changes: the result is
-  /// the current one, which starts as `webm_texture` under the app's cache
+  /// the current one, which starts as `animated_stickers` under the app's cache
   /// directory (`Context.cacheDir` on Android, `Library/Caches` on iOS).
   ///
   /// The directory is created when the first animation needs it, and only
@@ -996,10 +996,10 @@ protocol WebmTextureHostApi {
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
-class WebmTextureHostApiSetup {
+class StickersHostApiSetup {
   static var codec: FlutterStandardMessageCodec { MessagesPigeonCodec.shared }
-  /// Sets up an instance of `WebmTextureHostApi` to handle messages through the `binaryMessenger`.
-  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: WebmTextureHostApi?, messageChannelSuffix: String = "") {
+  /// Sets up an instance of `StickersHostApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: StickersHostApi?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
     /// Creates the decoder and a platform texture sized to the bucket
     /// ([bucketW] x [bucketH] physical pixels). The texture shows frame 0 and
@@ -1011,7 +1011,7 @@ class WebmTextureHostApiSetup {
     /// animation isn't cached. With [loop] false, playback stops on the last frame and holds it
     /// until [seekToFrame]. Fails with a `PlatformException` carrying a
     /// `wt_status` name as its code if the core rejects the source.
-    let createAnimationChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAnimation\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let createAnimationChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.createAnimation\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       createAnimationChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1033,7 +1033,7 @@ class WebmTextureHostApiSetup {
       createAnimationChannel.setMessageHandler(nil)
     }
     /// Starts or stops playback. Inactive animations keep their current frame.
-    let setActiveChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setActive\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let setActiveChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.setActive\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setActiveChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1055,7 +1055,7 @@ class WebmTextureHostApiSetup {
     /// the limit allows, the largest visible areas play, then the most recently
     /// activated; the rest hold their frame. Starts at 0. An unknown or
     /// disposed [animId] is ignored.
-    let setPriorityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setPriority\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let setPriorityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.setPriority\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setPriorityChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1077,7 +1077,7 @@ class WebmTextureHostApiSetup {
     ///
     /// Throws `WT_ERR_INVALID_ARGUMENT` when [frame] is outside the
     /// animation's frames. An unknown or disposed [animId] is ignored.
-    let seekToFrameChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.seekToFrame\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let seekToFrameChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.seekToFrame\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       seekToFrameChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1096,7 +1096,7 @@ class WebmTextureHostApiSetup {
     /// Releases the animation, its texture and its decoder. Safe to call twice.
     /// An animation in an atlas leaves it; its page keeps its size until the
     /// atlas's next attach or detach.
-    let disposeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.dispose\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let disposeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.dispose\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       disposeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1112,7 +1112,7 @@ class WebmTextureHostApiSetup {
       disposeChannel.setMessageHandler(nil)
     }
     /// Reads the current device signals.
-    let deviceSignalsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.deviceSignals\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let deviceSignalsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.deviceSignals\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       deviceSignalsChannel.setMessageHandler { _, reply in
         do {
@@ -1130,7 +1130,7 @@ class WebmTextureHostApiSetup {
     /// 1..8, [maxFps] is 1..240, and a [maxConcurrent] of 0 means no limit.
     /// Changes reach running animations on the next scheduler round. Throws
     /// `WT_ERR_INVALID_ARGUMENT` for a value out of range.
-    let setSchedulerOptionsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setSchedulerOptions\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let setSchedulerOptionsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.setSchedulerOptions\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setSchedulerOptionsChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1150,7 +1150,7 @@ class WebmTextureHostApiSetup {
     /// Creates an empty atlas (ADR 0020): a set of pages, each one platform
     /// texture that many animations draw into. No texture exists until an
     /// animation is attached.
-    let createAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let createAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.createAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       createAtlasChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1169,7 +1169,7 @@ class WebmTextureHostApiSetup {
     /// size on a page with room (adding a page when needed), and retires their
     /// own textures. An animation keeps playing, pausing, seeking and
     /// reporting errors as before. Pages that grew get a new texture.
-    let attachToAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.attachToAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let attachToAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.attachToAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       attachToAtlasChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1188,7 +1188,7 @@ class WebmTextureHostApiSetup {
     /// Moves animations out of the atlas they are in, onto a new texture of
     /// their own (also for an animation whose atlas was disposed). Pages that
     /// shrank get a new texture; a page left empty has none.
-    let detachFromAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.detachFromAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let detachFromAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.detachFromAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       detachFromAtlasChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1205,7 +1205,7 @@ class WebmTextureHostApiSetup {
     }
     /// Releases retired textures (see [AtlasLayoutMessage.retiredTextureIds]).
     /// Unknown ids are ignored.
-    let releaseTexturesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.releaseTextures\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let releaseTexturesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.releaseTextures\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       releaseTexturesChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1227,7 +1227,7 @@ class WebmTextureHostApiSetup {
     /// isn't in atlas [atlasId]. Until then the slot's area of the texture
     /// holds stale pixels: keep showing the placeholder, or the texture shown
     /// before (`wt_atlas_shown_page`).
-    let atlasShownTexturesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasShownTextures\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let atlasShownTexturesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasShownTextures\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       atlasShownTexturesChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1244,7 +1244,7 @@ class WebmTextureHostApiSetup {
       atlasShownTexturesChannel.setMessageHandler(nil)
     }
     /// The atlas's pages and memory.
-    let atlasStatsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasStats\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let atlasStatsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasStats\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       atlasStatsChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1262,7 +1262,7 @@ class WebmTextureHostApiSetup {
     /// Frees the atlas. Animations still in it are left without a texture
     /// until [detachFromAtlas] (or [dispose]). Its page textures are retired,
     /// as listed in the result.
-    let disposeAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.disposeAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let disposeAtlasChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.disposeAtlas\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       disposeAtlasChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1279,7 +1279,7 @@ class WebmTextureHostApiSetup {
     }
     /// Sets the directory for the frame cache and returns the one in use, an
     /// absolute path. With a null [directory] nothing changes: the result is
-    /// the current one, which starts as `webm_texture` under the app's cache
+    /// the current one, which starts as `animated_stickers` under the app's cache
     /// directory (`Context.cacheDir` on Android, `Library/Caches` on iOS).
     ///
     /// The directory is created when the first animation needs it, and only
@@ -1287,7 +1287,7 @@ class WebmTextureHostApiSetup {
     /// afterwards cache there; existing ones keep their files. Cache
     /// administration (`wt_cache_*`) runs over FFI, so Dart passes this path to
     /// it.
-    let configureCacheChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.webm_texture.WebmTextureHostApi.configureCache\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let configureCacheChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.animated_stickers.StickersHostApi.configureCache\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       configureCacheChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1361,7 +1361,7 @@ class StreamErrorsEventChannel {
   private let channel: FlutterEventChannel
 
   init(messenger: FlutterBinaryMessenger, instanceName: String = "") {
-    var channelName = "dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamErrors"
+    var channelName = "dev.flutter.pigeon.animated_stickers.StickersEvents.streamErrors"
     if !instanceName.isEmpty {
       channelName += ".\(instanceName)"
     }
@@ -1399,7 +1399,7 @@ class StreamDeviceSignalsEventChannel {
   private let channel: FlutterEventChannel
 
   init(messenger: FlutterBinaryMessenger, instanceName: String = "") {
-    var channelName = "dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamDeviceSignals"
+    var channelName = "dev.flutter.pigeon.animated_stickers.StickersEvents.streamDeviceSignals"
     if !instanceName.isEmpty {
       channelName += ".\(instanceName)"
     }

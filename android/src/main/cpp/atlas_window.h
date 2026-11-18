@@ -9,8 +9,8 @@
 //   destroys a window only after wt_atlas_set_target replaced it (or
 //   wt_atlas_destroy returned), so the callbacks never see a dead one.
 // - The target callbacks run on scheduler workers, one at a time.
-#ifndef WEBM_TEXTURE_ANDROID_ATLAS_WINDOW_H_
-#define WEBM_TEXTURE_ANDROID_ATLAS_WINDOW_H_
+#ifndef ANIMATED_STICKERS_ANDROID_ATLAS_WINDOW_H_
+#define ANIMATED_STICKERS_ANDROID_ATLAS_WINDOW_H_
 
 #include <android/native_window.h>
 
@@ -54,4 +54,4 @@ class AtlasWindow {
 
 }  // namespace wt_android
 
-#endif  // WEBM_TEXTURE_ANDROID_ATLAS_WINDOW_H_
+#endif  // ANIMATED_STICKERS_ANDROID_ATLAS_WINDOW_H_

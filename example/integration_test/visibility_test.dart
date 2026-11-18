@@ -1,12 +1,12 @@
-// T2.5: in a 200-item list of WebmStickers, only the rows on screen report
+// T2.5: in a 200-item list of Stickers, only the rows on screen report
 // active, as counted by the page's debug overlay. Run with:
 //
 //   cd example && fvm flutter test integration_test/visibility_test.dart -d <device>
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/webm_texture.dart';
-import 'package:webm_texture_example/visibility_demo.dart';
+import 'package:animated_stickers/animated_stickers.dart';
+import 'package:animated_stickers_example/visibility_demo.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,7 @@ void main() {
   int onScreen(WidgetTester tester) {
     final viewport = tester.getRect(find.byKey(const Key('stickerList')));
     var n = 0;
-    for (final e in find.byType(WebmSticker, skipOffstage: false).evaluate()) {
+    for (final e in find.byType(Sticker, skipOffstage: false).evaluate()) {
       final box = e.renderObject! as RenderBox;
       final r = box.localToGlobal(Offset.zero) & box.size;
       final overlap = r.intersect(viewport);
@@ -47,7 +47,7 @@ void main() {
   Future<void> check(WidgetTester tester, String where) async {
     await waitForTextures(tester);
     final visible = onScreen(tester);
-    final built = find.byType(WebmSticker, skipOffstage: false).evaluate();
+    final built = find.byType(Sticker, skipOffstage: false).evaluate();
     // ignore: avoid_print
     print(
       '$where: on screen $visible, built ${built.length}, '
@@ -56,7 +56,7 @@ void main() {
     expect(visible, greaterThan(0), reason: where);
     expect(built.length, greaterThan(visible), reason: '$where: cache extent');
     expect(overlayCount(tester), visible, reason: where);
-    expect(WebmStickers.debugActiveCount.value, visible, reason: where);
+    expect(Stickers.debugActiveCount.value, visible, reason: where);
   }
 
   testWidgets('only on-screen stickers report active', (tester) async {
@@ -83,6 +83,6 @@ void main() {
     // Leaving the page stops everything.
     await tester.pumpWidget(const MaterialApp(home: SizedBox()));
     await tester.pump();
-    expect(WebmStickers.debugActiveCount.value, 0);
+    expect(Stickers.debugActiveCount.value, 0);
   });
 }

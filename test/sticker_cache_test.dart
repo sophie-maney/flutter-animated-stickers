@@ -2,7 +2,7 @@
 // host build of the core is available) against the real one:
 //
 //   tool/build_host_ffi_lib.sh
-//   WEBM_TEXTURE_LIB=build/ffi/src/libwebm_texture.dylib fvm flutter test test/sticker_cache_test.dart
+//   ANIMATED_STICKERS_LIB=build/ffi/src/libanimated_stickers.dylib fvm flutter test test/sticker_cache_test.dart
 @TestOn('vm')
 library;
 
@@ -10,12 +10,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_cache.dart';
-import 'package:webm_texture/src/sticker_config.dart';
-import 'package:webm_texture/src/sticker_runtime.dart';
-import 'package:webm_texture/src/sticker_tier.dart';
-import 'package:webm_texture/webm_texture.dart'
-    show StickerException, WebmStickers;
+import 'package:animated_stickers/src/sticker_cache.dart';
+import 'package:animated_stickers/src/sticker_config.dart';
+import 'package:animated_stickers/src/sticker_runtime.dart';
+import 'package:animated_stickers/src/sticker_tier.dart';
+import 'package:animated_stickers/animated_stickers.dart'
+    show StickerException, Stickers;
 
 import 'fake_host.dart';
 
@@ -103,7 +103,7 @@ void main() {
       );
     });
 
-    test('WebmStickers delegates to the runtime\'s cache', () async {
+    test('Stickers delegates to the runtime\'s cache', () async {
       StickerRuntime.debugOverride = StickerRuntime(
         cache: cache,
         tiers: StickerTierController(
@@ -112,12 +112,12 @@ void main() {
         ),
       );
       addTearDown(() => StickerRuntime.debugOverride = null);
-      await WebmStickers.configure(
+      await Stickers.configure(
         const StickerConfig(cacheDirectory: '/x', diskBudgetBytes: 7),
       );
       expect(native.applied, [('/x', 7)]);
-      expect(await WebmStickers.cacheStats(), native.result);
-      await WebmStickers.clearCache();
+      expect(await Stickers.cacheStats(), native.result);
+      await Stickers.clearCache();
       expect(native.cleared, ['/x']);
     });
 
@@ -134,9 +134,9 @@ void main() {
   });
 
   group('over FFI', () {
-    final lib = Platform.environment['WEBM_TEXTURE_LIB'];
+    final lib = Platform.environment['ANIMATED_STICKERS_LIB'];
     final skip = lib == null || !File(lib).existsSync()
-        ? 'set WEBM_TEXTURE_LIB (tool/build_host_ffi_lib.sh)'
+        ? 'set ANIMATED_STICKERS_LIB (tool/build_host_ffi_lib.sh)'
         : null;
 
     late Directory dir;

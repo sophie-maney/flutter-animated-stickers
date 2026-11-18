@@ -1,6 +1,6 @@
-// JNI entry points for com.example.webm_texture.WtNative (T2.2). Compiled
-// into libwebm_texture.so next to the core, so Kotlin and dart:ffi share one
-// copy of it.
+// JNI entry points for town.leggy.animated_stickers.WtNative (T2.2). Compiled
+// into libanimated_stickers.so next to the core, so Kotlin and dart:ffi share
+// one copy of it.
 //
 // Every animation plays on one process-wide scheduler (T3.3), created by the
 // first nativeCreate. Its threads are attached to the JVM for their lifetime
@@ -150,7 +150,7 @@ wt_sched* SharedScheduler(JNIEnv* env) {
     wt_sched* s = nullptr;
     const wt_status st = wt_sched_create(nullptr, &hooks, &s);
     if (st != WT_OK) {
-      __android_log_print(ANDROID_LOG_ERROR, "WebmTexture",
+      __android_log_print(ANDROID_LOG_ERROR, "AnimatedStickers",
                           "wt_sched_create failed: %s", wt_status_string(st));
     }
     return s;
@@ -233,7 +233,8 @@ extern "C" {
 // Deletes least-recently-used cache files in cache_dir down to the disk
 // budget, and stray temporaries. Returns a wt_status.
 // Thread: background thread (reads the directory).
-JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeEvictCache(
+JNIEXPORT jint JNICALL
+Java_town_leggy_animated_1stickers_WtNative_nativeEvictCache(
     JNIEnv* env, jclass, jstring cache_dir) {
   if (cache_dir == nullptr) return WT_ERR_INVALID_ARGUMENT;
   const char* dir = env->GetStringUTFChars(cache_dir, nullptr);
@@ -250,7 +251,8 @@ JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeEvictCache(
 // a file there, named by wt_cache_file_path; otherwise nothing is cached.
 // Writes {status, outWidth, outHeight, frameCount} into out and returns the
 // handle, or 0 on failure. Thread: background thread.
-JNIEXPORT jlong JNICALL Java_com_example_webm_1texture_WtNative_nativeCreate(
+JNIEXPORT jlong JNICALL
+Java_town_leggy_animated_1stickers_WtNative_nativeCreate(
     JNIEnv* env, jclass, jobject listener, jbyteArray bytes, jstring path,
     jint width, jint height, jboolean loop, jstring cache_dir,
     jstring source_key, jintArray out) {
@@ -315,8 +317,11 @@ JNIEXPORT jlong JNICALL Java_com_example_webm_1texture_WtNative_nativeCreate(
 // returning, waiting for at most one frame being written into it, never a
 // decode). Returns a wt_status.
 // Thread: platform main thread.
-JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeSetSurface(
-    JNIEnv* env, jclass, jlong handle, jobject surface) {
+JNIEXPORT jint JNICALL
+Java_town_leggy_animated_1stickers_WtNative_nativeSetSurface(JNIEnv* env,
+                                                             jclass,
+                                                             jlong handle,
+                                                             jobject surface) {
   Handle* h = FromJ(handle);
   if (h == nullptr) return WT_ERR_INVALID_ARGUMENT;
   ANativeWindow* window = nullptr;
@@ -328,8 +333,10 @@ JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeSetSurface(
 }
 
 // Thread: platform main thread.
-JNIEXPORT void JNICALL Java_com_example_webm_1texture_WtNative_nativeSetActive(
-    JNIEnv*, jclass, jlong handle, jboolean active) {
+JNIEXPORT void JNICALL
+Java_town_leggy_animated_1stickers_WtNative_nativeSetActive(JNIEnv*, jclass,
+                                                            jlong handle,
+                                                            jboolean active) {
   Handle* h = FromJ(handle);
   if (h != nullptr) h->player->SetActive(active == JNI_TRUE);
 }
@@ -338,9 +345,9 @@ JNIEXPORT void JNICALL Java_com_example_webm_1texture_WtNative_nativeSetActive(
 // under the scheduler's max_concurrent limit (see SurfacePlayer::SetPriority).
 // Thread: platform main thread.
 JNIEXPORT void JNICALL
-Java_com_example_webm_1texture_WtNative_nativeSetPriority(JNIEnv*, jclass,
-                                                          jlong handle,
-                                                          jlong priority) {
+Java_town_leggy_animated_1stickers_WtNative_nativeSetPriority(JNIEnv*, jclass,
+                                                              jlong handle,
+                                                              jlong priority) {
   Handle* h = FromJ(handle);
   if (h != nullptr && priority >= 0) {
     h->player->SetPriority(static_cast<uint64_t>(priority));
@@ -350,7 +357,7 @@ Java_com_example_webm_1texture_WtNative_nativeSetPriority(JNIEnv*, jclass,
 // Shows frame next (see SurfacePlayer::SeekTo). Returns a wt_status:
 // WT_ERR_INVALID_ARGUMENT for a frame outside the animation.
 // Thread: platform main thread.
-JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeSeek(
+JNIEXPORT jint JNICALL Java_town_leggy_animated_1stickers_WtNative_nativeSeek(
     JNIEnv*, jclass, jlong handle, jint frame) {
   Handle* h = FromJ(handle);
   if (h == nullptr || frame < 0) return WT_ERR_INVALID_ARGUMENT;
@@ -362,8 +369,9 @@ JNIEXPORT jint JNICALL Java_com_example_webm_1texture_WtNative_nativeSeek(
 // decode, or a cache file being finished). The player must not be in an
 // atlas: Kotlin detaches it first, on the main thread, so this can't overlap
 // nativeAtlasDestroy. Thread: background thread.
-JNIEXPORT void JNICALL Java_com_example_webm_1texture_WtNative_nativeDestroy(
-    JNIEnv* env, jclass, jlong handle) {
+JNIEXPORT void JNICALL
+Java_town_leggy_animated_1stickers_WtNative_nativeDestroy(JNIEnv* env, jclass,
+                                                          jlong handle) {
   Handle* h = FromJ(handle);
   if (h == nullptr) return;
   h->player.reset();
@@ -377,7 +385,7 @@ JNIEXPORT void JNICALL Java_com_example_webm_1texture_WtNative_nativeDestroy(
 // wt_status: WT_ERR_INVALID_ARGUMENT for a value out of range.
 // Thread: platform main thread.
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeSetSchedulerOptions(
+Java_town_leggy_animated_1stickers_WtNative_nativeSetSchedulerOptions(
     JNIEnv* env, jclass, jint worker_count, jint max_fps, jint max_concurrent) {
   if (worker_count < 1 || max_fps < 1 || max_concurrent < 0) {
     return WT_ERR_INVALID_ARGUMENT;
@@ -397,11 +405,9 @@ Java_com_example_webm_1texture_WtNative_nativeSetSchedulerOptions(
 // in RGBA_8888. Writes the status into out[0] and returns the handle, or 0.
 // Thread: platform main thread.
 JNIEXPORT jlong JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasCreate(JNIEnv* env, jclass,
-                                                          jint width,
-                                                          jint max_height,
-                                                          jint max_pages,
-                                                          jintArray out) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasCreate(
+    JNIEnv* env, jclass, jint width, jint max_height, jint max_pages,
+    jintArray out) {
   if (out == nullptr || env->GetArrayLength(out) < 1) return 0;
   jint status = WT_ERR_INVALID_ARGUMENT;
   wt_sched* sched = SharedScheduler(env);
@@ -427,8 +433,8 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasCreate(JNIEnv* env, jclass,
 // in flight, then releases every page's window. The caller releases the
 // SurfaceProducers afterwards. Thread: platform main thread.
 JNIEXPORT void JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasDestroy(JNIEnv*, jclass,
-                                                           jlong atlas) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasDestroy(JNIEnv*, jclass,
+                                                               jlong atlas) {
   AtlasHandle* h = AtlasFromJ(atlas);
   if (h == nullptr) return;
   wt_atlas_destroy(h->atlas);  // No target callback runs after this.
@@ -439,10 +445,8 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasDestroy(JNIEnv*, jclass,
 // {page, x, y, width, height} into out and returns a wt_status.
 // Thread: platform main thread (cancels the frame in flight; see above).
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasAttach(JNIEnv* env, jclass,
-                                                          jlong atlas,
-                                                          jlong anim,
-                                                          jintArray out) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasAttach(
+    JNIEnv* env, jclass, jlong atlas, jlong anim, jintArray out) {
   AtlasHandle* a = AtlasFromJ(atlas);
   Handle* p = FromJ(anim);
   if (a == nullptr || p == nullptr || out == nullptr ||
@@ -463,9 +467,9 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasAttach(JNIEnv* env, jclass,
 // Moves the animation back to its own sink (wt_atlas_detach). Returns a
 // wt_status. Thread: platform main thread (cancels the frame in flight).
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasDetach(JNIEnv*, jclass,
-                                                          jlong atlas,
-                                                          jlong anim) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasDetach(JNIEnv*, jclass,
+                                                              jlong atlas,
+                                                              jlong anim) {
   AtlasHandle* a = AtlasFromJ(atlas);
   Handle* p = FromJ(anim);
   if (a == nullptr || p == nullptr) return WT_ERR_INVALID_ARGUMENT;
@@ -476,9 +480,10 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasDetach(JNIEnv*, jclass,
 // (wt_atlas_shown_page). Thread: platform main thread; never waits for a
 // frame.
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasShownPage(JNIEnv*, jclass,
-                                                             jlong atlas,
-                                                             jlong anim) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasShownPage(JNIEnv*,
+                                                                 jclass,
+                                                                 jlong atlas,
+                                                                 jlong anim) {
   AtlasHandle* a = AtlasFromJ(atlas);
   Handle* p = FromJ(anim);
   if (a == nullptr || p == nullptr) return -1;
@@ -487,8 +492,9 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasShownPage(JNIEnv*, jclass,
 
 // Pages created so far. Thread: platform main thread.
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasPageCount(JNIEnv*, jclass,
-                                                             jlong atlas) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasPageCount(JNIEnv*,
+                                                                 jclass,
+                                                                 jlong atlas) {
   AtlasHandle* a = AtlasFromJ(atlas);
   return a == nullptr ? 0 : static_cast<jint>(wt_atlas_page_count(a->atlas));
 }
@@ -496,10 +502,8 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasPageCount(JNIEnv*, jclass,
 // Fills out with wt_atlas_page_info (see the kPage* layout). Returns a
 // wt_status. Thread: platform main thread; never waits for a frame.
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasPageInfo(JNIEnv* env, jclass,
-                                                            jlong atlas,
-                                                            jint page,
-                                                            jlongArray out) {
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasPageInfo(
+    JNIEnv* env, jclass, jlong atlas, jint page, jlongArray out) {
   AtlasHandle* a = AtlasFromJ(atlas);
   if (a == nullptr || page < 0 || out == nullptr ||
       env->GetArrayLength(out) < kPageLength) {
@@ -532,7 +536,7 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasPageInfo(JNIEnv* env, jclass,
 // at all). Waits for a present in flight on the old window, then releases
 // it. Returns a wt_status. Thread: platform main thread.
 JNIEXPORT jint JNICALL
-Java_com_example_webm_1texture_WtNative_nativeAtlasSetSurface(
+Java_town_leggy_animated_1stickers_WtNative_nativeAtlasSetSurface(
     JNIEnv* env, jclass, jlong atlas, jint page, jobject surface, jint height) {
   AtlasHandle* a = AtlasFromJ(atlas);
   if (a == nullptr || page < 0 || height < 0) return WT_ERR_INVALID_ARGUMENT;
@@ -560,8 +564,9 @@ Java_com_example_webm_1texture_WtNative_nativeAtlasSetSurface(
 // The core's name for a status code, e.g. "WT_ERR_LIMIT".
 // Thread: any thread.
 JNIEXPORT jstring JNICALL
-Java_com_example_webm_1texture_WtNative_nativeStatusName(JNIEnv* env, jclass,
-                                                         jint status) {
+Java_town_leggy_animated_1stickers_WtNative_nativeStatusName(JNIEnv* env,
+                                                             jclass,
+                                                             jint status) {
   return env->NewStringUTF(wt_status_string(status));
 }
 

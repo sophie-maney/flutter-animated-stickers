@@ -2,7 +2,7 @@
 // pattern should show it through their transparent parts, with no dark or
 // light fringes on the edges.
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';
 
@@ -24,7 +24,7 @@ class CheckerboardPage extends StatefulWidget {
 }
 
 class _CheckerboardPageState extends State<CheckerboardPage> {
-  final _controller = WebmStickerController();
+  final _controller = StickerController();
   bool _dark = false;
 
   @override
@@ -70,7 +70,7 @@ class _CheckerboardPageState extends State<CheckerboardPage> {
         crossAxisSpacing: 12,
         children: [
           for (final name in checkerboardStickers)
-            WebmSticker(
+            Sticker(
               source: corpusSource(name),
               controller: _controller,
               errorBuilder: (_, e) => Center(child: Text('$e')),

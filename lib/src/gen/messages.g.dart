@@ -165,7 +165,7 @@ class AnimationSourceMessage {
   }
 }
 
-/// What [WebmTextureHostApi.createAnimation] returns.
+/// What [StickersHostApi.createAnimation] returns.
 class AnimationHandleMessage {
   AnimationHandleMessage({required this.animId, required this.textureId});
 
@@ -351,7 +351,7 @@ class AnimationErrorMessage {
   }
 }
 
-/// Layout of an atlas's pages ([WebmTextureHostApi.createAtlas]; see
+/// Layout of an atlas's pages ([StickersHostApi.createAtlas]; see
 /// `wt_atlas_options` in `wt_api.h`).
 class AtlasOptionsMessage {
   AtlasOptionsMessage({
@@ -569,10 +569,10 @@ class AtlasLayoutMessage {
     required this.retiredTextureIds,
   });
 
-  /// [WebmTextureHostApi.attachToAtlas]: one per animation, in order.
+  /// [StickersHostApi.attachToAtlas]: one per animation, in order.
   List<AtlasSlotMessage> slots;
 
-  /// [WebmTextureHostApi.detachFromAtlas]: each animation's new texture of
+  /// [StickersHostApi.detachFromAtlas]: each animation's new texture of
   /// its own, in order (textureId -1 for an unknown animation).
   List<AnimationHandleMessage> handles;
 
@@ -583,7 +583,7 @@ class AtlasLayoutMessage {
 
   /// Textures this call replaced (a page's previous size, an animation's own
   /// texture when it entered the atlas). They hold their last frame until
-  /// Dart calls [WebmTextureHostApi.releaseTextures], which it does once no
+  /// Dart calls [StickersHostApi.releaseTextures], which it does once no
   /// widget draws them any more.
   List<int> retiredTextureIds;
 
@@ -630,7 +630,7 @@ class AtlasLayoutMessage {
   }
 }
 
-/// One atlas page's state and memory ([WebmTextureHostApi.atlasStats]).
+/// One atlas page's state and memory ([StickersHostApi.atlasStats]).
 class AtlasPageStatsMessage {
   AtlasPageStatsMessage({
     required this.pageId,
@@ -745,7 +745,7 @@ class AtlasPageStatsMessage {
   }
 }
 
-/// [WebmTextureHostApi.atlasStats].
+/// [StickersHostApi.atlasStats].
 class AtlasStatsMessage {
   AtlasStatsMessage({
     required this.pages,
@@ -893,11 +893,11 @@ const StandardMethodCodec pigeonMethodCodec = StandardMethodCodec(
 
 /// Texture lifecycle and device queries. Handlers run on the platform main
 /// thread and must not decode; decoding happens on native worker threads.
-class WebmTextureHostApi {
-  /// Constructor for [WebmTextureHostApi]. The [binaryMessenger] named argument is
+class StickersHostApi {
+  /// Constructor for [StickersHostApi]. The [binaryMessenger] named argument is
   /// available for dependency injection. If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WebmTextureHostApi({
+  StickersHostApi({
     BinaryMessenger? binaryMessenger,
     String messageChannelSuffix = '',
   }) : pigeonVar_binaryMessenger = binaryMessenger,
@@ -928,7 +928,7 @@ class WebmTextureHostApi {
     bool loop,
   ) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAnimation$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.createAnimation$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -949,7 +949,7 @@ class WebmTextureHostApi {
   /// Starts or stops playback. Inactive animations keep their current frame.
   Future<void> setActive(int animId, bool active) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setActive$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.setActive$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -974,7 +974,7 @@ class WebmTextureHostApi {
   /// disposed [animId] is ignored.
   Future<void> setPriority(int animId, int priority) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setPriority$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.setPriority$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -999,7 +999,7 @@ class WebmTextureHostApi {
   /// animation's frames. An unknown or disposed [animId] is ignored.
   Future<void> seekToFrame(int animId, int frame) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.seekToFrame$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.seekToFrame$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1021,7 +1021,7 @@ class WebmTextureHostApi {
   /// atlas's next attach or detach.
   Future<void> dispose(int animId) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.dispose$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.dispose$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1041,7 +1041,7 @@ class WebmTextureHostApi {
   /// Reads the current device signals.
   Future<DeviceSignalsMessage> deviceSignals() async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.deviceSignals$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.deviceSignals$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1068,7 +1068,7 @@ class WebmTextureHostApi {
     int maxConcurrent,
   ) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.setSchedulerOptions$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.setSchedulerOptions$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1090,7 +1090,7 @@ class WebmTextureHostApi {
   /// animation is attached.
   Future<int> createAtlas(AtlasOptionsMessage options) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAtlas$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.createAtlas$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1117,7 +1117,7 @@ class WebmTextureHostApi {
     List<int> animIds,
   ) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.attachToAtlas$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.attachToAtlas$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1140,7 +1140,7 @@ class WebmTextureHostApi {
   /// shrank get a new texture; a page left empty has none.
   Future<AtlasLayoutMessage> detachFromAtlas(List<int> animIds) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.detachFromAtlas$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.detachFromAtlas$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1162,7 +1162,7 @@ class WebmTextureHostApi {
   /// Unknown ids are ignored.
   Future<void> releaseTextures(List<int> textureIds) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.releaseTextures$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.releaseTextures$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1188,7 +1188,7 @@ class WebmTextureHostApi {
   /// before (`wt_atlas_shown_page`).
   Future<List<int>> atlasShownTextures(int atlasId, List<int> animIds) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasShownTextures$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasShownTextures$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1209,7 +1209,7 @@ class WebmTextureHostApi {
   /// The atlas's pages and memory.
   Future<AtlasStatsMessage> atlasStats(int atlasId) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.atlasStats$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.atlasStats$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1232,7 +1232,7 @@ class WebmTextureHostApi {
   /// as listed in the result.
   Future<AtlasLayoutMessage> disposeAtlas(int atlasId) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.disposeAtlas$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.disposeAtlas$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1252,7 +1252,7 @@ class WebmTextureHostApi {
 
   /// Sets the directory for the frame cache and returns the one in use, an
   /// absolute path. With a null [directory] nothing changes: the result is
-  /// the current one, which starts as `webm_texture` under the app's cache
+  /// the current one, which starts as `animated_stickers` under the app's cache
   /// directory (`Context.cacheDir` on Android, `Library/Caches` on iOS).
   ///
   /// The directory is created when the first animation needs it, and only
@@ -1262,7 +1262,7 @@ class WebmTextureHostApi {
   /// it.
   Future<String> configureCache(String? directory) async {
     final pigeonVar_channelName =
-        'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.configureCache$pigeonVar_messageChannelSuffix';
+        'dev.flutter.pigeon.animated_stickers.StickersHostApi.configureCache$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -1294,7 +1294,7 @@ Stream<AnimationErrorMessage> streamErrors({String instanceName = ''}) {
     instanceName = '.$instanceName';
   }
   final EventChannel streamErrorsChannel = EventChannel(
-    'dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamErrors$instanceName',
+    'dev.flutter.pigeon.animated_stickers.StickersEvents.streamErrors$instanceName',
     pigeonMethodCodec,
   );
   return streamErrorsChannel.receiveBroadcastStream().map((dynamic event) {
@@ -1304,7 +1304,7 @@ Stream<AnimationErrorMessage> streamErrors({String instanceName = ''}) {
 
 /// A fresh reading of every device signal, sent when Low Power Mode, battery
 /// saver or the thermal state changes while the app runs. Same content as
-/// [WebmTextureHostApi.deviceSignals].
+/// [StickersHostApi.deviceSignals].
 ///
 /// Returns a broadcast [Stream] of events from the `streamDeviceSignals` event channel.
 ///
@@ -1317,7 +1317,7 @@ Stream<DeviceSignalsMessage> streamDeviceSignals({String instanceName = ''}) {
     instanceName = '.$instanceName';
   }
   final EventChannel streamDeviceSignalsChannel = EventChannel(
-    'dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamDeviceSignals$instanceName',
+    'dev.flutter.pigeon.animated_stickers.StickersEvents.streamDeviceSignals$instanceName',
     pigeonMethodCodec,
   );
   return streamDeviceSignalsChannel.receiveBroadcastStream().map((

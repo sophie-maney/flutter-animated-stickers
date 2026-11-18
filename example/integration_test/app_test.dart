@@ -29,12 +29,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/src/sticker_atlas_scope.dart';
-import 'package:webm_texture/webm_texture.dart';
-import 'package:webm_texture_example/checkerboard_page.dart';
-import 'package:webm_texture_example/corpus.dart';
-import 'package:webm_texture_example/main.dart';
-import 'package:webm_texture_example/stress_page.dart';
+import 'package:animated_stickers/src/sticker_atlas_scope.dart';
+import 'package:animated_stickers/animated_stickers.dart';
+import 'package:animated_stickers_example/checkerboard_page.dart';
+import 'package:animated_stickers_example/corpus.dart';
+import 'package:animated_stickers_example/main.dart';
+import 'package:animated_stickers_example/stress_page.dart';
 
 import 'screenshots.dart';
 
@@ -189,9 +189,9 @@ Future<void> _elapse(WidgetTester tester, Duration d) async {
   }
 }
 
-/// The physical-pixel rect of the first [WebmSticker].
+/// The physical-pixel rect of the first [Sticker].
 Rect _stickerRect(WidgetTester tester, [int index = 0]) {
-  final finder = find.byType(WebmSticker).at(index);
+  final finder = find.byType(Sticker).at(index);
   final dpr = tester.view.devicePixelRatio;
   final r = tester.getRect(finder);
   return Rect.fromLTRB(
@@ -376,7 +376,7 @@ void main() {
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     for (var i = 0; i < rows * columns; i++)
-                      WebmSticker(
+                      Sticker(
                         source: corpusSource(
                           playableCorpus[i % playableCorpus.length],
                         ),
@@ -431,7 +431,7 @@ void main() {
     await tester.tap(find.byKey(const Key('openCheckerboard')));
     await tester.pumpAndSettle();
     await _waitForTextures(tester, checkerboardStickers.length);
-    expect(WebmStickers.debugActiveCount.value, greaterThan(0));
+    expect(Stickers.debugActiveCount.value, greaterThan(0));
 
     final rect = _stickerRect(tester); // vp9_alpha_512, animated.
 
@@ -450,7 +450,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('play')));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, 0);
+    expect(Stickers.debugActiveCount.value, 0);
     await _elapse(tester, const Duration(milliseconds: 300));
     expect(
       await change(const Duration(milliseconds: 400)),
@@ -460,7 +460,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('play')));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, greaterThan(0));
+    expect(Stickers.debugActiveCount.value, greaterThan(0));
     expect(
       await change(const Duration(milliseconds: 400)),
       greaterThan(0.001),
@@ -481,7 +481,7 @@ void main() {
             children: [
               SizedBox(
                 height: 200,
-                child: WebmSticker(source: corpusSource('vp9_alpha_512.webm')),
+                child: Sticker(source: corpusSource('vp9_alpha_512.webm')),
               ),
               const SizedBox(height: 3000),
             ],
@@ -490,7 +490,7 @@ void main() {
       ),
     );
     await _waitForTextures(tester, 1);
-    expect(WebmStickers.debugActiveCount.value, 1);
+    expect(Stickers.debugActiveCount.value, 1);
 
     final rect = _stickerRect(tester);
     final (a, _) = await _screenshot();
@@ -502,13 +502,13 @@ void main() {
     controller.jumpTo(2000);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, 0, reason: 'scrolled off');
+    expect(Stickers.debugActiveCount.value, 0, reason: 'scrolled off');
 
     // Back in view.
     controller.jumpTo(0);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, 1, reason: 'scrolled back');
+    expect(Stickers.debugActiveCount.value, 1, reason: 'scrolled back');
 
     // Backgrounded.
     // The framework only allows real transitions, one step at a time.
@@ -520,7 +520,7 @@ void main() {
       _binding.handleAppLifecycleStateChanged(s);
     }
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, 0, reason: 'app hidden');
+    expect(Stickers.debugActiveCount.value, 0, reason: 'app hidden');
     for (final s in [
       AppLifecycleState.hidden,
       AppLifecycleState.inactive,
@@ -529,6 +529,6 @@ void main() {
       _binding.handleAppLifecycleStateChanged(s);
     }
     await tester.pump(const Duration(milliseconds: 300));
-    expect(WebmStickers.debugActiveCount.value, 1, reason: 'app resumed');
+    expect(Stickers.debugActiveCount.value, 1, reason: 'app resumed');
   });
 }

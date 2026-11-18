@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:webm_texture/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
 
 /// Records host API calls instead of reaching a platform.
-class FakeHost extends WebmTextureHostApi {
+class FakeHost extends StickersHostApi {
   final List<(String, AnimationSourceMessage, int, int)> created = [];
 
   /// The `loop` argument of each [created] call.

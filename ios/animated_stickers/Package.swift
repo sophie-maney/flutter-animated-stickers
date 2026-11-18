@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "webm_texture",
+    name: "animated_stickers",
     platforms: [
         .iOS("15.0")
     ],
     products: [
-        .library(name: "webm-texture", targets: ["webm_texture"])
+        .library(name: "animated-stickers", targets: ["animated_stickers"])
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework")
@@ -50,7 +50,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "webm_texture",
+            name: "animated_stickers",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
                 "wt_core",

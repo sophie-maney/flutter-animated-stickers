@@ -220,13 +220,13 @@ jobs:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: webm_texture
+        working-directory: animated_stickers
     steps:
       # SwiftPM derives the package identity from the directory name, which must
       # match the plugin name rather than the repository name.
       - uses: actions/checkout@v4
         with:
-          path: webm_texture
+          path: animated_stickers
 
       - name: Install fvm
         run: |
@@ -237,13 +237,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.FVM_HOME }}
-          key: fvm-${{ runner.os }}-${{ hashFiles('webm_texture/.fvmrc') }}
+          key: fvm-${{ runner.os }}-${{ hashFiles('animated_stickers/.fvmrc') }}
 
       - name: Cache pub
         uses: actions/cache@v4
         with:
           path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ hashFiles('webm_texture/**/pubspec.yaml') }}
+          key: pub-${{ runner.os }}-${{ hashFiles('animated_stickers/**/pubspec.yaml') }}
           restore-keys: pub-${{ runner.os }}-
 
       - run: fvm install
@@ -251,7 +251,7 @@ jobs:
       - name: Fetch native prebuilts
         run: fvm dart run tool/fetch_prebuilts.dart --platform ios
       - name: Build debug simulator app
-        working-directory: webm_texture/example
+        working-directory: animated_stickers/example
         run: fvm flutter build ios --simulator --debug --no-codesign
 
   # Screenshot goldens in example/integration_test/goldens/ were recorded on a
@@ -327,11 +327,11 @@ jobs:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: webm_texture
+        working-directory: animated_stickers
     steps:
       - uses: actions/checkout@v4
         with:
-          path: webm_texture
+          path: animated_stickers
 
       - name: Install fvm
         run: |
@@ -342,13 +342,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.FVM_HOME }}
-          key: fvm-${{ runner.os }}-${{ hashFiles('webm_texture/.fvmrc') }}
+          key: fvm-${{ runner.os }}-${{ hashFiles('animated_stickers/.fvmrc') }}
 
       - name: Cache pub
         uses: actions/cache@v4
         with:
           path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ hashFiles('webm_texture/**/pubspec.yaml') }}
+          key: pub-${{ runner.os }}-${{ hashFiles('animated_stickers/**/pubspec.yaml') }}
           restore-keys: pub-${{ runner.os }}-
 
       - run: fvm install
@@ -365,7 +365,7 @@ jobs:
           echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
 
       - name: Run integration tests
-        working-directory: webm_texture/example
+        working-directory: animated_stickers/example
         timeout-minutes: 30
         # One app launch for every test (all_test.dart); the script retries
         # the flaky simulator launches (see its header).

@@ -1,4 +1,4 @@
-package com.example.webm_texture_example
+package town.leggy.animated_stickers.example
 
 import io.flutter.embedding.android.FlutterActivity
 

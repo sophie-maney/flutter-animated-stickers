@@ -1,9 +1,9 @@
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.util.Log
 import io.flutter.view.TextureRegistry
 
-private const val TAG = "WebmTexture"
+private const val TAG = "AnimatedStickers"
 
 /**
  * One native atlas (`wt_atlas`, T4.2, [ADR 0020](docs/decisions/0020-atlas-compositor.md)):
