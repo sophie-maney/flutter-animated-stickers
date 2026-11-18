@@ -1,4 +1,4 @@
-# webm_texture — Plan
+# animated_stickers — Plan
 
 > Step-by-step tasks for agents: [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md). Agent rules: [`AGENTS.md`](AGENTS.md).
 
@@ -16,6 +16,7 @@ A Flutter plugin (Android + iOS) that plays animated stickers inline the way Tel
 | Sources | `file`, `bytes`, `asset` built in; `network` goes through a pluggable `StickerFetcher`. Content is keyed by SHA-1 of the bytes, a caller `key`, or a file path ([ADR 0013](docs/decisions/0013-sources-and-fetcher.md)) |
 | Native libs | Built by CI per ABI with pinned versions, then vendored into the published package with sha256 checks |
 | Low-end devices | Automatic device tiers; the app can override them |
+| Name | Package `animated_stickers`; widget `Sticker`, facade `Stickers`, controller `StickerController`; Android and iOS id `town.leggy.animated_stickers` ([ADR 0028](docs/decisions/0028-package-rename.md)) |
 | Distribution | Public on pub.dev eventually, so the API, docs, licenses and binary hosting must meet that bar from day one |
 
 ## Why libvpx (and not FFmpeg)
@@ -37,10 +38,10 @@ Platform decoders are ruled out. Android `MediaCodec` VP9 hardware paths discard
 ```
 Dart (lib/)                                   Native core (src/, C++17, shared Android+iOS)
 ─────────────────────────────────────         ─────────────────────────────────────────────
-WebmSticker widget ──► StickerRegistry        Source sniff ─► Demuxer (WebM | AnimWebP | GIF)
+Sticker widget ──► StickerRegistry        Source sniff ─► Demuxer (WebM | AnimWebP | GIF)
    (TickerMode + viewport visibility)            │                 │
 StickerAtlasScope (grid mode)                    │           Decoder (vpx color + vpx alpha | webp | gif)
-WebmStickers.configure / probe                   │                 │
+Stickers.configure / probe                   │                 │
         │  Pigeon (lifecycle, textures)          │       libyuv: scale to target bucket → YUVA420
         │  dart:ffi (probe, cache admin)         │                 │
         ▼                                        ▼                 ▼
@@ -65,7 +66,7 @@ Platform glue                                 FrameCache (disk: LZ4 YUVA420 fram
   - high: source fps, unlimited animations
   - mid: ≤30 fps, ≤30 concurrent
   - low: ≤15 fps, ≤8 concurrent, the rest show a static first frame
-  - Apps override this with `StickerConfig(tier:, maxFps:, maxConcurrent:)`. The rules (thresholds, how Low Power Mode and thermal state lower the tier, worker counts) are in [ADR 0018](docs/decisions/0018-device-tiers.md); `WebmStickers.debugTier` shows the tier in force.
+  - Apps override this with `StickerConfig(tier:, maxFps:, maxConcurrent:)`. The rules (thresholds, how Low Power Mode and thermal state lower the tier, worker counts) are in [ADR 0018](docs/decisions/0018-device-tiers.md); `Stickers.debugTier` shows the tier in force.
 - **Safety:** input from other users is untrusted.
   - libvpx is built with `--size-limit=1024x1024`, which only the VP9 decoder enforces; every VP8/VP9 keyframe must also have the track's size, checked before libvpx sees it ([ADR 0025](docs/decisions/0025-security-review-hardening.md)).
   - The core enforces limits (configurable): max dimensions, frame count, duration, file size, and total decode budget.
@@ -75,14 +76,14 @@ Platform glue                                 FrameCache (disk: LZ4 YUVA420 fram
 
 ### Dart API (draft)
 ```dart
-await WebmStickers.configure(StickerConfig(
+await Stickers.configure(StickerConfig(
   cacheDirectory: ..., diskBudgetBytes: 200 << 20,   // both implemented in T3.2
   tier: StickerTier.auto, maxFps: null, maxConcurrent: null,
   limits: StickerLimits(maxDimension: 1024, maxDuration: Duration(seconds: 10), maxBytes: 2 << 20),
-  fetcher: myFetcher, // implements StickerFetcher for StickerSource.network (until `configure` lands: WebmStickers.fetcher = myFetcher, ADR 0013)
+  fetcher: myFetcher, // implements StickerFetcher for StickerSource.network (until `configure` lands: Stickers.fetcher = myFetcher, ADR 0013)
 ));
 
-WebmSticker(
+Sticker(
   source: StickerSource.file(path) | .bytes(data, key:) | .asset(name) | .network(url),
   width: 120, height: 120, fit: BoxFit.contain,
   autoplay: true, loop: true, controller: ctrl,          // play/pause/seekToFrame (ADR 0014)
@@ -90,16 +91,16 @@ WebmSticker(
 );
 
 StickerAtlasScope(child: GridView.builder(...));         // grid mode
-final info = await WebmStickers.probe(source);           // codec, w, h, fps, frames, duration, hasAlpha, hasAudio
-await WebmStickers.clearCache();
-final stats = await WebmStickers.cacheStats();          // fileCount, totalBytes
-WebmStickers.debugActiveCount;                           // ValueListenable<int>: widgets animating now
+final info = await Stickers.probe(source);           // codec, w, h, fps, frames, duration, hasAlpha, hasAudio
+await Stickers.clearCache();
+final stats = await Stickers.cacheStats();          // fileCount, totalBytes
+Stickers.debugActiveCount;                           // ValueListenable<int>: widgets animating now
 ```
 
 ## Repository layout
 ```
 .fvmrc                     # flutter 3.47.9
-pubspec.yaml               # package: webm_texture (name TBC)
+pubspec.yaml               # package: animated_stickers (ADR 0028)
 lib/                       # public API, registry, visibility, pigeon + ffigen bindings
 pigeons/                   # Pigeon definitions
 src/                       # C++ core + CMakeLists.txt (shared by Android CMake & iOS)
@@ -109,8 +110,8 @@ third_party/
   test-deps.lock           # same format, for test-only tools such as GoogleTest; never shipped (ADR 0007)
   build/                   # build-android.sh, build-ios.sh (xcframework), license collector
   prebuilt/                # gitignored; filled by tool/fetch_prebuilts.dart from GitHub Releases
-android/                   # Kotlin plugin, JNI bridge, CMake → libwebm_texture.so (core + prebuilt .a; Dart opens it)
-ios/webm_texture/          # Package.swift (SwiftPM only); Sources/webm_texture = Swift, Sources/wt_ios = ObjC++ shim, Sources/wt_core = symlinks to src/ (ADR 0009)
+android/                   # Kotlin plugin, JNI bridge, CMake → libanimated_stickers.so (core + prebuilt .a; Dart opens it)
+ios/animated_stickers/      # Package.swift (SwiftPM only); Sources/animated_stickers = Swift, Sources/wt_ios = ObjC++ shim, Sources/wt_core = symlinks to src/ (ADR 0009)
 example/                   # demo: chat list, picker grid, stress test, integration_test/
 test/                      # Dart unit/widget tests
 native_test/               # GoogleTest host tests, golden frame checksums
@@ -122,7 +123,7 @@ tool/                      # fetch_prebuilts, build_host_deps.sh (host tests), g
 ## Phases
 
 ### Phase 0: Scaffold + de-risking spikes
-1. Run `fvm install 3.47.9 && fvm use 3.47.9`, then `fvm flutter create --template=plugin --platforms=android,ios -a kotlin -i swift --org <org> webm_texture`. The `plugin_ffi` template is not used because Kotlin/Swift texture glue is required.
+1. Run `fvm install 3.47.9 && fvm use 3.47.9`, then `fvm flutter create --template=plugin --platforms=android,ios -a kotlin -i swift --org <org> animated_stickers`. The `plugin_ffi` template is not used because Kotlin/Swift texture glue is required.
 2. Write `third_party/build` scripts and a CI job that produce static libs for arm64-v8a, armeabi-v7a, x86_64 (and x86, if API 24 emulators still matter) plus an iOS xcframework (device arm64, simulator arm64+x86_64).
    - Android: NDK r30 for the plugin build (ADR 0009), `-Wl,-z,max-page-size=16384` (Play requires 16 KB page alignment).
    - libvpx: `--disable-vp8-encoder --disable-vp9-encoder --enable-vp8-decoder --enable-vp9-decoder --disable-vp9-highbitdepth --size-limit=1024x1024 --enable-pic`, with `--enable-runtime-cpu-detect` on x86. libvpx has no `--disable-encoders` switch ([ADR 0002](docs/decisions/0002-pinning-and-prebuilt-contents.md)).
@@ -142,12 +143,12 @@ tool/                      # fetch_prebuilts, build_host_deps.sh (host tests), g
 
 ### Phase 2: Platform textures + standalone widget
 - Pigeon API ([ADR 0010](docs/decisions/0010-pigeon-api-shape.md)): `createAnimation(sourceKey, source, bucketW, bucketH) → {animId, textureId}`, `setActive`, `dispose`, `deviceSignals`, plus a `streamErrors` event channel.
-- Android: a `SurfaceProducer` per Animation (`resetInBackground`), passed to native code as `ANativeWindow` (`RGBA_8888`). Handle `onSurfaceAvailable`/`onSurfaceCleanup`, because the surface is destroyed in the background and has to be recreated. The JNI glue is compiled into `libwebm_texture.so` with the core ([ADR 0011](docs/decisions/0011-android-texture-glue.md)); its per-animation render threads gave way to the core's scheduler in T3.3 ([ADR 0017](docs/decisions/0017-scheduler.md)).
+- Android: a `SurfaceProducer` per Animation (`resetInBackground`), passed to native code as `ANativeWindow` (`RGBA_8888`). Handle `onSurfaceAvailable`/`onSurfaceCleanup`, because the surface is destroyed in the background and has to be recreated. The JNI glue is compiled into `libanimated_stickers.so` with the core ([ADR 0011](docs/decisions/0011-android-texture-glue.md)); its per-animation render threads gave way to the core's scheduler in T3.3 ([ADR 0017](docs/decisions/0017-scheduler.md)).
 - iOS: a `FlutterTexture` with a `CVPixelBufferPool` (BGRA, IOSurface, Metal-compatible), where native code writes into the locked buffer. Confirm from which thread `textureFrameAvailable` may be called.
-- Dart: `WebmSticker`, `StickerRegistry` (refcounted dedupe by hash+bucket), visibility via a custom render object (viewport intersection + `TickerMode`), app lifecycle handling, and placeholder/error states. Visibility is checked after each frame. Controlled, `autoplay: false` and `loop: false` stickers get a private animation ([ADR 0012](docs/decisions/0012-sticker-widget-visibility-and-playback.md)). A non-looping sticker holds its last frame, and `WebmStickerController.seekToFrame` shows any frame, paused or playing ([ADR 0014](docs/decisions/0014-loop-and-seek.md)).
+- Dart: `Sticker`, `StickerRegistry` (refcounted dedupe by hash+bucket), visibility via a custom render object (viewport intersection + `TickerMode`), app lifecycle handling, and placeholder/error states. Visibility is checked after each frame. Controlled, `autoplay: false` and `loop: false` stickers get a private animation ([ADR 0012](docs/decisions/0012-sticker-widget-visibility-and-playback.md)). A non-looping sticker holds its last frame, and `StickerController.seekToFrame` shows any frame, paused or playing ([ADR 0014](docs/decisions/0014-loop-and-seek.md)).
 
 ### Phase 3: Cache, scheduler, tiers
-- `.wsc` cache writer/reader, LRU eviction under budget, versioned format, and atomic writes (temp file + rename). The budget is enforced after each write and at startup, LRU on mtime, and the platform glue caches under `<cache dir>/webm_texture` ([ADR 0015](docs/decisions/0015-frame-cache-file-and-abi.md), [ADR 0016](docs/decisions/0016-cache-budget-and-eviction.md)).
+- `.wsc` cache writer/reader, LRU eviction under budget, versioned format, and atomic writes (temp file + rename). The budget is enforced after each write and at startup, LRU on mtime, and the platform glue caches under `<cache dir>/animated_stickers` ([ADR 0015](docs/decisions/0015-frame-cache-file-and-abi.md), [ADR 0016](docs/decisions/0016-cache-budget-and-eviction.md)).
 - Clock and worker pool, frame dropping, and the global `maxConcurrent` limit, prioritising the most visible stickers. One scheduler per process in `src/sched/`, behind `wt_sched_*`/`wt_player_*` and a `wt_sink` per animation; the visible area reaches it through the Pigeon call `setPriority` ([ADR 0017](docs/decisions/0017-scheduler.md)).
 - Tier detection on each platform plus runtime downgrades (thermal state, Low Power Mode): the platforms report `deviceSignals` and push changes on `streamDeviceSignals`, Dart picks the tier and sends it through `setSchedulerOptions` ([ADR 0018](docs/decisions/0018-device-tiers.md)).
 
@@ -156,7 +157,7 @@ tool/                      # fetch_prebuilts, build_host_deps.sh (host tests), g
 - Pages are sized to content (≤ 2048 wide, height rounded to 16 px) and every slot has a ≥ 2-px transparent gutter. The allocator's shelf, reuse and handle rules are in [ADR 0019](docs/decisions/0019-slot-allocator.md): slots never move, and the page shrinks only from the bottom.
 - Slots are reclaimed when items scroll out, and the atlas grows (taller page) or splits (new page) when full.
 - The compositor is in the core (`wt_atlas_*`, [ADR 0020](docs/decisions/0020-atlas-compositor.md)): workers decode into a RAM frame per slot, and once per scheduler tick each page with new frames locks one buffer, rewrites every live slot and its gutter, and presents. A page that changes size gets a new texture, and the old one is retired until Dart releases it, because a `Texture` stretches its buffer to its box. Pigeon: `createAtlas`, `attachToAtlas`/`detachFromAtlas` (batched), `releaseTextures`, `atlasStats`, `disposeAtlas`.
-- `StickerAtlasScope` ([ADR 0021](docs/decisions/0021-atlas-scope-and-content-rate.md)) owns one native atlas. A `WebmSticker` below it holds an animation (and slot) only while some of it is on screen, keyed by scope in the registry, and shows its placeholder until the platform says the slot's first frame reached the page texture (`atlasShownTextures`, `wt_atlas_shown_page`). Attaches are batched once per frame; retired textures are released two frames after nothing draws them.
+- `StickerAtlasScope` ([ADR 0021](docs/decisions/0021-atlas-scope-and-content-rate.md)) owns one native atlas. A `Sticker` below it holds an animation (and slot) only while some of it is on screen, keyed by scope in the registry, and shows its placeholder until the platform says the slot's first frame reached the page texture (`atlasShownTextures`, `wt_atlas_shown_page`). Attaches are batched once per frame; retired textures are released two frames after nothing draws them.
 - Pages present at the content rate: a page's players show their frames on a shared beat (its shortest member frame, at least a clock period), so players started at different times don't make a page present at every tick. Slots draw the page texture frozen, and the scope latches each page's newest image once per frame, because Android's external texture asks for a new image on every un-frozen paint.
 
 ### Phase 5: Animated WebP + GIF
@@ -183,5 +184,4 @@ tool/                      # fetch_prebuilts, build_host_deps.sh (host tests), g
 | Cache disk usage | Size buckets, YUVA+LZ4, LRU budget, `clearCache()` |
 
 ## Still open (non-blocking)
-- Package name (`webm_texture` is a placeholder; `webm_texture` vs `webm_sticker` vs a brand name) and the org/bundle id.
 - Whether to also support Dart build hooks (`code_assets`) as the native-lib delivery path once the Kotlin/Swift glue no longer needs to link the core directly. Revisit after 1.0.

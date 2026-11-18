@@ -3,7 +3,7 @@
 Instructions for any coding agent working in this repository.
 
 ## What this is
-`webm_texture` (name TBC) is a Flutter plugin for **Android and iOS only**. It plays animated stickers inline, the way Telegram does: VP9/VP8 WebM with alpha, animated WebP and GIF. A shared C++ core decodes in software, caches frames, and renders them into Flutter `Texture`s.
+`animated_stickers` is a Flutter plugin for **Android and iOS only**. It plays animated stickers inline, the way Telegram does: VP9/VP8 WebM with alpha, animated WebP and GIF. A shared C++ core decodes in software, caches frames, and renders them into Flutter `Texture`s.
 
 - **Why**: [`PLAN.md`](PLAN.md) holds the architecture, decisions and risks.
 - **What to do next**: [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) lists the ordered tasks, each with acceptance criteria and a recommended model and effort level.
@@ -18,13 +18,13 @@ Instructions for any coding agent working in this repository.
 
 ## Repository map
 ```
-lib/                 Dart public API (lib/webm_texture.dart) + lib/src/ internals
+lib/                 Dart public API (lib/animated_stickers.dart) + lib/src/ internals
 pigeons/             Pigeon definitions → generated code in lib/src/gen, android/, ios/
 src/                 C++17 core (demux/ decode/ convert/ cache/ sched/ atlas/ api/)
   api/wt_api.h       The ONLY C ABI surface (FFI + platform glue include this)
 third_party/         versions.lock, test-deps.lock, build scripts; prebuilt/ is gitignored
 android/             Kotlin plugin + JNI + CMake
-ios/webm_texture/    Package.swift (SwiftPM only), Swift + ObjC++ shim
+ios/animated_stickers/    Package.swift (SwiftPM only), Swift + ObjC++ shim
 native_test/         GoogleTest host tests
 fuzz/                libFuzzer targets + seed corpus
 test/                Dart unit/widget tests
@@ -45,7 +45,7 @@ Each command works once the task that introduces it has landed (that task's ID i
 | Dart tests | `fvm flutter test` |
 | Build iOS prebuilts [T0.4] | `third_party/build/build-ios.sh` (macOS + Xcode, `brew install cmake nasm`) → `third_party/prebuilt/ios/WebmTextureDeps.xcframework` |
 | Build Android prebuilts [T0.5] | `third_party/build/build-android.sh [--with-x86]` (NDK r30 for the plugin, [ADR 0009](docs/decisions/0009-ffi-loading-and-native-wiring.md); the script itself accepts r28+, `cmake`, `nasm`) → `third_party/prebuilt/android/{include,<abi>/libwebm_texture_deps.a}` |
-| Vendor + archive [T6.4] | `fvm dart run tool/vendor_prebuilts.dart vendor` (fetch, verify, size-check the prebuilts) · `fvm dart run tool/vendor_prebuilts.dart archive --out build/release/webm_texture.tar.gz` (dry run, then the archive pub would upload) · `fvm dart pub global activate pana 0.23.19 && fvm dart pub global run pana .`. Release flow and one-time pub.dev setup: [ADR 0024](docs/decisions/0024-publish-pipeline.md) |
+| Vendor + archive [T6.4] | `fvm dart run tool/vendor_prebuilts.dart vendor` (fetch, verify, size-check the prebuilts) · `fvm dart run tool/vendor_prebuilts.dart archive --out build/release/animated_stickers.tar.gz` (dry run, then the archive pub would upload) · `fvm dart pub global activate pana 0.23.19 && fvm dart pub global run pana .`. Release flow and one-time pub.dev setup: [ADR 0024](docs/decisions/0024-publish-pipeline.md) |
 | Third-party licenses [T0.4] | `third_party/build/collect-licenses.sh` → `third_party/LICENSES.md` (commit it) |
 | Fetch native libs [T0.6] | `fvm dart run tool/fetch_prebuilts.dart` |
 | Host deps [T1.1] | `tool/build_host_deps.sh` (`cmake`, `nasm` on x86_64) → `build/deps/host-core/prefix`; rerun after `versions.lock` or `test-deps.lock` changes |
@@ -53,7 +53,7 @@ Each command works once the task that introduces it has landed (that task's ID i
 | Scheduler race check [T3.3] | `cmake -S . -B build/tsan -DWT_HOST_TESTS=ON -DWT_TSAN=ON && cmake --build build/tsan -j && ctest --test-dir build/tsan -R 'Sched\|Timeline\|SkipFrame\|SanitizerTest\|Atlas' --output-on-failure` (ThreadSanitizer; can't share a build with `WT_SANITIZE`. Includes the 500-animation scheduler stress test, the atlas churn test [T4.2] and the cancellation stress test [T6.1]) |
 | Fuzz (60 s smoke) [T1.7] | `cmake -S . -B build/fuzz -DWT_FUZZ=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && cmake --build build/fuzz -j && tool/fuzz.sh 60` (runs `fuzz_sniff`, `fuzz_probe`, `fuzz_webm`, `fuzz_webp`, `fuzz_gif` and `fuzz_wsc` in parallel; findings go to `build/fuzz/artifacts/<target>/`. LLVM clang; Apple clang has no libFuzzer, so on macOS use `brew install llvm` and `/opt/homebrew/opt/llvm/bin/clang++`) |
 | Regenerate bindings [T1.8, T2.1] | `fvm dart run pigeon --input pigeons/messages.dart` · `fvm dart run ffigen --config ffigen.yaml` (needs libclang: `brew install llvm`) |
-| Dart tests against the core [T1.8, T3.2] | `tool/build_host_ffi_lib.sh` → `WEBM_TEXTURE_LIB=build/ffi/src/libwebm_texture.dylib fvm flutter test test/probe_test.dart test/sticker_cache_test.dart` (`.so` on Linux; the test skips without it) |
+| Dart tests against the core [T1.8, T3.2] | `tool/build_host_ffi_lib.sh` → `ANIMATED_STICKERS_LIB=build/ffi/src/libanimated_stickers.dylib fvm flutter test test/probe_test.dart test/sticker_cache_test.dart` (`.so` on Linux; the test skips without it) |
 | Regenerate corpus [T0.3] | `tool/gen_corpus.sh` (needs `ffmpeg` with libvpx + libopus, `img2webp`, `gif2webp`, `gifsicle`, `jq`) · validate: `tool/gen_corpus.sh --check` |
 | Android build | `cd example && fvm flutter build apk --debug` |
 | iOS build | `cd example && fvm flutter build ios --simulator --debug` |

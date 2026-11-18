@@ -1,6 +1,6 @@
 # Security policy
 
-`webm_texture` decodes stickers that come from other users, so it treats
+`animated_stickers` decodes stickers that come from other users, so it treats
 every sticker byte as hostile. The threat model, the mitigations, the latest
 review's findings and the fuzzing results are in
 [`docs/security.md`](docs/security.md).
