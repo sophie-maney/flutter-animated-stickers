@@ -27,15 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
+      # A pinned fvm release, checked against its sha256 (#52).
       - name: Install fvm
-        run: |
-          curl -fsSL https://fvm.app/install.sh | bash
-          echo "$HOME/fvm/bin" >> "$GITHUB_PATH"
+        run: tool/ci/install_fvm.sh
 
       - name: Cache fvm SDK
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
