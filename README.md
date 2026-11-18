@@ -211,8 +211,9 @@ void main() {
 
 Then `Sticker(source: StickerSource.network('https://example.com/a.webm'))`.
 
-The fetcher is called on the UI isolate, at most once at a time per distinct
-source. Throw to report a failure; the exception reaches the widget's
+The fetcher is called on the UI isolate. Widgets showing the same source
+share one call, and the result is kept for the 32 most recent asset and
+network sources, so a source is usually fetched once. Throw to report a failure; the exception reaches the widget's
 `errorBuilder`. Return `StickerFetchResult.file(path)` instead when you
 already keep downloads on disk, and name those files after their content (a
 hash, or a version in the path), because the path identifies the sticker in

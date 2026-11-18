@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'gen/messages.g.dart';
 import 'sticker_config.dart';
 
-/// How much work the plugin allows itself (PLAN.md, "Tiers").
+/// How much work the plugin allows itself: frame rate and how many stickers
+/// play at once.
 ///
 /// With [auto] the plugin picks one from the device and lowers it while the
 /// device is under pressure. Any other value is used as given.
@@ -147,9 +148,6 @@ abstract final class StickerTiers {
   }
 }
 
-/// Reads the device signals.
-typedef DeviceSignalsReader = Future<DeviceSignalsMessage> Function();
-
 /// Opens the stream of signal changes.
 typedef DeviceSignalsStream = Stream<DeviceSignalsMessage> Function();
 
@@ -181,7 +179,8 @@ class StickerTierController {
   final ValueNotifier<TierLimits?> _limits = ValueNotifier(null);
 
   /// The tier in force: never [StickerTier.auto]. It is [StickerTier.high]
-  /// until the device has been read.
+  /// until the device has been read, which starts with the first sticker or
+  /// [Stickers.configure].
   ValueListenable<StickerTier> get tier => _tier;
 
   /// The scheduler options last sent to the platform, or null before that.

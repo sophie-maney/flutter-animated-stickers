@@ -182,8 +182,11 @@ final class BytesFetchResult extends StickerFetchResult {
 abstract interface class StickerFetcher {
   /// Fetches the sticker at [url], sending [headers] if given.
   ///
-  /// Called on the UI isolate, at most once at a time per distinct source.
-  /// Throw to report a failure; the exception reaches the widget's
+  /// Called on the UI isolate. Widgets showing equal sources share one call,
+  /// and its result is kept for the 32 most recent asset and network
+  /// sources, so a source is usually fetched once; it is fetched again after
+  /// a failure, after it dropped out of those 32, or after `Stickers.fetcher`
+  /// changed. Throw to report a failure; the exception reaches the widget's
   /// `errorBuilder`. Bytes over 2 MiB (the core's default input limit) are
   /// refused with a `WT_ERR_LIMIT` `StickerException` before they are hashed
   /// or cached, but a fetcher should refuse large downloads itself, before

@@ -131,12 +131,6 @@ class StickerLease {
   /// Whether [release] was called.
   bool get isReleased => _released;
 
-  /// Whether this claim wants the animation to play.
-  bool get isActive => _active;
-
-  /// The on-screen area of this claim's widget, in physical pixels.
-  int get visibleArea => _visibleArea;
-
   /// Says whether this claim wants the animation to play. The animation plays
   /// while at least one of its leases is active. Does nothing once released.
   void setActive(bool active) {

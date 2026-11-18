@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:animated_stickers/animated_stickers.dart' show Stickers;
 import 'package:animated_stickers/src/gen/messages.g.dart';
 import 'package:animated_stickers/src/sticker_config.dart';
 import 'package:animated_stickers/src/sticker_registry.dart';
@@ -343,4 +344,46 @@ void main() {
       expect(host.created, hasLength(1));
     },
   );
+
+  test('configure refuses out-of-range values, as in release builds', () {
+    // The constructor's asserts catch these in debug builds; configure must
+    // refuse them without asserts too, before anything is applied.
+    for (final config in const [
+      _Unchecked(diskBudget: -1),
+      _Unchecked(fps: 0),
+      _Unchecked(fps: 241),
+      _Unchecked(concurrent: -1),
+      _Unchecked(concurrent: 1 << 31),
+    ]) {
+      expect(
+        Stickers.configure(config),
+        throwsA(isA<RangeError>()),
+        reason: '$config',
+      );
+    }
+  });
+}
+
+/// A [StickerConfig] whose values skip the constructor's asserts, as they
+/// are in a release build.
+class _Unchecked extends StickerConfig {
+  const _Unchecked({
+    this.diskBudget = StickerConfig.defaultDiskBudgetBytes,
+    this.fps,
+    this.concurrent,
+  });
+
+  final int diskBudget;
+  final int? fps;
+  final int? concurrent;
+
+  @override
+  int get diskBudgetBytes => diskBudget;
+  @override
+  int? get maxFps => fps;
+  @override
+  int? get maxConcurrent => concurrent;
+
+  @override
+  String toString() => '_Unchecked($diskBudget, $fps, $concurrent)';
 }

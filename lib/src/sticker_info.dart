@@ -91,6 +91,12 @@ class StickerInfo {
 /// A field must be at least 1 (and [maxDimension], [maxFrames] and
 /// [maxDuration] in milliseconds at most 2^32 - 1), or using the limits
 /// throws a [RangeError].
+///
+/// Only [Stickers.probe] takes limits, to check a file against tighter (or
+/// looser) bounds before showing it. Playback in a [Sticker] always uses the
+/// defaults, so a file over them fails with `WT_ERR_LIMIT` even if it passed a
+/// probe with looser limits. Loosening them also gives up the memory bounds
+/// they keep (see `docs/security.md` in the repository).
 class StickerLimits {
   /// Creates limits; any null field keeps its default.
   const StickerLimits({
