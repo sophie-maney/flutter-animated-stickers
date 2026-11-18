@@ -13,13 +13,20 @@ import 'sticker_runtime.dart';
 import 'sticker_source.dart';
 import 'sticker_visibility.dart';
 
-/// Builds what a [Sticker] shows when its sticker can't be played.
+/// Builds what a [Sticker] shows when its sticker can't be played, like
+/// Flutter's `ImageErrorWidgetBuilder`.
 ///
 /// [error] is usually a [StickerException]; its `name` says why (such as
-/// `WT_ERR_LIMIT` for a sticker over the limits).
+/// `WT_ERR_LIMIT` for a sticker over the limits). Errors from Dart code, such
+/// as a failing `StickerFetcher` or a missing asset, arrive as thrown.
+///
+/// [stackTrace] is where [error] was thrown, or null when the native core
+/// reported it (a [StickerException] with a negative `code`), since the Dart
+/// stack says nothing about where the core failed.
 typedef StickerErrorWidgetBuilder = Widget Function(
   BuildContext context,
   Object error,
+  StackTrace? stackTrace,
 );
 
 /// Plays, pauses and seeks the [Sticker]s it is given to.
@@ -27,7 +34,10 @@ typedef StickerErrorWidgetBuilder = Widget Function(
 /// Stickers with a controller get an animation of their own, shared only with
 /// other stickers on the same controller, so pausing or seeking one never
 /// affects a copy elsewhere on screen.
-class StickerController extends ChangeNotifier {
+///
+/// Stickers rely on the controller's own implementation, so it can be
+/// extended but not implemented.
+base class StickerController extends ChangeNotifier {
   /// Creates a controller that starts playing, or paused if [playing] is
   /// false.
   StickerController({this._playing = true});
@@ -148,6 +158,7 @@ class _StickerState extends State<Sticker> {
   ResolvedSticker? _resolved;
   StickerInfo? _info;
   Object? _error;
+  StackTrace? _errorStack;
 
   /// Bumped when a new source makes earlier probes stale.
   int _sourceGeneration = 0;
@@ -286,6 +297,7 @@ class _StickerState extends State<Sticker> {
     _resolved = null;
     _info = null;
     _error = null;
+    _errorStack = null;
     _pending = null;
     _pendingSeek = null;
     _runtime.resolver
@@ -314,9 +326,9 @@ class _StickerState extends State<Sticker> {
               setState(() => _info = info);
             }
           },
-          onError: (Object error) {
+          onError: (Object error, StackTrace stackTrace) {
             if (!mounted || generation != _sourceGeneration) return;
-            setState(() => _error = _describe(error));
+            setState(() => _setError(error, stackTrace));
           },
         );
   }
@@ -392,12 +404,12 @@ class _StickerState extends State<Sticker> {
             old?.release();
             setState(() {});
           },
-          onError: (Object error) {
+          onError: (Object error, StackTrace stackTrace) {
             if (!mounted || generation != _generation || _pending != want) {
               return;
             }
             _pending = null;
-            setState(() => _error = _describe(error));
+            setState(() => _setError(error, stackTrace));
           },
         );
   }
@@ -441,7 +453,7 @@ class _StickerState extends State<Sticker> {
   Widget _content(BuildContext context, Size box) {
     final error = _error;
     if (error != null) {
-      return widget.errorBuilder?.call(context, error) ??
+      return widget.errorBuilder?.call(context, error, _errorStack) ??
           const SizedBox.expand();
     }
     final info = _info;
@@ -484,14 +496,22 @@ class _StickerState extends State<Sticker> {
     );
   }
 
-  static Object _describe(Object error) => switch (error) {
-    PlatformException(:final code, :final message) => StickerException(
-      _statusCodes[code] ?? 0,
-      code,
-      message,
-    ),
-    _ => error,
-  };
+  /// Records [error] for the error builder. A platform error becomes a
+  /// [StickerException]; a native status carries no stack trace.
+  void _setError(Object error, StackTrace stackTrace) {
+    final described = switch (error) {
+      PlatformException(:final code, :final message) => StickerException(
+        _statusCodes[code] ?? 0,
+        code,
+        message,
+      ),
+      _ => error,
+    };
+    _error = described;
+    _errorStack = described is StickerException && described.code < 0
+        ? null
+        : stackTrace;
+  }
 
   static const Map<String, int> _statusCodes = {
     'WT_ERR_INVALID_ARGUMENT': wt.WT_ERR_INVALID_ARGUMENT,

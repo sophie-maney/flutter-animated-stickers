@@ -89,7 +89,7 @@ class _Row extends StatelessWidget {
           width: 80,
           height: 80,
           placeholder: const ColoredBox(color: Color(0x14000000)),
-          errorBuilder: (_, e) => Center(
+          errorBuilder: (_, e, _) => Center(
             child: Text(
               e is StickerException ? e.name : '$e',
               style: const TextStyle(fontSize: 10, color: Colors.red),

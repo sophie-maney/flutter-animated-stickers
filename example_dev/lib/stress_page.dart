@@ -153,7 +153,7 @@ class _StressPageState extends State<StressPage> {
               source: corpusSource(playableCorpus[i % playableCorpus.length]),
               controller: controllers?[i],
               placeholder: const ColoredBox(color: Color(0x14000000)),
-              errorBuilder: (_, e) => Center(
+              errorBuilder: (_, e, _) => Center(
                 child: Text(
                   e is StickerException ? e.name : '$e',
                   style: const TextStyle(fontSize: 9, color: Colors.red),

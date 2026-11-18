@@ -70,7 +70,7 @@ void main() {
   testWidgets('a played-through sticker is cached and reused', (tester) async {
     expect(
       await Stickers.cacheStats(),
-      const CacheStats(fileCount: 0, totalBytes: 0),
+      const StickerCacheStats(fileCount: 0, totalBytes: 0),
     );
     await play(tester, 'key:cache-test');
     final written = files();
@@ -165,7 +165,7 @@ void main() {
     expect(files(), isEmpty);
     expect(
       await Stickers.cacheStats(),
-      const CacheStats(fileCount: 0, totalBytes: 0),
+      const StickerCacheStats(fileCount: 0, totalBytes: 0),
     );
   });
 }

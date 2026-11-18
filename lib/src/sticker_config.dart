@@ -4,9 +4,17 @@ import 'sticker_tier.dart';
 
 /// Settings for [Stickers.configure]: the frame cache and the device
 /// tier.
+///
+/// Each [Stickers.configure] call applies the whole configuration: a field
+/// left out gets its default again, not the value of an earlier call (except
+/// [cacheDirectory]; see there). The fetcher for network stickers is set
+/// separately, through `Stickers.fetcher`, and safety limits apply only to
+/// `Stickers.probe` (see `StickerLimits`).
+///
+/// Compares by value.
 @immutable
-class StickerConfig {
-  /// Creates a configuration; a null field keeps its default.
+final class StickerConfig {
+  /// Creates a configuration. Each field left out takes its default.
   const StickerConfig({
     this.cacheDirectory,
     this.diskBudgetBytes = defaultDiskBudgetBytes,
@@ -55,4 +63,48 @@ class StickerConfig {
   /// Overrides the tier's limit on stickers that play at once, whatever the
   /// tier; 0 means no limit. Null keeps the tier's own.
   final int? maxConcurrent;
+
+  @override
+  bool operator ==(Object other) =>
+      other is StickerConfig &&
+      other.cacheDirectory == cacheDirectory &&
+      other.diskBudgetBytes == diskBudgetBytes &&
+      other.tier == tier &&
+      other.maxFps == maxFps &&
+      other.maxConcurrent == maxConcurrent;
+
+  @override
+  int get hashCode =>
+      Object.hash(cacheDirectory, diskBudgetBytes, tier, maxFps, maxConcurrent);
+
+  @override
+  String toString() =>
+      'StickerConfig(cacheDirectory: $cacheDirectory, '
+      'diskBudgetBytes: $diskBudgetBytes, tier: ${tier.name}, '
+      'maxFps: $maxFps, maxConcurrent: $maxConcurrent)';
+}
+
+/// Throws a [RangeError] for a value [Stickers.configure] must refuse.
+///
+/// [StickerConfig]'s constructor asserts the same ranges, but release builds
+/// drop asserts, and the platform would refuse the scheduler options without
+/// a word. Takes the values rather than a [StickerConfig] so tests can pass
+/// what only a release build could construct.
+void checkStickerConfigValues({
+  required int diskBudgetBytes,
+  required int? maxFps,
+  required int? maxConcurrent,
+}) {
+  RangeError.checkNotNegative(diskBudgetBytes, 'diskBudgetBytes');
+  if (maxFps != null) {
+    RangeError.checkValueInInterval(maxFps, 1, 240, 'maxFps');
+  }
+  if (maxConcurrent != null) {
+    RangeError.checkValueInInterval(
+      maxConcurrent,
+      0,
+      0x7fffffff,
+      'maxConcurrent',
+    );
+  }
 }

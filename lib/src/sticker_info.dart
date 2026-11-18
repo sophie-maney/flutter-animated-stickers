@@ -1,4 +1,9 @@
+import 'package:flutter/foundation.dart';
+
 /// Container format of a sticker.
+///
+/// Minor releases may add values (a new container), so a `switch` over it in
+/// an app needs a default case.
 enum StickerFormat {
   /// Not recognised.
   unknown,
@@ -14,6 +19,9 @@ enum StickerFormat {
 }
 
 /// Codec of the frames inside a sticker.
+///
+/// Minor releases may add values (a new codec), so a `switch` over it in an
+/// app needs a default case.
 enum StickerCodec {
   /// Not recognised.
   unknown,
@@ -32,7 +40,10 @@ enum StickerCodec {
 }
 
 /// What `Stickers.probe` learns about a sticker without decoding pixels.
-class StickerInfo {
+///
+/// Compares by value.
+@immutable
+final class StickerInfo {
   /// Creates a [StickerInfo].
   const StickerInfo({
     required this.format,
@@ -80,6 +91,34 @@ class StickerInfo {
   final bool truncated;
 
   @override
+  bool operator ==(Object other) =>
+      other is StickerInfo &&
+      other.format == format &&
+      other.codec == codec &&
+      other.width == width &&
+      other.height == height &&
+      other.frameCount == frameCount &&
+      other.duration == duration &&
+      other.fps == fps &&
+      other.hasAlpha == hasAlpha &&
+      other.hasAudio == hasAudio &&
+      other.truncated == truncated;
+
+  @override
+  int get hashCode => Object.hash(
+    format,
+    codec,
+    width,
+    height,
+    frameCount,
+    duration,
+    fps,
+    hasAlpha,
+    hasAudio,
+    truncated,
+  );
+
+  @override
   String toString() =>
       'StickerInfo($format/$codec ${width}x$height, $frameCount frames, '
       '${duration.inMilliseconds} ms, ${fps.toStringAsFixed(2)} fps, '
@@ -97,7 +136,10 @@ class StickerInfo {
 /// defaults, so a file over them fails with `WT_ERR_LIMIT` even if it passed a
 /// probe with looser limits. Loosening them also gives up the memory bounds
 /// they keep (see `docs/security.md` in the repository).
-class StickerLimits {
+///
+/// Compares by value.
+@immutable
+final class StickerLimits {
   /// Creates limits; any null field keeps its default.
   const StickerLimits({
     this.maxDimension,
@@ -117,10 +159,27 @@ class StickerLimits {
 
   /// Most frames in one animation.
   final int? maxFrames;
+
+  @override
+  bool operator ==(Object other) =>
+      other is StickerLimits &&
+      other.maxDimension == maxDimension &&
+      other.maxDuration == maxDuration &&
+      other.maxBytes == maxBytes &&
+      other.maxFrames == maxFrames;
+
+  @override
+  int get hashCode =>
+      Object.hash(maxDimension, maxDuration, maxBytes, maxFrames);
+
+  @override
+  String toString() =>
+      'StickerLimits(maxDimension: $maxDimension, maxDuration: $maxDuration, '
+      'maxBytes: $maxBytes, maxFrames: $maxFrames)';
 }
 
 /// Thrown when the native core rejects a sticker or can't be loaded.
-class StickerException implements Exception {
+final class StickerException implements Exception {
   /// Creates an exception for native status [code] named [name].
   const StickerException(this.code, this.name, [this.message]);
 

@@ -71,7 +71,7 @@ class _Bubble extends StatelessWidget {
                 source: corpusSource(sticker),
                 height: 160,
                 placeholder: const SizedBox(width: 160, height: 160),
-                errorBuilder: (_, e) => SizedBox(
+                errorBuilder: (_, e, _) => SizedBox(
                   width: 160,
                   height: 160,
                   child: Center(child: Text('$e')),

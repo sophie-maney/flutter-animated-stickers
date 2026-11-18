@@ -73,7 +73,7 @@ class _CheckerboardPageState extends State<CheckerboardPage> {
             Sticker(
               source: corpusSource(name),
               controller: _controller,
-              errorBuilder: (_, e) => Center(child: Text('$e')),
+              errorBuilder: (_, e, _) => Center(child: Text('$e')),
             ),
         ],
       ),
