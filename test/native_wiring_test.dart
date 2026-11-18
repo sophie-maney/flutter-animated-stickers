@@ -55,4 +55,26 @@ void main() {
     }
     expect(Link('example_dev/test_assets').targetSync(), '../test_assets');
   });
+
+  test('the published example ships copies of corpus files', () {
+    // example/ is what pub.dev shows and ships (ADR 0029): real files, no
+    // symlink, each identical to its corpus original.
+    final pubspec = File('example/pubspec.yaml').readAsStringSync();
+    const names = ['vp9_alpha_512.webm', 'anim.webp', 'anim_disposal.gif'];
+    var total = 0;
+    for (final name in names) {
+      expect(pubspec, contains('- assets/$name'));
+      final path = 'example/assets/$name';
+      expect(
+        FileSystemEntity.isLinkSync(path),
+        isFalse,
+        reason: '$path must be a real file',
+      );
+      final bytes = File(path).readAsBytesSync();
+      expect(bytes, File('test_assets/$name').readAsBytesSync(), reason: path);
+      total += bytes.length;
+    }
+    expect(total, 54337);
+    expect(Directory('example/assets').listSync(), hasLength(names.length));
+  });
 }

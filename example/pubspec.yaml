@@ -1,0 +1,24 @@
+name: animated_stickers_example
+description: "A short example of the animated_stickers plugin."
+publish_to: 'none'
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # In your app: `animated_stickers: ^1.0.0`. The example uses the package
+  # it ships in.
+  animated_stickers:
+    path: ../
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/vp9_alpha_512.webm
+    - assets/anim.webp
+    - assets/anim_disposal.gif
