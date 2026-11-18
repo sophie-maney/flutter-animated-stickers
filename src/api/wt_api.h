@@ -33,6 +33,12 @@
  * - "Background thread": may read files and decode, so it can take
  *   milliseconds or more. Never call it on the platform main thread or the
  *   Flutter UI/raster threads; in Dart, call it inside Isolate.run.
+ * - "Any thread but the scheduler's own": may wait for a frame in flight or
+ *   a page's present (below), so never call it from a sink or atlas target
+ *   callback, which runs on a scheduler thread. The wait is bounded, so the
+ *   platform main thread may call it; the glue still destroys players
+ *   (wt_player_destroy, which also unmaps the animation's files) on a
+ *   background thread.
  * A wt_source is immutable after creation: any number of threads may use the
  * same source concurrently. A wt_anim is not thread-safe: calls on one
  * animation must not overlap (the caller serialises them, e.g. the scheduler
@@ -58,11 +64,11 @@
  * Frames are 8-bit, 4 channels, premultiplied alpha, rows top to bottom.
  * Android writes WT_PIXEL_FORMAT_RGBA8888 and iOS WT_PIXEL_FORMAT_BGRA8888.
  *
- * Status of this header (T1.1): the types and signatures are final for Phase 1.
- * As of T1.5 every function is implemented for WebM, as of T5.1 for animated
- * WebP and as of T5.2 for GIF. WT_ERR_UNIMPLEMENTED is reserved for functions
- * a later phase adds before it fills them in.
- * T3.1 added wt_anim_create_cached (WT_API_VERSION 2), T3.2 the cache
+ * Every function is implemented for WebM, animated WebP and GIF. No function
+ * returns WT_ERR_UNIMPLEMENTED any more; the code stays reserved so its value
+ * is never reused.
+ * History: T1.1 set the Phase 1 types and signatures (WT_API_VERSION 1), T3.1
+ * added wt_anim_create_cached (WT_API_VERSION 2), T3.2 the cache
  * directory functions (WT_API_VERSION 3), T3.3 the scheduler (wt_sched,
  * wt_player and the WT_BUSY / WT_NO_TARGET codes, WT_API_VERSION 4), T4.2
  * the atlas compositor (wt_atlas, WT_API_VERSION 5), T4.3
@@ -380,9 +386,10 @@ WT_API wt_status wt_anim_get_info(const wt_anim* anim, wt_info* out_info,
                                   uint32_t* out_width, uint32_t* out_height);
 
 /*
- * Moves the cursor so the next wt_anim_next_frame returns frame_index.
- * Seeking decodes from the preceding random-access frame, so its cost grows
- * with the distance to it. wt_anim_seek(anim, 0) is cheap and is how a loop
+ * Moves the cursor so the next wt_anim_next_frame returns frame_index. The
+ * seek itself decodes nothing; that next call decodes from the preceding
+ * random-access frame, so its cost grows with the distance to it (unless the
+ * decoder is already between the two). Seeking to frame 0 is how a loop
  * restarts.
  * Returns WT_ERR_INVALID_ARGUMENT when frame_index >= frame_count.
  * Thread: background thread, not concurrently with another call on anim.
@@ -404,8 +411,9 @@ WT_API wt_status wt_anim_seek(wt_anim* anim, uint32_t frame_index);
  * Returns WT_END, writing nothing, when the cursor is past the last frame.
  * Returns WT_ERR_INVALID_ARGUMENT for a buffer that is too small, without
  * decoding or advancing. Any other error still advances the cursor, so one
- * broken frame doesn't stall playback; dst may hold a partial frame, and the
- * caller should keep showing the previous one. A frame whose alpha payload
+ * broken frame doesn't stall playback; dst isn't written (the frame is
+ * decoded before it is converted into dst), and the caller should keep
+ * showing the previous one. A frame whose alpha payload
  * is missing or broken is not an error: it keeps the last good alpha until
  * the alpha stream's next keyframe.
  * With a cache (wt_anim_create_cached) this may also write, rename or delete
@@ -615,9 +623,11 @@ typedef struct wt_sink {
    */
   void (*release)(void* context, wt_status status, const wt_frame_info* frame);
   /*
-   * A frame failed to decode (status < 0). Playback carries on with the next
-   * one. Called for the first failure of a player only, so a broken file
-   * can't flood the app. May be NULL.
+   * Playback hit an error (status < 0): a frame that failed to decode, a
+   * skip or seek that failed, or a buffer from acquire that the frame
+   * couldn't be written into. Playback carries on with the next frame.
+   * Called for the first failure of a player only, so a broken file can't
+   * flood the app. May be NULL.
    */
   void (*error)(void* context, wt_status status);
 } wt_sink;
@@ -739,8 +749,8 @@ WT_API void wt_player_redraw(wt_player* player);
  * into a slot of a page (wt::SlotAllocator, ADR 0019) instead of its own
  * sink:
  *
- * - Workers decode each frame into a CPU copy of the slot, so every slot
- *   always has its latest frame at hand.
+ * - Workers write each decoded frame into a CPU copy of the slot, so every
+ *   slot always has its latest frame at hand.
  * - When the jobs a scheduler round dispatched for a page's players are done,
  *   a worker presents the page: it locks one buffer of the target for the
  *   whole page, writes every live slot (content plus a cleared gutter, the
@@ -930,7 +940,8 @@ WT_API uint32_t wt_atlas_page_count(wt_atlas* atlas);
 /*
  * Fills *out_info for page index `page` (< wt_atlas_page_count).
  * Thread: any thread, not concurrently with wt_atlas_destroy. Never waits for
- * a frame or a present.
+ * a frame, or for a present's buffer; it may wait while a present copies the
+ * page's slots into a buffer.
  */
 WT_API wt_status wt_atlas_get_page(wt_atlas* atlas, uint32_t page,
                                    wt_atlas_page_info* out_info);
@@ -962,7 +973,8 @@ WT_API wt_status wt_atlas_set_target(wt_atlas* atlas, uint32_t page,
  * before (a placeholder, an older texture) until then: until a present
  * wrote it, a slot's area of the target's buffers holds stale pixels.
  * Thread: as wt_atlas_attach (may wait while another thread attaches);
- * never waits for a frame or a present.
+ * never waits for a frame, or for a present's buffer; it may wait while a
+ * present copies the page's slots into a buffer.
  */
 WT_API int32_t wt_atlas_shown_page(wt_atlas* atlas, const wt_player* player);
 

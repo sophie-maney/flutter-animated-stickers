@@ -26,8 +26,9 @@ class StickerConfig {
   /// The default for [diskBudgetBytes]: 200 MiB.
   static const int defaultDiskBudgetBytes = 200 << 20;
 
-  /// An absolute path for the frame cache, or null for `animated_stickers` under
-  /// the app's cache directory.
+  /// An absolute path for the frame cache, or null for `animated_stickers`
+  /// under the app's cache directory (or, on a later
+  /// [Stickers.configure] call, the directory already in use).
   ///
   /// The plugin creates it, and only ever reads, writes and deletes the
   /// `*.wsc` files it made there.

@@ -18,6 +18,10 @@ import 'sticker_visibility.dart';
 /// ```dart
 /// StickerAtlasScope(
 ///   child: GridView.builder(
+///     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+///       crossAxisCount: 4,
+///     ),
+///     itemCount: sources.length,
 ///     itemBuilder: (context, i) => Sticker(source: sources[i]),
 ///   ),
 /// )
@@ -38,6 +42,10 @@ import 'sticker_visibility.dart';
 /// Every sticker in the scope plays on its own, as standalone ones do, but
 /// stickers showing the same content at the same size in one scope share an
 /// animation and a slot.
+///
+/// [maxPages] and [maxPageHeight] are read when the scope is first built;
+/// later changes to them take effect only in a new scope (one with another
+/// key, say).
 class StickerAtlasScope extends StatefulWidget {
   /// Creates a scope for the stickers in [child].
   const StickerAtlasScope({
@@ -364,7 +372,7 @@ class StickerAtlasController implements StickerAtlasHost {
 
   /// Each attach call so far: how many animations it moved and its round
   /// trip in milliseconds, which includes the platform thread waiting for
-  /// each player's frame in flight. For perf tests.
+  /// each player's frame in flight. For perf tests; empty in release builds.
   @visibleForTesting
   final List<(int, double)> debugAttaches = [];
 
@@ -468,7 +476,9 @@ class StickerAtlasController implements StickerAtlasHost {
         _calls++;
         final watch = Stopwatch()..start();
         layout = await _host.attachToAtlas(atlasId, ids);
-        debugAttaches.add((ids.length, watch.elapsedMicroseconds / 1000));
+        if (!kReleaseMode) {
+          debugAttaches.add((ids.length, watch.elapsedMicroseconds / 1000));
+        }
       } catch (_) {
         // The engine is going away, say: they keep their own textures.
         for (final m in joining) {

@@ -115,8 +115,11 @@ TEST(AnimCancelTest, ACancelledCatchUpMovesNothingAndResumes) {
     const char* name;
     uint32_t target;  // Far from the frame before it that decoding starts at.
   };
-  for (const Case c : {Case{"vp9_alpha_512.webm", 44}, Case{"anim.webp", 15},
-                       Case{"vp8_alpha_256.webm", 29}}) {
+  // GIF replays from frame 0 with its own disposal state and rect budget,
+  // which a cancelled replay must leave as they were.
+  for (const Case c :
+       {Case{"vp9_alpha_512.webm", 44}, Case{"anim.webp", 15},
+        Case{"vp8_alpha_256.webm", 29}, Case{"anim_disposal.gif", 5}}) {
     SCOPED_TRACE(c.name);
     TestAnim ref;
     ASSERT_EQ(MakeAnim(c.name, 64, "", &ref), WT_OK);

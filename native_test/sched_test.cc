@@ -371,48 +371,105 @@ TEST(SchedulerTest, DrawsTheFirstFrameThenWaitsToBeActivated) {
 // Timers on loaded machines (and hosted CI runners) wake late; the
 // scheduler then skips frames to keep the content's time. So these tests
 // check where playback is, not how many frames it showed.
+//
+// A wake more than the stall threshold late (100 ms here) is different: by
+// design playback then carries on from the next frame instead of racing to
+// catch up (ADR 0017), so a window with a stall ends behind the content
+// clock by the length of the stall. Hosted runners do stall that long now and
+// then, so the position is measured over up to kWindows windows, each on a
+// fresh player, and one of them must be on the content clock: a scheduler that
+// drifts or plays at the wrong rate is off in every window. What load can't
+// excuse (never ahead of the content, in order, one call at a time) is checked
+// in every window.
+constexpr int kWindows = 3;
+
+// One window: plays a fresh player of `frames` frames of `ms` each for
+// `window`, then pauses it.
+struct PlayWindow {
+  std::vector<uint32_t> shown;
+  Nanos elapsed{};          // From before activating to after pausing.
+  uint64_t skipped = 0;     // Frames skipped to keep time.
+  int sink_overlaps = 0;    // Overlapping sink calls.
+  int source_overlaps = 0;  // Overlapping source calls.
+  int protocol_errors = 0;
+};
+
+PlayWindow Play(Fixture* f, uint32_t frames, uint32_t ms, milliseconds window) {
+  PlayWindow out;
+  auto a = f->Add(Frames(frames, ms));
+  EXPECT_TRUE(a->sink->WaitShown(1, milliseconds(1000)));
+  const uint64_t skipped = f->Stats().frames_skipped;
+  const auto start = std::chrono::steady_clock::now();
+  f->sched->SetActive(a->player, true);
+  std::this_thread::sleep_for(window);
+  f->sched->SetActive(a->player, false);
+  out.elapsed = std::chrono::steady_clock::now() - start;
+  out.shown = a->sink->shown();
+  out.skipped = f->Stats().frames_skipped - skipped;
+  out.sink_overlaps = a->sink->overlaps();
+  out.source_overlaps = a->log->exclusive.overlaps();
+  out.protocol_errors = a->sink->protocol_errors();
+  f->Remove(a.get());
+  return out;
+}
+
+// How many frames of `ms` the content clock passes in `elapsed`.
+double ContentFrames(Nanos elapsed, uint32_t ms) {
+  return std::chrono::duration<double, std::milli>(elapsed).count() / ms;
+}
 
 TEST(SchedulerTest, PlaysAtTheContentRate) {
   Fixture f;
-  auto a = f.Add(Frames(50, 25));  // 40 fps, 1.25 s.
-  ASSERT_TRUE(a->sink->WaitShown(1, milliseconds(1000)));
-  const auto start = std::chrono::steady_clock::now();
-  f.sched->SetActive(a->player, true);
-  Sleep(500);
-  f.sched->SetActive(a->player, false);
-  const auto elapsed = std::chrono::steady_clock::now() - start;
-  const std::vector<uint32_t> shown = a->sink->shown();
-  EXPECT_GE(shown.size(), 5u) << "it plays";
-  EXPECT_LE(shown.size(), 22u) << "never faster than the content";
-  // On the content clock: frame k is due k * 25 ms after starting.
-  const double expect = static_cast<double>(elapsed / milliseconds(25));
-  EXPECT_NEAR(static_cast<double>(shown.back()), expect, 4.0);
-  // In order: each frame follows the last, or skips ahead to keep time.
-  for (size_t i = 1; i < shown.size(); ++i) EXPECT_GT(shown[i], shown[i - 1]);
-  EXPECT_EQ(a->sink->overlaps(), 0);
-  EXPECT_EQ(a->log->exclusive.overlaps(), 0);
-  EXPECT_EQ(a->sink->protocol_errors(), 0);
-  f.Remove(a.get());
+  // The smallest distance from the content clock over the windows, in frames.
+  double best = 1e9;
+  for (int w = 0; w < kWindows && best > 4.0; ++w) {
+    const PlayWindow p = Play(&f, 50, 25, milliseconds(500));  // 40 fps.
+    const std::vector<uint32_t>& shown = p.shown;
+    ASSERT_GE(shown.size(), 5u) << "it plays";
+    EXPECT_LE(shown.size(), 22u) << "never faster than the content";
+    // Never ahead of the content clock: frame k is due k * 25 ms after
+    // activation at the earliest (a stall only moves it later), and may be
+    // started half a 60-fps period early.
+    const double content = ContentFrames(p.elapsed, 25);
+    EXPECT_LE(static_cast<double>(shown.back()), content + 1.0);
+    // In order: each frame follows the last, or skips ahead to keep time.
+    for (size_t i = 1; i < shown.size(); ++i) {
+      EXPECT_GT(shown[i], shown[i - 1]);
+    }
+    EXPECT_EQ(p.sink_overlaps, 0);
+    EXPECT_EQ(p.source_overlaps, 0);
+    EXPECT_EQ(p.protocol_errors, 0);
+    // On the content clock: frame k is due k * 25 ms after starting.
+    best =
+        std::min(best, std::abs(static_cast<double>(shown.back()) - content));
+  }
+  EXPECT_LE(best, 4.0) << "off the content clock in all " << kWindows
+                       << " windows";
 }
 
 TEST(SchedulerTest, ContentFasterThanMaxFpsSkipsFrames) {
   Fixture f(/*workers=*/2, /*max_fps=*/20);
-  auto a = f.Add(Frames(600, 10));  // 100 fps.
-  ASSERT_TRUE(a->sink->WaitShown(1, milliseconds(1000)));
-  const auto start = std::chrono::steady_clock::now();
-  f.sched->SetActive(a->player, true);
-  Sleep(1000);
-  f.sched->SetActive(a->player, false);
-  const auto elapsed = std::chrono::steady_clock::now() - start;
-  const std::vector<uint32_t> shown = a->sink->shown();
-  // At most 20 frames a second (plus the first), each about 5 frames on.
-  EXPECT_LE(shown.size(), 23u);
-  EXPECT_GE(shown.size(), 8u);
-  EXPECT_GT(f.Stats().frames_skipped, 50u);
-  // Content time kept: the last frame is about elapsed / 10 ms.
-  const double expect = static_cast<double>(elapsed / milliseconds(10));
-  EXPECT_NEAR(static_cast<double>(shown.back()), expect, 15.0);
-  f.Remove(a.get());
+  double best = 1e9;
+  for (int w = 0; w < kWindows && best > 15.0; ++w) {
+    const PlayWindow p = Play(&f, 600, 10, milliseconds(1000));  // 100 fps.
+    const std::vector<uint32_t>& shown = p.shown;
+    // At most 20 frames a second (plus the first), each about 5 frames on.
+    EXPECT_LE(shown.size(), 23u);
+    ASSERT_GE(shown.size(), 8u);
+    EXPECT_GT(p.skipped, 50u);
+    const double content = ContentFrames(p.elapsed, 10);
+    // Never ahead of the content clock (a frame may start half a 20-fps
+    // period, 25 ms, early).
+    EXPECT_LE(static_cast<double>(shown.back()), content + 3.0);
+    for (size_t i = 1; i < shown.size(); ++i) {
+      EXPECT_GT(shown[i], shown[i - 1]);
+    }
+    // Content time kept: the last frame is about elapsed / 10 ms.
+    best =
+        std::min(best, std::abs(static_cast<double>(shown.back()) - content));
+  }
+  EXPECT_LE(best, 15.0) << "off the content clock in all " << kWindows
+                        << " windows";
 }
 
 // CPU time of the whole process so far.

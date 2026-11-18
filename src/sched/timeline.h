@@ -67,7 +67,7 @@ struct FrameJob {
 struct FrameOutcome {
   // The target used up its turn: it was drawn, or it failed to decode (the
   // previous frame stays on screen and playback moves on). False when the
-  // sink had no buffer, so nothing was drawn.
+  // sink had no buffer or the job was cancelled, so nothing was drawn.
   bool drawn = false;
   // Where the core's cursor ended up (the next frame it returns), if known.
   uint32_t cursor = 0;

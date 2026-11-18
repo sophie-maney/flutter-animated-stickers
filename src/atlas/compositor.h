@@ -106,7 +106,6 @@ class Atlas {
   // As wt_atlas_shown_page.
   int32_t ShownPage(const Player* player);
 
-  Scheduler* scheduler() const { return sched_; }
   const wt_atlas_options& options() const { return options_; }
 
   // Tests only: called by every present from now on (nullptr: none). Set it

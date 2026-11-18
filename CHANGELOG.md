@@ -21,5 +21,6 @@ First release.
   `clearCache()`.
 * `Stickers.probe` reads a sticker's metadata (`StickerInfo`) without
   decoding pixels.
-* Hard limits on untrusted input (`StickerLimits`: 2 MiB, 1024 px, 10 s,
-  600 frames by default); violations surface as `StickerException`.
+* Hard limits on untrusted input (2 MiB, 1024 px, 10 s, 600 frames);
+  violations surface as `StickerException`. `Stickers.probe` can check a
+  file against other `StickerLimits`; playback always uses the defaults.

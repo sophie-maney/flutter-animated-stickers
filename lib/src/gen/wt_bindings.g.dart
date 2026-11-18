@@ -182,8 +182,9 @@ class WtBindings {
   /// Returns WT_END, writing nothing, when the cursor is past the last frame.
   /// Returns WT_ERR_INVALID_ARGUMENT for a buffer that is too small, without
   /// decoding or advancing. Any other error still advances the cursor, so one
-  /// broken frame doesn't stall playback; dst may hold a partial frame, and the
-  /// caller should keep showing the previous one. A frame whose alpha payload
+  /// broken frame doesn't stall playback; dst isn't written (the frame is
+  /// decoded before it is converted into dst), and the caller should keep
+  /// showing the previous one. A frame whose alpha payload
   /// is missing or broken is not an error: it keeps the last good alpha until
   /// the alpha stream's next keyframe.
   /// With a cache (wt_anim_create_cached) this may also write, rename or delete
@@ -232,9 +233,10 @@ class WtBindings {
         )
       >();
 
-  /// Moves the cursor so the next wt_anim_next_frame returns frame_index.
-  /// Seeking decodes from the preceding random-access frame, so its cost grows
-  /// with the distance to it. wt_anim_seek(anim, 0) is cheap and is how a loop
+  /// Moves the cursor so the next wt_anim_next_frame returns frame_index. The
+  /// seek itself decodes nothing; that next call decodes from the preceding
+  /// random-access frame, so its cost grows with the distance to it (unless the
+  /// decoder is already between the two). Seeking to frame 0 is how a loop
   /// restarts.
   /// Returns WT_ERR_INVALID_ARGUMENT when frame_index >= frame_count.
   /// Thread: background thread, not concurrently with another call on anim.
@@ -352,10 +354,9 @@ class WtBindings {
 
   /// Frees player's slot and gives it back the sink it had before
   /// wt_atlas_attach, cancelling its frame in flight and waiting for it to stop;
-  /// the frame that should be showing is then drawn into that sink. The page may now want a smaller
-  /// target, or none. Returns WT_ERR_INVALID_ARGUMENT when player isn't in this
-  /// atlas.
-  /// Thread: as wt_atlas_attach.
+  /// the frame that should be showing is then drawn into that sink. The page may
+  /// now want a smaller target, or none. Returns WT_ERR_INVALID_ARGUMENT when
+  /// player isn't in this atlas. Thread: as wt_atlas_attach.
   int wt_atlas_detach(
     ffi.Pointer<wt_atlas> atlas,
     ffi.Pointer<wt_player> player,
@@ -376,7 +377,8 @@ class WtBindings {
 
   /// Fills *out_info for page index `page` (< wt_atlas_page_count).
   /// Thread: any thread, not concurrently with wt_atlas_destroy. Never waits for
-  /// a frame or a present.
+  /// a frame, or for a present's buffer; it may wait while a present copies the
+  /// page's slots into a buffer.
   int wt_atlas_get_page(
     ffi.Pointer<wt_atlas> atlas,
     int page,
@@ -481,7 +483,8 @@ class WtBindings {
   /// before (a placeholder, an older texture) until then: until a present
   /// wrote it, a slot's area of the target's buffers holds stale pixels.
   /// Thread: as wt_atlas_attach (may wait while another thread attaches);
-  /// never waits for a frame or a present.
+  /// never waits for a frame, or for a present's buffer; it may wait while a
+  /// present copies the page's slots into a buffer.
   int wt_atlas_shown_page(
     ffi.Pointer<wt_atlas> atlas,
     ffi.Pointer<wt_player> player,
@@ -1693,9 +1696,11 @@ final class wt_sink extends ffi.Struct {
   >
   release;
 
-  /// A frame failed to decode (status < 0). Playback carries on with the next
-  /// one. Called for the first failure of a player only, so a broken file
-  /// can't flood the app. May be NULL.
+  /// Playback hit an error (status < 0): a frame that failed to decode, a
+  /// skip or seek that failed, or a buffer from acquire that the frame
+  /// couldn't be written into. Playback carries on with the next frame.
+  /// Called for the first failure of a player only, so a broken file can't
+  /// flood the app. May be NULL.
   external ffi.Pointer<
     ffi.NativeFunction<
       ffi.Void Function(ffi.Pointer<ffi.Void> context, wt_status status)

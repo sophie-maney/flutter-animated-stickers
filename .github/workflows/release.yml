@@ -18,7 +18,9 @@ permissions:
   contents: read
 
 env:
-  FVM_HOME: ${{ github.workspace }}/.fvm_home
+  # Not FVM_HOME: fvm prints a legacy-variable warning for it on stdout,
+  # which would land at the top of pana.json.
+  FVM_CACHE_PATH: ${{ github.workspace }}/.fvm_home
   # Pinned so a new pana release can't change the score under a tagged build.
   PANA_VERSION: 0.23.19
   # The package scores 160/160 once pubspec.yaml is on the default branch
@@ -56,7 +58,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
       - name: Install pinned Flutter
@@ -111,7 +113,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      FVM_HOME: ${{ github.workspace }}/.fvm_home
+      FVM_CACHE_PATH: ${{ github.workspace }}/.fvm_home
     steps:
       - uses: actions/checkout@v4 # for .fvmrc only; the archive is unpacked outside the checkout
 

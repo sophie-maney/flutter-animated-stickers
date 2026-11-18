@@ -88,7 +88,9 @@ internal class StickerAtlas(
                 }
                 next = PageSurface(page, producer, width, wanted)
                 producer.setCallback(next)
-                Log.i(TAG, "atlas $atlasId page $page: ${producer.javaClass.simpleName} id=${producer.id()} ${width}x$wanted")
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(TAG, "atlas $atlasId page $page: ${producer.javaClass.simpleName} id=${producer.id()} ${width}x$wanted")
+                }
             } else {
                 WtNative.nativeAtlasSetSurface(handle, page, null, 0)
             }
