@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  FVM_HOME: ${{ github.workspace }}/.fvm_home
+  FVM_CACHE_PATH: ${{ github.workspace }}/.fvm_home
 
 jobs:
   check:
@@ -30,7 +30,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
       - name: Cache pub
@@ -53,6 +53,8 @@ jobs:
       - run: fvm dart format --set-exit-if-changed .
       - run: fvm flutter analyze
       - run: fvm flutter test
+      # LICENSE and NOTICE must match versions.lock and LICENSES.md.
+      - run: tool/aggregate_licenses.sh --check
 
       # Pinned so CI and local runs format identically (brew/pip: 23.1.5).
       - name: clang-format
@@ -187,7 +189,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
       - name: Cache pub
@@ -236,7 +238,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('animated_stickers/.fvmrc') }}
 
       - name: Cache pub
@@ -279,7 +281,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
       - name: Cache pub
@@ -341,7 +343,7 @@ jobs:
       - name: Cache fvm SDK
         uses: actions/cache@v4
         with:
-          path: ${{ env.FVM_HOME }}
+          path: ${{ env.FVM_CACHE_PATH }}
           key: fvm-${{ runner.os }}-${{ hashFiles('animated_stickers/.fvmrc') }}
 
       - name: Cache pub
