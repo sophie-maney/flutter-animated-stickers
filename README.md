@@ -59,6 +59,22 @@ The widget always applies the defaults. `StickerLimits` is accepted by
 `Stickers.probe`, which can check a file against tighter or looser
 limits before you show it.
 
+## Requirements
+
+- **Android**: NDK r30 or newer. The prebuilt libyuv needs a symbol only
+  r30's runtime has, so the plugin asks for `ndkVersion = "30.0.16248370"`.
+  Set the same in your app's `android/app/build.gradle.kts` (Flutter warns
+  when an app's NDK is older than a plugin's, and the link fails with r28):
+
+  ```kotlin
+  android {
+      ndkVersion = "30.0.16248370"
+  }
+  ```
+
+- **iOS**: Swift Package Manager. There is no CocoaPods podspec, so an app
+  that has turned Flutter's SwiftPM support off can't use the plugin.
+
 ## Quick start
 
 ```yaml
@@ -87,10 +103,39 @@ class Hello extends StatelessWidget {
 
 Declare the file as an asset in `pubspec.yaml`, as for any other asset.
 
+### From a git checkout
+
+The package on pub.dev carries its native libraries. The repository doesn't
+(CI builds them and attaches them to a GitHub release), so with a git
+dependency, fetch them into pub's copy of the repository after
+`flutter pub get`:
+
+```yaml
+dependencies:
+  animated_stickers:
+    git:
+      url: https://github.com/sophie-maney/flutter-animated-stickers
+      ref: <commit>
+```
+
+```sh
+dart ~/.pub-cache/git/flutter-animated-stickers-<commit>/tool/fetch_prebuilts.dart
+```
+
+pub keeps one copy per commit under `$PUB_CACHE/git` (`~/.pub-cache` by
+default); `.dart_tool/package_config.json` lists the path as the `rootUri` of
+`animated_stickers`. The script downloads the release that matches the
+checkout, verifies every archive against its SHA-256, and writes
+`third_party/prebuilt/` there. It needs `tar` and only the Dart SDK. Run it
+again after changing `ref`, since the new commit gets a new copy.
+
 A `StickerSource` is one of:
 
 - `StickerSource.asset(name, {bundle, package})`: a bundled asset.
-- `StickerSource.file(path)`: an absolute path on disk.
+- `StickerSource.file(path)`: an absolute path on disk. The core maps the
+  file while the sticker plays, so replace it by writing a new file and
+  renaming it over the path, never by rewriting it in place: a file that
+  shrinks under the mapping crashes the app.
 - `StickerSource.bytes(data, {key})`: encoded bytes in memory. Pass a `key`
   to name the content cheaply; without it the SHA-1 of the bytes is used.
 - `StickerSource.network(url, {headers, key})`: needs a `StickerFetcher`
