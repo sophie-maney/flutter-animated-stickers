@@ -1,4 +1,4 @@
-name: webm_texture
+name: animated_stickers
 description: >-
   Plays animated stickers inline on Android and iOS: VP9/VP8 WebM with alpha,
   animated WebP and GIF, decoded natively and drawn into Flutter Textures.
@@ -21,7 +21,6 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.16.0
-  plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_test:
@@ -48,10 +47,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.webm_texture
-        pluginClass: WebmTexturePlugin
+        package: town.leggy.animated_stickers
+        pluginClass: AnimatedStickersPlugin
       ios:
-        pluginClass: WebmTexturePlugin
+        pluginClass: AnimatedStickersPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

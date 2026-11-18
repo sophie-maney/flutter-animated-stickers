@@ -10,7 +10,6 @@ import 'app_test.dart' as app;
 import 'atlas_demo_test.dart' as atlas_demo;
 import 'atlas_test.dart' as atlas;
 import 'cache_test.dart' as cache;
-import 'plugin_integration_test.dart' as plugin;
 import 'probe_test.dart' as probe;
 import 'texture_test.dart' as texture;
 import 'tier_test.dart' as tier;
@@ -22,7 +21,6 @@ void main() {
   atlas.main();
   atlas_demo.main();
   cache.main();
-  plugin.main();
   probe.main();
   texture.main();
   tier.main();

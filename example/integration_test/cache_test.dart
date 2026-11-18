@@ -10,8 +10,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 /// 60 frames over 2 s, so one pass takes about two seconds of wall time.
 const _clip = 'vp9_opaque_256.webm';
@@ -20,7 +20,7 @@ const _bucket = 128;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final api = WebmTextureHostApi();
+  final api = StickersHostApi();
   late Directory dir;
   late String originalDirectory;
   late Uint8List data;
@@ -33,15 +33,13 @@ void main() {
 
   tearDownAll(() async {
     // Back to where the other tests expect it.
-    await WebmStickers.configure(
-      StickerConfig(cacheDirectory: originalDirectory),
-    );
+    await Stickers.configure(StickerConfig(cacheDirectory: originalDirectory));
     await dir.delete(recursive: true);
   });
 
   setUp(() async {
-    await WebmStickers.configure(StickerConfig(cacheDirectory: dir.path));
-    await WebmStickers.clearCache();
+    await Stickers.configure(StickerConfig(cacheDirectory: dir.path));
+    await Stickers.clearCache();
   });
 
   List<String> files() =>
@@ -71,14 +69,14 @@ void main() {
 
   testWidgets('a played-through sticker is cached and reused', (tester) async {
     expect(
-      await WebmStickers.cacheStats(),
+      await Stickers.cacheStats(),
       const CacheStats(fileCount: 0, totalBytes: 0),
     );
     await play(tester, 'key:cache-test');
     final written = files();
     expect(written, hasLength(1));
     expect(written.single, matches(RegExp(r'^[0-9a-f]{32}_128x128_v1\.wsc$')));
-    final stats = await WebmStickers.cacheStats();
+    final stats = await Stickers.cacheStats();
     expect(stats.fileCount, 1);
     expect(stats.totalBytes, greaterThan(0));
     expect(
@@ -90,7 +88,7 @@ void main() {
     // the file isn't rewritten with different content.
     await play(tester, 'key:cache-test', seconds: 1);
     expect(files(), written);
-    expect(await WebmStickers.cacheStats(), stats);
+    expect(await Stickers.cacheStats(), stats);
   });
 
   testWidgets('another size of the same sticker is another file', (
@@ -117,14 +115,14 @@ void main() {
 
   testWidgets('the budget evicts the least recently used file', (tester) async {
     await play(tester, 'key:one');
-    final one = (await WebmStickers.cacheStats()).totalBytes;
+    final one = (await Stickers.cacheStats()).totalBytes;
     expect(one, greaterThan(0));
-    await WebmStickers.clearCache();
+    await Stickers.clearCache();
 
     // Room for four files and a half (one file may take a quarter of the
     // budget, ADR 0026): writing the fifth evicts the first.
     final budget = one * 9 ~/ 2;
-    await WebmStickers.configure(
+    await Stickers.configure(
       StickerConfig(cacheDirectory: dir.path, diskBudgetBytes: budget),
     );
     final written = <String>[];
@@ -140,22 +138,19 @@ void main() {
     expect(left, hasLength(4));
     expect(left, isNot(contains(written.first)));
     expect(left, containsAll(written.skip(1)));
-    expect(
-      (await WebmStickers.cacheStats()).totalBytes,
-      lessThanOrEqualTo(budget),
-    );
+    expect((await Stickers.cacheStats()).totalBytes, lessThanOrEqualTo(budget));
   });
 
   testWidgets('a file over a quarter of the budget is not written', (
     tester,
   ) async {
     await play(tester, 'key:one');
-    final one = (await WebmStickers.cacheStats()).totalBytes;
+    final one = (await Stickers.cacheStats()).totalBytes;
     await play(tester, 'key:two');
     expect(files(), hasLength(2));
     // One byte short of a file per quarter: the next one isn't written, and
     // nothing is evicted for it.
-    await WebmStickers.configure(
+    await Stickers.configure(
       StickerConfig(cacheDirectory: dir.path, diskBudgetBytes: one * 4 - 4),
     );
     final before = files();
@@ -166,10 +161,10 @@ void main() {
   testWidgets('clearCache empties the directory', (tester) async {
     await play(tester, 'key:clear');
     expect(files(), hasLength(1));
-    await WebmStickers.clearCache();
+    await Stickers.clearCache();
     expect(files(), isEmpty);
     expect(
-      await WebmStickers.cacheStats(),
+      await Stickers.cacheStats(),
       const CacheStats(fileCount: 0, totalBytes: 0),
     );
   });

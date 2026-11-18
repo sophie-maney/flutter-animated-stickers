@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 /// Records fetches and returns a canned result instead of using a network.
 class FakeFetcher implements StickerFetcher {

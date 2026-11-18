@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture/src/sticker_config.dart';
-import 'package:webm_texture/src/sticker_registry.dart';
-import 'package:webm_texture/src/sticker_source.dart';
-import 'package:webm_texture/src/sticker_bucket.dart';
-import 'package:webm_texture/src/sticker_tier.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/sticker_config.dart';
+import 'package:animated_stickers/src/sticker_registry.dart';
+import 'package:animated_stickers/src/sticker_source.dart';
+import 'package:animated_stickers/src/sticker_bucket.dart';
+import 'package:animated_stickers/src/sticker_tier.dart';
 
 import 'fake_host.dart';
 

@@ -1,7 +1,7 @@
-# The webm_texture core: a static library behind the C ABI in api/wt_api.h.
+# The animated_stickers core: a static library behind the C ABI in api/wt_api.h.
 #
 # Included by the root CMakeLists.txt for host builds (tests, fuzzing) and by
-# android/CMakeLists.txt for the plugin's libwebm_texture.so (T1.8). iOS
+# android/CMakeLists.txt for the plugin's libanimated_stickers.so (T1.8). iOS
 # compiles the same sources through SwiftPM against the xcframework instead.
 #
 # Inputs (set before add_subdirectory):
@@ -24,7 +24,7 @@ if(ANDROID)
   target_include_directories(wt_deps SYSTEM INTERFACE "${_wt_prebuilt}/include")
   target_link_libraries(wt_deps INTERFACE "${_wt_archive}" m)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-  message(FATAL_ERROR "iOS builds the core through ios/webm_texture (SwiftPM), not CMake")
+  message(FATAL_ERROR "iOS builds the core through ios/animated_stickers (SwiftPM), not CMake")
 else()
   # Linking order matters for static archives: users before what they use.
   set(_wt_host_libs webpdemux webpdecoder vpx yuv gif lz4)
@@ -94,19 +94,19 @@ endfunction()
 add_library(wt_core STATIC ${WT_CORE_SOURCES})
 wt_configure_core(wt_core)
 
-# libwebm_texture: the core as a shared library for dart:ffi. Android always
-# builds it (the plugin's CMake loads it as libwebm_texture.so); the host
+# libanimated_stickers: the core as a shared library for dart:ffi. Android always
+# builds it (the plugin's CMake loads it as libanimated_stickers.so); the host
 # builds it on request so `fvm flutter test` can probe the corpus
 # (-DWT_BUILD_SHARED=ON, see tool/build_host_ffi_lib.sh). iOS has no such
 # target: the sources are compiled into the app and found with
 # DynamicLibrary.process().
 if(ANDROID OR WT_BUILD_SHARED)
-  add_library(webm_texture SHARED ${WT_CORE_SOURCES})
-  wt_configure_core(webm_texture)
+  add_library(animated_stickers SHARED ${WT_CORE_SOURCES})
+  wt_configure_core(animated_stickers)
   if(ANDROID)
     # Export only wt_api.h; keep the prebuilt archives' symbols private, and
     # align segments to 16 KB pages (Play requirement; AGENTS.md).
-    target_link_options(webm_texture PRIVATE
+    target_link_options(animated_stickers PRIVATE
       -Wl,--exclude-libs,ALL -Wl,-z,max-page-size=16384 -Wl,--gc-sections)
   endif()
 endif()

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'atlas_demo.dart';
 import 'checkerboard_page.dart';
@@ -18,7 +18,7 @@ class ExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'webm_texture',
+    title: 'animated_stickers',
     theme: ThemeData(colorSchemeSeed: Colors.indigo),
     home: const _HomePage(),
   );
@@ -91,16 +91,16 @@ class _HomePageState extends State<_HomePage> {
     super.initState();
     // Reads the device and applies its tier; the label below follows Low
     // Power Mode and thermal changes.
-    WebmStickers.configure(const StickerConfig());
+    Stickers.configure(const StickerConfig());
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('webm_texture'),
+      title: const Text('animated_stickers'),
       actions: [
         ValueListenableBuilder<StickerTier>(
-          valueListenable: WebmStickers.debugTier,
+          valueListenable: Stickers.debugTier,
           builder: (_, tier, _) => Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Text('tier ${tier.name}', key: const Key('tierLabel')),

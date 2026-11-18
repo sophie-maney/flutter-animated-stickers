@@ -9,14 +9,14 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture/src/sticker_tier.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/sticker_tier.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final host = WebmTextureHostApi();
+  final host = StickersHostApi();
 
   testWidgets('deviceSignals reports memory and cores', (tester) async {
     final s = await host.deviceSignals();
@@ -52,17 +52,17 @@ void main() {
   testWidgets('configure sets the tier and auto detects it again', (
     tester,
   ) async {
-    await WebmStickers.configure(const StickerConfig(tier: StickerTier.low));
-    expect(WebmStickers.debugTier.value, StickerTier.low);
-    await WebmStickers.configure(const StickerConfig(tier: StickerTier.mid));
-    expect(WebmStickers.debugTier.value, StickerTier.mid);
+    await Stickers.configure(const StickerConfig(tier: StickerTier.low));
+    expect(Stickers.debugTier.value, StickerTier.low);
+    await Stickers.configure(const StickerConfig(tier: StickerTier.mid));
+    expect(Stickers.debugTier.value, StickerTier.mid);
 
-    await WebmStickers.configure(const StickerConfig());
+    await Stickers.configure(const StickerConfig());
     final s = await host.deviceSignals();
     expect(
-      WebmStickers.debugTier.value,
+      Stickers.debugTier.value,
       StickerTiers.effective(s, const StickerConfig()),
     );
-    expect(WebmStickers.debugTier.value, isNot(StickerTier.auto));
+    expect(Stickers.debugTier.value, isNot(StickerTier.auto));
   });
 }

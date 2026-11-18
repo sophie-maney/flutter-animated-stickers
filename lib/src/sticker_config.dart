@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'sticker_tier.dart';
 
-/// Settings for [WebmStickers.configure]: the frame cache and the device
+/// Settings for [Stickers.configure]: the frame cache and the device
 /// tier.
 @immutable
 class StickerConfig {
@@ -26,7 +26,7 @@ class StickerConfig {
   /// The default for [diskBudgetBytes]: 200 MiB.
   static const int defaultDiskBudgetBytes = 200 << 20;
 
-  /// An absolute path for the frame cache, or null for `webm_texture` under
+  /// An absolute path for the frame cache, or null for `animated_stickers` under
   /// the app's cache directory.
   ///
   /// The plugin creates it, and only ever reads, writes and deletes the

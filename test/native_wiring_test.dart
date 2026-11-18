@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('ios/.../wt_core links every src/ subdirectory', () {
-    const root = 'ios/webm_texture/Sources/wt_core';
+    const root = 'ios/animated_stickers/Sources/wt_core';
     final dirs = Directory('src')
         .listSync()
         .whereType<Directory>()

@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
 
 /// Clips that play today, cycled over the tiles.
 const atlasDemoClips = [
@@ -60,7 +60,7 @@ class AtlasSlotView extends StatelessWidget {
 
 /// Releases textures a layout retired once a frame without them was drawn
 /// (the engine unregisters textures after the raster work queued before).
-void releaseAfterFrame(WebmTextureHostApi api, List<int> ids) {
+void releaseAfterFrame(StickersHostApi api, List<int> ids) {
   if (ids.isEmpty) return;
   SchedulerBinding.instance.addPostFrameCallback((_) {
     unawaited(api.releaseTextures(ids));
@@ -82,7 +82,7 @@ class AtlasDemoPage extends StatefulWidget {
 }
 
 class _AtlasDemoPageState extends State<AtlasDemoPage> {
-  final _api = WebmTextureHostApi();
+  final _api = StickersHostApi();
   final _anims = <int>[];
   final _slots = <int, AtlasSlotMessage>{};
   final _pages = <int, AtlasPageMessage>{};

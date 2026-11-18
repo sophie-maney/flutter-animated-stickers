@@ -28,8 +28,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/webm_texture.dart';
-import 'package:webm_texture_example/stress_page.dart';
+import 'package:animated_stickers/animated_stickers.dart';
+import 'package:animated_stickers_example/stress_page.dart';
 
 import 'perf_util.dart';
 
@@ -77,11 +77,11 @@ void main() {
     // Assets load, every visible cell gets its animation and starts playing.
     for (var i = 0; i < 600; i++) {
       await tester.pump(const Duration(milliseconds: 50));
-      if (WebmStickers.debugActiveCount.value >= _visible) break;
+      if (Stickers.debugActiveCount.value >= _visible) break;
     }
     // Let stragglers at the edges settle.
     await tester.pump(const Duration(milliseconds: 500));
-    final visible = WebmStickers.debugActiveCount.value;
+    final visible = Stickers.debugActiveCount.value;
     expect(visible, _visible);
 
     // The first loop decodes and writes each cache file; later ones read it.
@@ -111,7 +111,7 @@ void main() {
     ticking.value = false;
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(WebmStickers.debugActiveCount.value, 0);
+    expect(Stickers.debugActiveCount.value, 0);
     await Future<void>.delayed(const Duration(seconds: 2));
     final pausedCpu = await cpuPercent(_cpuWindow);
 

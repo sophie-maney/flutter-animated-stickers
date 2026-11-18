@@ -2,7 +2,8 @@
 
 #include <android/log.h>
 
-#define WT_LOG(prio, ...) __android_log_print(prio, "WebmTexture", __VA_ARGS__)
+#define WT_LOG(prio, ...) \
+  __android_log_print(prio, "AnimatedStickers", __VA_ARGS__)
 
 namespace wt_android {
 

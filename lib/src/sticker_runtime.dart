@@ -15,7 +15,7 @@ import 'sticker_tier.dart';
 /// Reads a sticker's metadata; [probeSticker] outside tests.
 typedef StickerProber = Future<StickerInfo> Function(StickerSource source);
 
-/// Process-wide state behind every `WebmSticker`: the registry, a cache of
+/// Process-wide state behind every `Sticker`: the registry, a cache of
 /// probe results, and whether the app is in the foreground.
 ///
 /// Used from the UI isolate only.

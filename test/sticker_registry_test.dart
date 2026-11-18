@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/sticker_bucket.dart';
-import 'package:webm_texture/src/sticker_registry.dart';
-import 'package:webm_texture/src/sticker_source.dart';
+import 'package:animated_stickers/src/sticker_bucket.dart';
+import 'package:animated_stickers/src/sticker_registry.dart';
+import 'package:animated_stickers/src/sticker_source.dart';
 
 import 'fake_host.dart';
 

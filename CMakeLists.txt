@@ -1,4 +1,4 @@
-# Host build of the webm_texture core: GoogleTest suite and libFuzzer targets.
+# Host build of the animated_stickers core: GoogleTest suite and libFuzzer targets.
 #
 #   tool/build_host_deps.sh
 #   cmake -S . -B build/host -DWT_HOST_TESTS=ON -DWT_SANITIZE=ON
@@ -12,13 +12,13 @@
 # The plugin itself doesn't use this file: Android adds src/ from
 # android/CMakeLists.txt, and iOS builds the sources through SwiftPM.
 cmake_minimum_required(VERSION 3.22)
-project(webm_texture_core LANGUAGES C CXX)
+project(animated_stickers_core LANGUAGES C CXX)
 
 option(WT_HOST_TESTS "Build the GoogleTest suite in native_test/" OFF)
 option(WT_SANITIZE "Build everything with ASan + UBSan" OFF)
 option(WT_TSAN "Build everything with ThreadSanitizer (not with WT_SANITIZE)" OFF)
 option(WT_FUZZ "Build the libFuzzer targets in fuzz/ (clang only; implies ASan + UBSan)" OFF)
-option(WT_BUILD_SHARED "Build libwebm_texture (shared) so Dart tests can load it" OFF)
+option(WT_BUILD_SHARED "Build libanimated_stickers (shared) so Dart tests can load it" OFF)
 option(WT_WERROR "Treat warnings in our own code as errors" OFF)
 set(WT_DEPS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/deps/host-core/prefix"
     CACHE PATH "Prefix written by tool/build_host_deps.sh")

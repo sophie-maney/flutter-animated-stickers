@@ -1,5 +1,5 @@
 // The bundled test corpus, shared by the example pages.
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 /// Corpus files that play today, with a short label for the UI.
 const playableCorpus = [

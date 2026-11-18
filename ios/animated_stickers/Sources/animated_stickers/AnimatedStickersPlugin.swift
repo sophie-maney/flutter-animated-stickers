@@ -4,7 +4,7 @@ import UIKit
 import wt_core
 import wt_ios
 
-public class WebmTexturePlugin: NSObject, FlutterPlugin, WebmTextureHostApi {
+public class AnimatedStickersPlugin: NSObject, FlutterPlugin, StickersHostApi {
   /// Dart finds the core with DynamicLibrary.process(). The app is statically
   /// linked, so reference every entry point from Swift, or the linker would
   /// strip the ones nothing else uses.
@@ -45,7 +45,7 @@ public class WebmTexturePlugin: NSObject, FlutterPlugin, WebmTextureHostApi {
   init(registry: FlutterTextureRegistry) {
     self.registry = registry
     cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("webm_texture", isDirectory: true).path
+      .appendingPathComponent("animated_stickers", isDirectory: true).path
     super.init()
   }
 
@@ -62,18 +62,16 @@ public class WebmTexturePlugin: NSObject, FlutterPlugin, WebmTextureHostApi {
       wt_atlas_create, wt_atlas_destroy, wt_atlas_attach, wt_atlas_detach, wt_atlas_page_count,
       wt_atlas_get_page, wt_atlas_set_target, wt_atlas_shown_page,
     ]
-    let channel = FlutterMethodChannel(name: "webm_texture", binaryMessenger: registrar.messenger())
-    let instance = WebmTexturePlugin(registry: registrar.textures())
+    let instance = AnimatedStickersPlugin(registry: registrar.textures())
     // Keep the cache within its budget from the start; frame writes keep it
     // there afterwards.
     let startupDirectory = instance.cacheDirectory
     DispatchQueue.global(qos: .utility).async {
       _ = WTPlayer.evictCache(inDirectory: startupDirectory)
     }
-    registrar.addMethodCallDelegate(instance, channel: channel)
     // Publishing makes the engine call detachFromEngine(for:) on teardown.
     registrar.publish(instance)
-    WebmTextureHostApiSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
+    StickersHostApiSetup.setUp(binaryMessenger: registrar.messenger(), api: instance)
     StreamErrorsStreamHandler.register(with: registrar.messenger(), streamHandler: instance.errors)
     StreamDeviceSignalsStreamHandler.register(
       with: registrar.messenger(), streamHandler: instance.signals)
@@ -85,10 +83,10 @@ public class WebmTexturePlugin: NSObject, FlutterPlugin, WebmTextureHostApi {
     atlases.removeAll()
     for animId in Array(animations.keys) { disposeNow(animId) }
     releaseRetired(retired.map(\.id))
-    WebmTextureHostApiSetup.setUp(binaryMessenger: registrar.messenger(), api: nil)
+    StickersHostApiSetup.setUp(binaryMessenger: registrar.messenger(), api: nil)
   }
 
-  // MARK: WebmTextureHostApi
+  // MARK: StickersHostApi
 
   func createAnimation(
     sourceKey: String, source: AnimationSourceMessage, bucketW: Int64, bucketH: Int64,
@@ -341,22 +339,13 @@ public class WebmTexturePlugin: NSObject, FlutterPlugin, WebmTextureHostApi {
     guard animations[animId] != nil else { return }
     errors.send(AnimationErrorMessage(animId: animId, code: code, message: message))
   }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "getPlatformVersion":
-      result("iOS " + UIDevice.current.systemVersion)
-    default:
-      result(FlutterMethodNotImplemented)
-    }
-  }
 }
 
 /// A weak reference to the plugin that worker queues can carry. It is only
 /// dereferenced on the main thread, which owns all of the plugin's state.
 private final class WeakPlugin: @unchecked Sendable {
-  weak var value: WebmTexturePlugin?
-  init(_ value: WebmTexturePlugin) { self.value = value }
+  weak var value: AnimatedStickersPlugin?
+  init(_ value: AnimatedStickersPlugin) { self.value = value }
 }
 
 /// Holds the Dart listener of `streamErrors`, if any. Main thread only:

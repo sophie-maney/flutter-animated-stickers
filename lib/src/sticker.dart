@@ -13,7 +13,7 @@ import 'sticker_runtime.dart';
 import 'sticker_source.dart';
 import 'sticker_visibility.dart';
 
-/// Builds what a [WebmSticker] shows when its sticker can't be played.
+/// Builds what a [Sticker] shows when its sticker can't be played.
 ///
 /// [error] is usually a [StickerException]; its `name` says why (such as
 /// `WT_ERR_LIMIT` for a sticker over the limits).
@@ -22,15 +22,15 @@ typedef StickerErrorWidgetBuilder = Widget Function(
   Object error,
 );
 
-/// Plays, pauses and seeks the [WebmSticker]s it is given to.
+/// Plays, pauses and seeks the [Sticker]s it is given to.
 ///
 /// Stickers with a controller get an animation of their own, shared only with
 /// other stickers on the same controller, so pausing or seeking one never
 /// affects a copy elsewhere on screen.
-class WebmStickerController extends ChangeNotifier {
+class StickerController extends ChangeNotifier {
   /// Creates a controller that starts playing, or paused if [playing] is
   /// false.
-  WebmStickerController({this._playing = true});
+  StickerController({this._playing = true});
 
   bool _playing;
 
@@ -44,7 +44,7 @@ class WebmStickerController extends ChangeNotifier {
   /// Holds the frame that is showing.
   void pause() => _setPlaying(false);
 
-  final Set<_WebmStickerState> _stickers = {};
+  final Set<_StickerState> _stickers = {};
 
   /// Shows [frame] (0-based) on every sticker on this controller right away,
   /// playing or paused. A playing sticker carries on from there, and a
@@ -84,9 +84,9 @@ class WebmStickerController extends ChangeNotifier {
 /// Below a [StickerAtlasScope] the sticker is drawn through the scope's
 /// atlas textures instead of a texture of its own, and only holds its
 /// animation while some of it is on screen.
-class WebmSticker extends StatefulWidget {
+class Sticker extends StatefulWidget {
   /// Creates a sticker for [source].
-  const WebmSticker({
+  const Sticker({
     super.key,
     required this.source,
     this.width,
@@ -119,14 +119,14 @@ class WebmSticker extends StatefulWidget {
 
   /// Whether to start over after the last frame. When false the sticker
   /// stops on its last frame and holds it, until
-  /// [WebmStickerController.seekToFrame] moves it back.
+  /// [StickerController.seekToFrame] moves it back.
   ///
   /// A non-looping sticker gets an animation of its own, like one with a
   /// [controller], so it plays once wherever it appears.
   final bool loop;
 
-  /// Plays, pauses and seeks the sticker; see [WebmStickerController].
-  final WebmStickerController? controller;
+  /// Plays, pauses and seeks the sticker; see [StickerController].
+  final StickerController? controller;
 
   /// Shown until the first frame is ready. Empty when null.
   final Widget? placeholder;
@@ -135,10 +135,10 @@ class WebmSticker extends StatefulWidget {
   final StickerErrorWidgetBuilder? errorBuilder;
 
   @override
-  State<WebmSticker> createState() => _WebmStickerState();
+  State<Sticker> createState() => _StickerState();
 }
 
-class _WebmStickerState extends State<WebmSticker> {
+class _StickerState extends State<Sticker> {
   late final StickerRuntime _runtime = StickerRuntime.instance;
   late final ValueListenable<bool> _appRunning = _runtime.appRunning;
 
@@ -173,7 +173,7 @@ class _WebmStickerState extends State<WebmSticker> {
 
   Object? get _owner => _ownerFor(widget);
 
-  Object? _ownerFor(WebmSticker w) =>
+  Object? _ownerFor(Sticker w) =>
       w.controller ?? (w.autoplay && w.loop ? null : _privateOwner);
 
   bool get _playing => widget.controller?.isPlaying ?? widget.autoplay;
@@ -224,7 +224,7 @@ class _WebmStickerState extends State<WebmSticker> {
   }
 
   @override
-  void didUpdateWidget(WebmSticker oldWidget) {
+  void didUpdateWidget(Sticker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       _detach(oldWidget.controller);
@@ -252,17 +252,17 @@ class _WebmStickerState extends State<WebmSticker> {
     super.dispose();
   }
 
-  void _attach(WebmStickerController? controller) {
+  void _attach(StickerController? controller) {
     controller?.addListener(_updateActive);
     controller?._stickers.add(this);
   }
 
-  void _detach(WebmStickerController? controller) {
+  void _detach(StickerController? controller) {
     controller?.removeListener(_updateActive);
     controller?._stickers.remove(this);
   }
 
-  /// Applies [WebmStickerController.seekToFrame] to the lease, unless one in
+  /// Applies [StickerController.seekToFrame] to the lease, unless one in
   /// [seen] already did, and keeps it for a lease that is on its way.
   void _seekToFrame(int frame, Set<int> seen) {
     final lease = _lease;

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: implementation_imports
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture_example/main.dart';
-import 'package:webm_texture_example/texture_demo.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers_example/main.dart';
+import 'package:animated_stickers_example/texture_demo.dart';
 
-const _prefix = 'dev.flutter.pigeon.webm_texture.WebmTextureHostApi';
+const _prefix = 'dev.flutter.pigeon.animated_stickers.StickersHostApi';
 
 void main() {
   testWidgets('the landing page links every page', (tester) async {
@@ -29,7 +29,7 @@ void main() {
   testWidgets('shows a texture per playable sticker', (tester) async {
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    const codec = WebmTextureHostApi.pigeonChannelCodec;
+    const codec = StickersHostApi.pigeonChannelCodec;
     var nextId = 1;
     final active = <int, bool>{};
     final disposed = <int>{};
@@ -63,7 +63,7 @@ void main() {
     );
     messenger.setMockMethodCallHandler(
       const MethodChannel(
-        'dev.flutter.pigeon.webm_texture.WebmTextureEvents.streamErrors',
+        'dev.flutter.pigeon.animated_stickers.StickersEvents.streamErrors',
         pigeonMethodCodec,
       ),
       (call) async => null,

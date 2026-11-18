@@ -1,12 +1,8 @@
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.os.Handler
 import android.os.Looper
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.view.TextureRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-private const val CACHE_DIR_NAME = "webm_texture"
+private const val CACHE_DIR_NAME = "animated_stickers"
 
 // Retired textures kept at most; older ones are released even if Dart never
 // asked.
@@ -27,11 +23,9 @@ private const val MAX_RETIRED = 64
  * native scheduler's workers. Host API calls arrive on the platform main
  * thread.
  */
-class WebmTexturePlugin :
+class AnimatedStickersPlugin :
     FlutterPlugin,
-    MethodCallHandler,
-    WebmTextureHostApi {
-    private lateinit var channel: MethodChannel
+    StickersHostApi {
     private var errorChannel: StreamErrorsEventChannel? = null
     private var signalsChannel: StreamDeviceSignalsEventChannel? = null
     private var deviceSignals: DeviceSignals? = null
@@ -64,9 +58,7 @@ class WebmTexturePlugin :
         // Keep the cache within its budget from the start; frame writes
         // keep it there afterwards.
         background.launch { WtNative.nativeEvictCache(dir.path) }
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "webm_texture")
-        channel.setMethodCallHandler(this)
-        WebmTextureHostApi.setUp(flutterPluginBinding.binaryMessenger, this)
+        StickersHostApi.setUp(flutterPluginBinding.binaryMessenger, this)
         signalsChannel = StreamDeviceSignalsStreamHandler.register(
             flutterPluginBinding.binaryMessenger,
             object : StreamDeviceSignalsStreamHandler() {
@@ -333,20 +325,8 @@ class WebmTexturePlugin :
         }
     }
 
-    override fun onMethodCall(
-        call: MethodCall,
-        result: Result
-    ) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else {
-            result.notImplemented()
-        }
-    }
-
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
-        WebmTextureHostApi.setUp(binding.binaryMessenger, null)
+        StickersHostApi.setUp(binding.binaryMessenger, null)
         errorChannel?.setStreamHandler(null)
         errorChannel = null
         signalsChannel?.setStreamHandler(null)

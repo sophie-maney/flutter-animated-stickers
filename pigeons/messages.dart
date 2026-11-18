@@ -10,11 +10,13 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/gen/messages.g.dart',
     dartOptions: DartOptions(),
-    kotlinOut: 'android/src/main/kotlin/com/example/webm_texture/Messages.g.kt',
-    kotlinOptions: KotlinOptions(package: 'com.example.webm_texture'),
-    swiftOut: 'ios/webm_texture/Sources/webm_texture/Messages.g.swift',
+    kotlinOut:
+        'android/src/main/kotlin/town/leggy/animated_stickers/Messages.g.kt',
+    kotlinOptions: KotlinOptions(package: 'town.leggy.animated_stickers'),
+    swiftOut:
+        'ios/animated_stickers/Sources/animated_stickers/Messages.g.swift',
     swiftOptions: SwiftOptions(),
-    dartPackageName: 'webm_texture',
+    dartPackageName: 'animated_stickers',
   ),
 )
 /// Where the sticker bytes come from. Exactly one of [bytes] and [path] is set.
@@ -28,7 +30,7 @@ class AnimationSourceMessage {
   String? path;
 }
 
-/// What [WebmTextureHostApi.createAnimation] returns.
+/// What [StickersHostApi.createAnimation] returns.
 class AnimationHandleMessage {
   AnimationHandleMessage({required this.animId, required this.textureId});
 
@@ -110,7 +112,7 @@ class AnimationErrorMessage {
   String message;
 }
 
-/// Layout of an atlas's pages ([WebmTextureHostApi.createAtlas]; see
+/// Layout of an atlas's pages ([StickersHostApi.createAtlas]; see
 /// `wt_atlas_options` in `wt_api.h`).
 class AtlasOptionsMessage {
   AtlasOptionsMessage({
@@ -189,10 +191,10 @@ class AtlasLayoutMessage {
     required this.retiredTextureIds,
   });
 
-  /// [WebmTextureHostApi.attachToAtlas]: one per animation, in order.
+  /// [StickersHostApi.attachToAtlas]: one per animation, in order.
   List<AtlasSlotMessage> slots;
 
-  /// [WebmTextureHostApi.detachFromAtlas]: each animation's new texture of
+  /// [StickersHostApi.detachFromAtlas]: each animation's new texture of
   /// its own, in order (textureId -1 for an unknown animation).
   List<AnimationHandleMessage> handles;
 
@@ -203,12 +205,12 @@ class AtlasLayoutMessage {
 
   /// Textures this call replaced (a page's previous size, an animation's own
   /// texture when it entered the atlas). They hold their last frame until
-  /// Dart calls [WebmTextureHostApi.releaseTextures], which it does once no
+  /// Dart calls [StickersHostApi.releaseTextures], which it does once no
   /// widget draws them any more.
   List<int> retiredTextureIds;
 }
 
-/// One atlas page's state and memory ([WebmTextureHostApi.atlasStats]).
+/// One atlas page's state and memory ([StickersHostApi.atlasStats]).
 class AtlasPageStatsMessage {
   AtlasPageStatsMessage({
     required this.pageId,
@@ -252,7 +254,7 @@ class AtlasPageStatsMessage {
   int presentFailures;
 }
 
-/// [WebmTextureHostApi.atlasStats].
+/// [StickersHostApi.atlasStats].
 class AtlasStatsMessage {
   AtlasStatsMessage({
     required this.pages,
@@ -274,7 +276,7 @@ class AtlasStatsMessage {
 /// Texture lifecycle and device queries. Handlers run on the platform main
 /// thread and must not decode; decoding happens on native worker threads.
 @HostApi()
-abstract class WebmTextureHostApi {
+abstract class StickersHostApi {
   /// Creates the decoder and a platform texture sized to the bucket
   /// ([bucketW] x [bucketH] physical pixels). The texture shows frame 0 and
   /// stays inactive until [setActive].
@@ -367,7 +369,7 @@ abstract class WebmTextureHostApi {
 
   /// Sets the directory for the frame cache and returns the one in use, an
   /// absolute path. With a null [directory] nothing changes: the result is
-  /// the current one, which starts as `webm_texture` under the app's cache
+  /// the current one, which starts as `animated_stickers` under the app's cache
   /// directory (`Context.cacheDir` on Android, `Library/Caches` on iOS).
   ///
   /// The directory is created when the first animation needs it, and only
@@ -381,11 +383,11 @@ abstract class WebmTextureHostApi {
 /// Errors that happen after `createAnimation` returned, such as a lost
 /// surface or a decode failure mid-playback.
 @EventChannelApi()
-abstract class WebmTextureEvents {
+abstract class StickersEvents {
   AnimationErrorMessage streamErrors();
 
   /// A fresh reading of every device signal, sent when Low Power Mode, battery
   /// saver or the thermal state changes while the app runs. Same content as
-  /// [WebmTextureHostApi.deviceSignals].
+  /// [StickersHostApi.deviceSignals].
   DeviceSignalsMessage streamDeviceSignals();
 }

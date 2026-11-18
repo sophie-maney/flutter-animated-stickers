@@ -1,6 +1,6 @@
 <img src="assets/icon.svg" width="64" height="64" alt="">
 
-# flutter-webm-texture
+# animated_stickers
 
 Animated stickers in Flutter, the way Telegram plays them: VP9/VP8 WebM with
 alpha, animated WebP and GIF. A shared C++ core decodes in software, caches
@@ -10,7 +10,7 @@ screen full of stickers stays smooth and cheap.
 ## Features
 
 - **Transparent video stickers**: WebM (VP9 and VP8, with alpha), animated
-  WebP and GIF behind one widget, `WebmSticker`.
+  WebP and GIF behind one widget, `Sticker`.
 - **Off the UI thread**: decoding runs on native worker threads, never on the
   platform main thread or the Flutter UI and raster threads.
 - **Plays only what you see**: a sticker advances only while it is on screen,
@@ -56,26 +56,26 @@ bounds keep one sticker from exhausting memory or CPU. The dimension limit
 matches libvpx's own size limit.
 
 The widget always applies the defaults. `StickerLimits` is accepted by
-`WebmStickers.probe`, which can check a file against tighter or looser
+`Stickers.probe`, which can check a file against tighter or looser
 limits before you show it.
 
 ## Quick start
 
 ```yaml
 dependencies:
-  webm_texture: ^1.0.0
+  animated_stickers: ^1.0.0
 ```
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 class Hello extends StatelessWidget {
   const Hello({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const WebmSticker(
+    return const Sticker(
       source: StickerSource.asset('assets/wave.webm'),
       width: 160,
       height: 160,
@@ -96,17 +96,17 @@ A `StickerSource` is one of:
 - `StickerSource.network(url, {headers, key})`: needs a `StickerFetcher`
   (below).
 
-`WebmSticker` takes `width`, `height`, `fit` (default `BoxFit.contain`),
+`Sticker` takes `width`, `height`, `fit` (default `BoxFit.contain`),
 `autoplay` (default `true`), `loop` (default `true`), `controller`,
 `placeholder` (shown until the first frame) and `errorBuilder` (shown when
 the sticker can't be played).
 
-Control playback with a `WebmStickerController`:
+Control playback with a `StickerController`:
 
 ```dart
-final controller = WebmStickerController(); // playing
+final controller = StickerController(); // playing
 
-WebmSticker(
+Sticker(
   source: const StickerSource.asset('assets/wave.webm'),
   controller: controller,
   loop: false,
@@ -126,7 +126,7 @@ moves it back.
 To read a file's metadata without decoding pixels:
 
 ```dart
-final info = await WebmStickers.probe(
+final info = await Stickers.probe(
   const StickerSource.asset('assets/wave.webm'),
 );
 debugPrint('${info.width}x${info.height}, ${info.frameCount} frames');
@@ -135,7 +135,7 @@ debugPrint('${info.width}x${info.height}, ${info.frameCount} frames');
 ## Atlas mode
 
 For grids and pickers, wrap the stickers in a `StickerAtlasScope`. Below it,
-every `WebmSticker` is drawn into a few shared atlas textures instead of a
+every `Sticker` is drawn into a few shared atlas textures instead of a
 texture each, which keeps 60+ visible stickers cheap:
 
 ```dart
@@ -145,7 +145,7 @@ StickerAtlasScope(
       crossAxisCount: 4,
     ),
     itemCount: sources.length,
-    itemBuilder: (context, i) => WebmSticker(source: sources[i]),
+    itemBuilder: (context, i) => Sticker(source: sources[i]),
   ),
 )
 ```
@@ -170,7 +170,7 @@ The plugin ships no HTTP client. Implement a `StickerFetcher` over your own
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 class HttpFetcher implements StickerFetcher {
   static const _maxBytes = 2 << 20;
@@ -204,12 +204,12 @@ class HttpFetcher implements StickerFetcher {
 }
 
 void main() {
-  WebmStickers.fetcher = HttpFetcher();
+  Stickers.fetcher = HttpFetcher();
   // runApp(...)
 }
 ```
 
-Then `WebmSticker(source: StickerSource.network('https://example.com/a.webm'))`.
+Then `Sticker(source: StickerSource.network('https://example.com/a.webm'))`.
 
 The fetcher is called on the UI isolate, at most once at a time per distinct
 source. Throw to report a failure; the exception reaches the widget's
@@ -240,7 +240,7 @@ Override it with a `StickerConfig`, once at startup, before the first sticker
 is shown:
 
 ```dart
-await WebmStickers.configure(
+await Stickers.configure(
   const StickerConfig(
     tier: StickerTier.mid, // skip detection
     maxFps: 24, // 1..240, overrides the tier's cap
@@ -249,7 +249,7 @@ await WebmStickers.configure(
 );
 ```
 
-`WebmStickers.debugTier` and `WebmStickers.debugActiveCount` are
+`Stickers.debugTier` and `Stickers.debugActiveCount` are
 `ValueListenable`s for debug overlays and tests.
 
 ## Frame cache
@@ -258,7 +258,7 @@ Decoded frames are written to one `.wsc` file per animation and size, so a
 sticker that has played through once replays, and starts on later launches,
 without decoding.
 
-- **Location**: `webm_texture` under the app's cache directory, or
+- **Location**: `animated_stickers` under the app's cache directory, or
   `StickerConfig.cacheDirectory` (an absolute path). The plugin only reads,
   writes and deletes the `*.wsc` files it made there.
 - **Budget**: `StickerConfig.diskBudgetBytes`, default 200 MiB. The least
@@ -267,8 +267,8 @@ without decoding.
 - **Inspect and clear**:
 
 ```dart
-final stats = await WebmStickers.cacheStats(); // fileCount, totalBytes
-await WebmStickers.clearCache(); // playing stickers carry on
+final stats = await Stickers.cacheStats(); // fileCount, totalBytes
+await Stickers.clearCache(); // playing stickers carry on
 ```
 
 `configure` applies the budget at once. Animations created before it keep

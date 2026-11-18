@@ -1,5 +1,5 @@
 /*
- * wt_api.h: the only C ABI of the webm_texture core.
+ * wt_api.h: the only C ABI of the animated_stickers core.
  *
  * Dart (dart:ffi via ffigen) and the platform glue (Android JNI, iOS ObjC++)
  * include this header and nothing else from src/. It is plain C11 and must

@@ -12,7 +12,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture_example/atlas_demo.dart';
+import 'package:animated_stickers_example/atlas_demo.dart';
 
 import 'screenshots.dart';
 

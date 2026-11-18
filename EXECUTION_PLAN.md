@@ -2,6 +2,8 @@
 
 These are the step-by-step tasks for agents. [`PLAN.md`](PLAN.md) explains *why*; this file says *what to do next*. Read [`AGENTS.md`](AGENTS.md) first.
 
+> The package was renamed in T6.6a ([ADR 0028](docs/decisions/0028-package-rename.md)). Task text below keeps the old names (`webm_texture`, `WebmSticker`, `WebmStickers`, `WebmStickerController`, `WebmTextureHostApi`); read them as `animated_stickers`, `Sticker`, `Stickers`, `StickerController` and `StickersHostApi`.
+
 **How to use this file**
 - Pick the first unticked task whose **Depends** are all ticked. Tasks in the same **Track** with satisfied dependencies can run in parallel.
 - Each task is one branch and one PR. Tick its checkbox in that PR.

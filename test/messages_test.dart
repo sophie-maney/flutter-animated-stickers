@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const channel =
-      'dev.flutter.pigeon.webm_texture.WebmTextureHostApi.createAnimation';
+      'dev.flutter.pigeon.animated_stickers.StickersHostApi.createAnimation';
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -19,15 +19,15 @@ void main() {
     List<Object?>? received;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler(channel, (ByteData? message) async {
-          received = WebmTextureHostApi.pigeonChannelCodec.decodeMessage(
+          received = StickersHostApi.pigeonChannelCodec.decodeMessage(
             message,
           ) as List<Object?>;
-          return WebmTextureHostApi.pigeonChannelCodec.encodeMessage(<Object?>[
+          return StickersHostApi.pigeonChannelCodec.encodeMessage(<Object?>[
             AnimationHandleMessage(animId: 7, textureId: 9),
           ]);
         });
 
-    final handle = await WebmTextureHostApi().createAnimation(
+    final handle = await StickersHostApi().createAnimation(
       'key',
       AnimationSourceMessage(path: '/tmp/a.webm'),
       128,
@@ -44,7 +44,7 @@ void main() {
   });
 
   test('bytes sources and signals survive the codec', () {
-    final codec = WebmTextureHostApi.pigeonChannelCodec;
+    final codec = StickersHostApi.pigeonChannelCodec;
     final source =
         codec.decodeMessage(
               codec.encodeMessage(

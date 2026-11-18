@@ -10,7 +10,7 @@ import 'native_library.dart';
 import 'sticker_config.dart';
 import 'sticker_info.dart';
 
-/// How much the frame cache holds, from [WebmStickers.cacheStats].
+/// How much the frame cache holds, from [Stickers.cacheStats].
 @immutable
 class CacheStats {
   /// Creates statistics.
@@ -112,11 +112,11 @@ class FfiCacheNative implements CacheNative {
 class StickerCache {
   /// Creates the cache control over [host] (the real platform API when null)
   /// and [native] (FFI when null).
-  StickerCache({WebmTextureHostApi? host, CacheNative? native})
-    : _host = host ?? WebmTextureHostApi(),
+  StickerCache({StickersHostApi? host, CacheNative? native})
+    : _host = host ?? StickersHostApi(),
       _native = native ?? const FfiCacheNative();
 
-  final WebmTextureHostApi _host;
+  final StickersHostApi _host;
   final CacheNative _native;
 
   /// Applies [config]: the platform starts caching in the directory (the

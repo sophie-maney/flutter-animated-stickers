@@ -1,4 +1,4 @@
-group = "com.example.webm_texture"
+group = "town.leggy.animated_stickers"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -26,7 +26,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.webm_texture"
+    namespace = "town.leggy.animated_stickers"
 
     compileSdk = 36
 
@@ -60,7 +60,7 @@ android {
         }
     }
 
-    // The C++ core plus the JNI texture glue as libwebm_texture.so, loaded by
+    // The C++ core plus the JNI texture glue as libanimated_stickers.so, loaded by
     // dart:ffi and System.loadLibrary.
     externalNativeBuild {
         cmake {
@@ -90,9 +90,4 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
-}
-
-dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.0.0")
 }

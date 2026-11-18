@@ -1,7 +1,7 @@
 // Prepares the package for `pub publish`: the release job's vendoring step.
 //
 //   fvm dart run tool/vendor_prebuilts.dart vendor [--skip-fetch]
-//   fvm dart run tool/vendor_prebuilts.dart archive --out build/release/webm_texture.tar.gz
+//   fvm dart run tool/vendor_prebuilts.dart archive --out build/release/animated_stickers.tar.gz
 //
 // `vendor` runs tool/fetch_prebuilts.dart (which verifies every archive against
 // the release's SHA256SUMS and fails closed), then checks that the prebuilts
@@ -185,8 +185,8 @@ Future<void> _archive(String root, String out) async {
   for (final needed in [
     'pubspec.yaml',
     'third_party/prebuilt/android/arm64-v8a/libwebm_texture_deps.a',
-    'ios/webm_texture/Frameworks/WebmTextureDeps.xcframework/Info.plist',
-    'ios/webm_texture/Sources/wt_core/api/wt_api.cc',
+    'ios/animated_stickers/Frameworks/WebmTextureDeps.xcframework/Info.plist',
+    'ios/animated_stickers/Sources/wt_core/api/wt_api.cc',
     'src/CMakeLists.txt',
   ]) {
     if (!files.contains(needed)) _fail('the archive would lack $needed');

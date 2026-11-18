@@ -16,9 +16,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture/src/gen/wt_bindings.g.dart';
-import 'package:webm_texture/src/native_library.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/gen/wt_bindings.g.dart';
+import 'package:animated_stickers/src/native_library.dart';
 
 import 'screenshots.dart';
 
@@ -87,7 +87,7 @@ Future<Map<int, Uint8List>> _decodeFrames(Uint8List data, List<int> frames) =>
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final api = WebmTextureHostApi();
+  final api = StickersHostApi();
   late Directory dir;
   late List<Map<String, dynamic>> entries;
 

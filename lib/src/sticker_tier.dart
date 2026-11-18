@@ -162,12 +162,12 @@ class StickerTierController {
   /// Creates a controller over [host] (the real platform API when null).
   /// [signalChanges] defaults to the platform's event channel.
   StickerTierController({
-    WebmTextureHostApi? host,
+    StickersHostApi? host,
     DeviceSignalsStream? signalChanges,
-  }) : _host = host ?? WebmTextureHostApi(),
+  }) : _host = host ?? StickersHostApi(),
        _signalChanges = signalChanges ?? streamDeviceSignals;
 
-  final WebmTextureHostApi _host;
+  final StickersHostApi _host;
   final DeviceSignalsStream _signalChanges;
 
   StickerConfig _config = const StickerConfig();

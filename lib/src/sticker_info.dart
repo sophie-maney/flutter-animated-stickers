@@ -31,7 +31,7 @@ enum StickerCodec {
   gif,
 }
 
-/// What `WebmStickers.probe` learns about a sticker without decoding pixels.
+/// What `Stickers.probe` learns about a sticker without decoding pixels.
 class StickerInfo {
   /// Creates a [StickerInfo].
   const StickerInfo({

@@ -1,5 +1,5 @@
 // A bare page over the platform texture glue (T2.2/T2.3): it drives the Pigeon
-// host API directly because the registry and the `WebmSticker` widget (T2.4,
+// host API directly because the registry and the `Sticker` widget (T2.4,
 // T2.5) don't exist yet. T2.7 replaces it with the real example pages.
 // ignore_for_file: implementation_imports
 import 'dart:async';
@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
 
 /// A corpus file and the aspect ratio it is shown at.
 class _Sticker {
@@ -52,7 +52,7 @@ class _Tile {
 }
 
 class _TextureDemoPageState extends State<TextureDemoPage> {
-  final _api = WebmTextureHostApi();
+  final _api = StickersHostApi();
   final _tiles = [for (final s in _stickers) _Tile(s)];
   final _bytes = <String, Uint8List>{};
   final _log = <String>[];

@@ -1,6 +1,6 @@
 // Chat: stickers mixed with text bubbles, the way a messenger shows them.
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';
 
@@ -67,7 +67,7 @@ class _Bubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: sticker != null
             // Stickers sit directly on the page, without a bubble.
-            ? WebmSticker(
+            ? Sticker(
                 source: corpusSource(sticker),
                 height: 160,
                 placeholder: const SizedBox(width: 160, height: 160),

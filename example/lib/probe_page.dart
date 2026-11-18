@@ -1,7 +1,7 @@
 // Probe: pick a corpus file and read its metadata through
-// `WebmStickers.probe`, without decoding pixels.
+// `Stickers.probe`, without decoding pixels.
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';
 
@@ -25,7 +25,7 @@ class _ProbePageState extends State<ProbePage> {
   void _select(String name) {
     setState(() {
       _name = name;
-      _info = WebmStickers.probe(corpusSource(name));
+      _info = Stickers.probe(corpusSource(name));
     });
   }
 

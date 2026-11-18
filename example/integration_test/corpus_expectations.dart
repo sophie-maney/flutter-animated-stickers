@@ -1,7 +1,7 @@
 // What probing each file in test_assets/manifest.json must return. Shared by
 // the device integration test and the host unit test (test/probe_test.dart).
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 /// Checks one manifest [entry] against [probe], which probes that file.
 Future<void> expectProbeMatchesManifest(

@@ -1,4 +1,4 @@
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.util.Log
 import io.flutter.view.TextureRegistry
@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import java.util.concurrent.Executor
 
-private const val TAG = "WebmTexture"
+private const val TAG = "AnimatedStickers"
 
 /**
  * One animation shown through one `SurfaceProducer` (T2.2), or through a slot

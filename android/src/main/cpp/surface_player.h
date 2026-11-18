@@ -14,8 +14,8 @@
 //   SetWindow(nullptr): it cancels the frame in flight and waits for it to
 //   stop.
 // - The sink callbacks run on scheduler workers, one at a time.
-#ifndef WEBM_TEXTURE_ANDROID_SURFACE_PLAYER_H_
-#define WEBM_TEXTURE_ANDROID_SURFACE_PLAYER_H_
+#ifndef ANIMATED_STICKERS_ANDROID_SURFACE_PLAYER_H_
+#define ANIMATED_STICKERS_ANDROID_SURFACE_PLAYER_H_
 
 #include <android/native_window.h>
 
@@ -108,4 +108,4 @@ class SurfacePlayer {
 
 }  // namespace wt_android
 
-#endif  // WEBM_TEXTURE_ANDROID_SURFACE_PLAYER_H_
+#endif  // ANIMATED_STICKERS_ANDROID_SURFACE_PLAYER_H_

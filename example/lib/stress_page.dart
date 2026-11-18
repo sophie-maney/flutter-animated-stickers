@@ -7,7 +7,7 @@
 // on a phone screen, the T3.3 budget (integration_test/sched_perf_test.dart,
 // atlas_perf_test.dart).
 import 'package:flutter/material.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';
 
@@ -45,7 +45,7 @@ class StressPage extends StatefulWidget {
 }
 
 class _StressPageState extends State<StressPage> {
-  List<WebmStickerController>? _controllers;
+  List<StickerController>? _controllers;
   late bool _dense = widget.initiallyDense;
   late bool _atlas = widget.initiallyAtlas;
 
@@ -55,8 +55,8 @@ class _StressPageState extends State<StressPage> {
     if (widget.initiallyPrivate) _controllers = _newControllers();
   }
 
-  static List<WebmStickerController> _newControllers() => [
-    for (var i = 0; i < stressItemCount; i++) WebmStickerController(),
+  static List<StickerController> _newControllers() => [
+    for (var i = 0; i < stressItemCount; i++) StickerController(),
   ];
 
   bool get _private => _controllers != null;
@@ -91,7 +91,7 @@ class _StressPageState extends State<StressPage> {
 
   @override
   void dispose() {
-    for (final c in _controllers ?? const <WebmStickerController>[]) {
+    for (final c in _controllers ?? const <StickerController>[]) {
       c.dispose();
     }
     super.dispose();
@@ -149,7 +149,7 @@ class _StressPageState extends State<StressPage> {
                     crossAxisSpacing: _dense ? 4 : 8,
                   ),
             itemCount: stressItemCount,
-            itemBuilder: (context, i) => WebmSticker(
+            itemBuilder: (context, i) => Sticker(
               source: corpusSource(playableCorpus[i % playableCorpus.length]),
               controller: controllers?[i],
               placeholder: const ColoredBox(color: Color(0x14000000)),
@@ -171,13 +171,13 @@ class _StressPageState extends State<StressPage> {
       : grid;
 }
 
-/// Shows [WebmStickers.debugActiveCount].
+/// Shows [Stickers.debugActiveCount].
 class _ActiveCounter extends StatelessWidget {
   const _ActiveCounter();
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<int>(
-    valueListenable: WebmStickers.debugActiveCount,
+    valueListenable: Stickers.debugActiveCount,
     builder: (_, n, _) => Text('active $n', key: const Key('activeCount')),
   );
 }

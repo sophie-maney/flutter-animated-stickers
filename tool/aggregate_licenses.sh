@@ -149,7 +149,7 @@ END {
   nt = tmp "/notice.txt"
   print "NOTICE" > nt
   print "" >> nt
-  print "webm_texture is Copyright 2026 The webm_texture Authors." >> nt
+  print "animated_stickers is Copyright 2026 The animated_stickers Authors." >> nt
   print "" >> nt
   print "The package'\''s binaries bundle the following third-party libraries. Their" >> nt
   print "full license texts are in LICENSE." >> nt

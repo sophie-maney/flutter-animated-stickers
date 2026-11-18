@@ -30,7 +30,7 @@ import 'fetch_prebuilts.dart' show sha256Hex;
 const defaultLockPath = 'third_party/versions.lock';
 const issueLabel = 'upstream-watch';
 const issueTitle = 'Upstream watch: newer releases or advisories';
-const _userAgent = 'webm-texture-upstream-watch';
+const _userAgent = 'animated-stickers-upstream-watch';
 const _gitilesRepo = 'https://chromium.googlesource.com/libyuv/libyuv';
 const _maxTarballBytes = 100 * 1024 * 1024;
 const _maxIndexBytes = 20 * 1024 * 1024;

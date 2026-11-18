@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/webm_texture.dart';
+import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus_expectations.dart';
 
@@ -40,11 +40,11 @@ void main() {
 
       await expectProbeMatchesManifest(
         entry,
-        () => WebmStickers.probe(StickerSource.file(file.path)),
+        () => Stickers.probe(StickerSource.file(file.path)),
       );
       await expectProbeMatchesManifest(
         entry,
-        () => WebmStickers.probe(StickerSource.bytes(data)),
+        () => Stickers.probe(StickerSource.bytes(data)),
       );
     }
   });
@@ -54,8 +54,7 @@ void main() {
         .buffer
         .asUint8List();
     final futures = [
-      for (var i = 0; i < 20; i++)
-        WebmStickers.probe(StickerSource.bytes(data)),
+      for (var i = 0; i < 20; i++) Stickers.probe(StickerSource.bytes(data)),
     ];
     final infos = await Future.wait(futures);
     expect(infos.every((i) => i.frameCount == 90), isTrue);

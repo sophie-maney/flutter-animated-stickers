@@ -1,4 +1,4 @@
-package com.example.webm_texture
+package town.leggy.animated_stickers
 
 import android.app.ActivityManager
 import android.content.BroadcastReceiver

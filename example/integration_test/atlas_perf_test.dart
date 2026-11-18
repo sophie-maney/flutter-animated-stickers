@@ -40,10 +40,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webm_texture/src/gen/messages.g.dart';
-import 'package:webm_texture/src/sticker_atlas_scope.dart';
-import 'package:webm_texture/webm_texture.dart';
-import 'package:webm_texture_example/stress_page.dart';
+import 'package:animated_stickers/src/gen/messages.g.dart';
+import 'package:animated_stickers/src/sticker_atlas_scope.dart';
+import 'package:animated_stickers/animated_stickers.dart';
+import 'package:animated_stickers_example/stress_page.dart';
 
 import 'perf_util.dart';
 
@@ -72,7 +72,7 @@ void main() {
   testWidgets('60 visible stickers in atlas mode: frame rate and raster', (
     tester,
   ) async {
-    await WebmStickers.configure(const StickerConfig(tier: StickerTier.high));
+    await Stickers.configure(const StickerConfig(tier: StickerTier.high));
     await tester.pumpWidget(
       const MaterialApp(
         home: StressPage(
@@ -87,20 +87,18 @@ void main() {
     // starts playing.
     for (var i = 0; i < 600; i++) {
       await tester.pump(const Duration(milliseconds: 50));
-      if (WebmStickers.debugActiveCount.value >= _visible &&
+      if (Stickers.debugActiveCount.value >= _visible &&
           find.byType(StickerAtlasSlot).evaluate().length >= _visible) {
         break;
       }
     }
     await tester.pump(const Duration(milliseconds: 500));
-    expect(WebmStickers.debugActiveCount.value, _visible);
+    expect(Stickers.debugActiveCount.value, _visible);
     expect(find.byType(StickerAtlasSlot), findsNWidgets(_visible));
 
-    final atlas = stickerAtlasOf(
-      tester.element(find.byType(WebmSticker).first),
-    )!;
+    final atlas = stickerAtlasOf(tester.element(find.byType(Sticker).first))!;
     final atlasId = atlas.debugAtlasId!;
-    final api = WebmTextureHostApi();
+    final api = StickersHostApi();
 
     // The first loop decodes and writes each cache file; later ones read it.
     await Future<void>.delayed(_warmUp);
@@ -166,7 +164,7 @@ void main() {
     final flutterFps = Platform.isIOS ? rasterPerSec : dartFps;
     final result = {
       'platform': Platform.operatingSystem,
-      'tier': WebmStickers.debugTier.value.name,
+      'tier': Stickers.debugTier.value.name,
       'visible': _visible,
       'contentFps': _contentFps,
       'flutterFps': flutterFps,
