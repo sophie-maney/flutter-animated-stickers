@@ -1,6 +1,6 @@
 # 0013: Sticker sources, content keys and the fetcher
 
-- **Status:** Accepted (T2.6)
+- **Status:** Accepted (T2.6). The fetcher stays a static setter: see [ADR 0029](0029-owner-decisions-for-1-0.md), which supersedes **Registration** below.
 - **Date:** 2026-11-10
 
 ## Context

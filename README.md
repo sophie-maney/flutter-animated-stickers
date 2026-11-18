@@ -103,6 +103,9 @@ class Hello extends StatelessWidget {
 
 Declare the file as an asset in `pubspec.yaml`, as for any other asset.
 
+The [example](example/lib/main.dart) is a short app with each format, a
+`StickerController` and an atlas grid, and runs as published.
+
 ### From a git checkout
 
 The package on pub.dev carries its native libraries. The repository doesn't
@@ -144,7 +147,11 @@ A `StickerSource` is one of:
 `Sticker` takes `width`, `height`, `fit` (default `BoxFit.contain`),
 `autoplay` (default `true`), `loop` (default `true`), `controller`,
 `placeholder` (shown until the first frame) and `errorBuilder` (shown when
-the sticker can't be played).
+the sticker can't be played). Like Flutter's `ImageErrorWidgetBuilder`, the
+error builder gets the error and its stack trace: the trace where a Dart
+error was thrown (a failing fetcher, a missing asset), or null when the
+native core rejected the sticker (a `StickerException` with a status name
+such as `WT_ERR_LIMIT`).
 
 Control playback with a `StickerController`:
 
@@ -155,7 +162,8 @@ Sticker(
   source: const StickerSource.asset('assets/wave.webm'),
   controller: controller,
   loop: false,
-  errorBuilder: (context, error) => const Icon(Icons.broken_image),
+  errorBuilder: (context, error, stackTrace) =>
+      const Icon(Icons.broken_image),
 );
 
 controller.pause();
@@ -295,6 +303,11 @@ await Stickers.configure(
 );
 ```
 
+Each `configure` call applies the whole `StickerConfig`: a field left out
+gets its default again, not the value of an earlier call. The fetcher
+(`Stickers.fetcher`) is set on its own, and limits only apply to
+`Stickers.probe` (see [Limits](#limits)).
+
 `Stickers.debugTier` and `Stickers.debugActiveCount` are
 `ValueListenable`s for debug overlays and tests.
 
@@ -313,7 +326,7 @@ without decoding.
 - **Inspect and clear**:
 
 ```dart
-final stats = await Stickers.cacheStats(); // fileCount, totalBytes
+final stats = await Stickers.cacheStats(); // StickerCacheStats: fileCount, totalBytes
 await Stickers.clearCache(); // playing stickers carry on
 ```
 

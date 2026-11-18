@@ -13,7 +13,7 @@ A Flutter plugin (Android + iOS) that plays animated stickers inline the way Tel
 | Formats | VP9 WebM (with alpha), VP8 WebM (with alpha), animated WebP, GIF |
 | Density | Inline chat stickers (1–10 on screen) **and** picker grids (30–60+ on screen) |
 | Min OS | Android API 24, iOS 15 |
-| Sources | `file`, `bytes`, `asset` built in; `network` goes through a pluggable `StickerFetcher`. Content is keyed by SHA-1 of the bytes, a caller `key`, or a file path ([ADR 0013](docs/decisions/0013-sources-and-fetcher.md)) |
+| Sources | `file`, `bytes`, `asset` built in; `network` goes through a pluggable `StickerFetcher`, registered with the static `Stickers.fetcher` ([ADR 0029](docs/decisions/0029-owner-decisions-for-1-0.md)). Content is keyed by SHA-1 of the bytes, a caller `key`, or a file path ([ADR 0013](docs/decisions/0013-sources-and-fetcher.md)) |
 | Native libs | Built by CI per ABI with pinned versions, then vendored into the published package with sha256 checks |
 | Low-end devices | Automatic device tiers; the app can override them |
 | Name | Package `animated_stickers`; widget `Sticker`, facade `Stickers`, controller `StickerController`; Android and iOS id `town.leggy.animated_stickers` ([ADR 0028](docs/decisions/0028-package-rename.md)) |
@@ -69,31 +69,31 @@ Platform glue                                 FrameCache (disk: LZ4 YUVA420 fram
   - Apps override this with `StickerConfig(tier:, maxFps:, maxConcurrent:)`. The rules (thresholds, how Low Power Mode and thermal state lower the tier, worker counts) are in [ADR 0018](docs/decisions/0018-device-tiers.md); `Stickers.debugTier` shows the tier in force.
 - **Safety:** input from other users is untrusted.
   - libvpx is built with `--size-limit=1024x1024`, which only the VP9 decoder enforces; every VP8/VP9 keyframe must also have the track's size, checked before libvpx sees it ([ADR 0025](docs/decisions/0025-security-review-hardening.md)).
-  - The core enforces limits (configurable): max dimensions, frame count, duration, file size, and total decode budget.
+  - The core enforces limits: max dimensions, frame count, duration, file size, and total decode budget. Playback always uses the defaults; `Stickers.probe` takes other `StickerLimits` to check a file before showing it ([ADR 0029](docs/decisions/0029-owner-decisions-for-1-0.md)).
   - Malformed input becomes an error state in the widget, never a crash.
   - Demux/decode entry points are fuzzed.
   - The threat model, the review findings and how to report a vulnerability are in [`docs/security.md`](docs/security.md).
 
 ### Dart API (draft)
 ```dart
-await Stickers.configure(StickerConfig(
-  cacheDirectory: ..., diskBudgetBytes: 200 << 20,   // both implemented in T3.2
+// Each call applies the whole config; limits and the fetcher aren't part of it (ADR 0029).
+await Stickers.configure(const StickerConfig(
+  cacheDirectory: ..., diskBudgetBytes: 200 << 20,
   tier: StickerTier.auto, maxFps: null, maxConcurrent: null,
-  limits: StickerLimits(maxDimension: 1024, maxDuration: Duration(seconds: 10), maxBytes: 2 << 20),
-  fetcher: myFetcher, // implements StickerFetcher for StickerSource.network (until `configure` lands: Stickers.fetcher = myFetcher, ADR 0013)
 ));
+Stickers.fetcher = myFetcher;  // implements StickerFetcher for StickerSource.network (static, ADR 0029)
 
 Sticker(
   source: StickerSource.file(path) | .bytes(data, key:) | .asset(name) | .network(url),
   width: 120, height: 120, fit: BoxFit.contain,
   autoplay: true, loop: true, controller: ctrl,          // play/pause/seekToFrame (ADR 0014)
-  placeholder: ..., errorBuilder: (ctx, err) => ...,
+  placeholder: ..., errorBuilder: (ctx, err, stackTrace) => ...,
 );
 
 StickerAtlasScope(child: GridView.builder(...));         // grid mode
-final info = await Stickers.probe(source);           // codec, w, h, fps, frames, duration, hasAlpha, hasAudio
+final info = await Stickers.probe(source, limits: StickerLimits(maxBytes: 1 << 20)); // codec, w, h, fps, frames, duration, hasAlpha, hasAudio; limits are probe-only (ADR 0029)
 await Stickers.clearCache();
-final stats = await Stickers.cacheStats();          // fileCount, totalBytes
+final stats = await Stickers.cacheStats();          // StickerCacheStats: fileCount, totalBytes
 Stickers.debugActiveCount;                           // ValueListenable<int>: widgets animating now
 ```
 
@@ -112,7 +112,9 @@ third_party/
   prebuilt/                # gitignored; filled by tool/fetch_prebuilts.dart from GitHub Releases
 android/                   # Kotlin plugin, JNI bridge, CMake → libanimated_stickers.so (core + prebuilt .a; Dart opens it)
 ios/animated_stickers/      # Package.swift (SwiftPM only); Sources/animated_stickers = Swift, Sources/wt_ios = ObjC++ shim, Sources/wt_core = symlinks to src/ (ADR 0009)
-example/                   # demo: chat list, picker grid, stress test, integration_test/
+example/                   # the published example: a short main.dart and 3 small stickers (ADR 0029)
+example_dev/               # unpublished development app: chat list, picker grid, stress test, integration_test/
+spikes/                    # spike code: alpha/ (host), spike_b/ and spike_c/ (Flutter apps)
 test/                      # Dart unit/widget tests
 native_test/               # GoogleTest host tests, golden frame checksums
 fuzz/                      # libFuzzer targets + seed corpus
@@ -165,11 +167,11 @@ tool/                      # fetch_prebuilts, build_host_deps.sh (host tests), g
 - giflib plus our own frame compositing ([ADR 0023](docs/decisions/0023-gif.md)): a sequential low-level reader (never `DGifSlurp`) behind the same `CanvasDecoder` seam, disposal none/background/previous with a transparent canvas, the transparency index and local palettes, de-interlacing, rects clipped to the screen, delays under 20 ms played as 100 ms, and rect areas counted against `max_total_pixels` (each rect at most `max_dimension`², [ADR 0025](docs/decisions/0025-security-review-hardening.md)). Its 1:1 colour meets the shared bar (50.01 dB measured), but at buckets whose chroma can't resolve pixel-aligned saturated edges the colour bar is GIF-specific (14 dB, measured 15.26).
 
 ### Phase 6: Hardening + pub.dev release
-- Integration tests in `example/`:
+- Integration tests in `example_dev/`:
   - golden screenshots of transparent stickers over a checkerboard on emulator/simulator and Firebase Test Lab real devices
   - `flutter drive --profile` timeline budgets for scrolling a 100-sticker grid
   - memory ceilings
-- Docs, example app, `CHANGELOG`, aggregated `LICENSE`/NOTICE for all bundled libraries, iOS `PrivacyInfo.xcprivacy`, `pana` score, and a `flutter pub publish --dry-run` gate.
+- Docs, a short published example (`example/`) beside the development app (`example_dev/`, [ADR 0029](docs/decisions/0029-owner-decisions-for-1-0.md)), `CHANGELOG`, aggregated `LICENSE`/NOTICE for all bundled libraries, iOS `PrivacyInfo.xcprivacy`, `pana` score, and a `flutter pub publish --dry-run` gate.
 - Release process: tag → CI builds prebuilts → `tool/vendor_prebuilts.dart` fetches (sha256) and vendors them into the archive, checking size limits → pana → `flutter pub publish --dry-run` → publish via pub.dev OIDC behind an approval gate, off by default ([ADR 0024](docs/decisions/0024-publish-pipeline.md)). A scheduled job watches upstream libvpx/libwebp CVEs and opens bump PRs.
 
 ## Key risks
