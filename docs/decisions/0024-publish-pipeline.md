@@ -18,7 +18,7 @@
 
 ## One-time setup (human, at T6.6)
 
-- pub.dev: the package must exist first, so publish `1.0.0` once by hand (`flutter pub publish` from the unpacked archive in the release artifact, with a personal login). Then Admin → Automated publishing → GitHub Actions: repository `sophie-maney/flutter-webm-texture`, tag pattern `v{{version}}`, **Require GitHub Actions environment**: `pub-dev`.
+- pub.dev: the package must exist first, so publish `1.0.0` once by hand (`flutter pub publish` from the unpacked archive in the release artifact, with a personal login). Then Admin → Automated publishing → GitHub Actions: repository `sophie-maney/flutter-animated-stickers`, tag pattern `v{{version}}`, **Require GitHub Actions environment**: `pub-dev`.
 - GitHub: Settings → Environments → create `pub-dev`, add required reviewers, restrict deployment to tags `v*`. Then Settings → Variables → add `PUBLISH_TO_PUB_DEV=true` only when ready.
 - The publish job is untested until then (it needs the pub.dev side); the build job, dry run and pana are exercised locally.
 

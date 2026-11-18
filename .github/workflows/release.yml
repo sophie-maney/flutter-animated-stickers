@@ -104,7 +104,7 @@ jobs:
   publish:
     name: Publish to pub.dev
     needs: build
-    if: vars.PUBLISH_TO_PUB_DEV == 'true' && github.repository == 'sophie-maney/flutter-webm-texture'
+    if: vars.PUBLISH_TO_PUB_DEV == 'true' && github.repository == 'sophie-maney/flutter-animated-stickers'
     runs-on: ubuntu-latest
     environment: pub-dev
     permissions:
