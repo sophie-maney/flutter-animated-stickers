@@ -1,7 +1,9 @@
 // The bundled test corpus, shared by the example pages.
 import 'package:animated_stickers/animated_stickers.dart';
 
-/// Corpus files that play today, with a short label for the UI.
+/// The WebM files the grid pages cycle through. The WebP and GIF files play
+/// too; they stay out of this list because the Stress screenshot goldens
+/// (integration_test/app_test.dart) are recorded with it.
 const playableCorpus = [
   'vp9_alpha_512.webm',
   'vp8_alpha_256.webm',
@@ -11,8 +13,8 @@ const playableCorpus = [
   'vp9_with_audio.webm',
 ];
 
-/// Every corpus file, including the ones the core rejects, for the Probe
-/// page.
+/// Every corpus file for the Probe page: the ones above, a still frame, the
+/// other formats, and the ones the core rejects or reports as truncated.
 const allCorpus = [
   ...playableCorpus,
   'vp9_single_frame.webm',
