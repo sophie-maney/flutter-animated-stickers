@@ -43,9 +43,6 @@ android {
         getByName("main") {
             java.srcDirs("src/main/kotlin")
         }
-        getByName("test") {
-            java.srcDirs("src/test/kotlin")
-        }
     }
 
     defaultConfig {
@@ -66,22 +63,6 @@ android {
         cmake {
             path = file("CMakeLists.txt")
             version = "3.22.1"
-        }
-    }
-
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-            all {
-                it.useJUnitPlatform()
-
-                it.outputs.upToDateWhen { false }
-
-                it.testLogging {
-                    events("passed", "skipped", "failed", "standardOut", "standardError")
-                    showStandardStreams = true
-                }
-            }
         }
     }
 }

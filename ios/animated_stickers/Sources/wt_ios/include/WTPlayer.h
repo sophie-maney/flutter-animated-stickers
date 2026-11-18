@@ -1,9 +1,9 @@
 // WTPlayer: the ObjC++ shim between the Swift texture glue and wt_api.h.
 //
 // It owns one animation on the process-wide scheduler (wt_sched, T3.3) and is
-// that player's wt_sink: the scheduler's workers decode each frame straight
-// into a fresh BGRA CVPixelBuffer from a pool, and the newest complete one is
-// kept for -copyLatestFrame. Everything media related stays in the core; this
+// that player's wt_sink: the scheduler's workers decode each frame, then
+// write it into a fresh BGRA CVPixelBuffer from a pool, and the newest
+// complete one is kept for -copyLatestFrame. Everything media related stays in the core; this
 // file only adapts handles, errors and buffers.
 //
 // Threads:
@@ -120,7 +120,8 @@ NS_SWIFT_NAME(WTPlayer)
 /// Whether the player's own buffers are on screen (T4.2). With NO (its
 /// texture was retired: the animation draws into an atlas, or its atlas was
 /// disposed), a frame meant for its own buffers parks the player instead of
-/// being decoded; YES draws the frame that should be showing. Any thread.
+/// being written (the core keeps it decoded, so at most one frame is decoded
+/// for nothing); YES draws the frame that should be showing. Any thread.
 - (void)setHasTarget:(BOOL)hasTarget;
 
 /// Frees the newest frame and the pool's idle buffers, once nothing shows

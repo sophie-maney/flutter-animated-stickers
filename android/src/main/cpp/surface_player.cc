@@ -120,8 +120,9 @@ wt_status SurfacePlayer::Acquire(void* context, wt_buffer* out) {
 void SurfacePlayer::Release(void* context, wt_status status,
                             const wt_frame_info* /*frame*/) {
   auto* self = static_cast<SurfacePlayer*>(context);
-  // Posted even after a failed decode: a locked buffer can't be cancelled.
-  // The core reports that failure through Error.
+  // Posted even when the frame couldn't be written into it (a buffer of the
+  // wrong size): a locked buffer can't be cancelled. The core reports that
+  // failure through Error. A frame that fails to decode never locks one.
   ANativeWindow_unlockAndPost(self->window_);
   if (status == WT_OK) self->reported_surface_ = false;
   self->window_mu_.unlock();

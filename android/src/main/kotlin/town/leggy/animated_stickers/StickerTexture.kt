@@ -16,10 +16,12 @@ private const val TAG = "AnimatedStickers"
  * created first, off the main thread; [attach] then gives it the producer's
  * surface. While the animation is in an atlas it has no producer of its own
  * ([retireProducer]); leaving the atlas gives it a new one. Every method here
- * runs on the platform main thread, and none of them waits for a decode: the
- * core decodes before it locks the window, so [onSurfaceCleanup] waits for at
- * most one frame being written, and [dispose] destroys the player off the
- * main thread ([ADR 0027](docs/decisions/0027-cancellable-frames.md)).
+ * runs on the platform main thread except [createNative] (a background
+ * thread) and [onNativeError] (a scheduler worker), and none of them waits
+ * for a decode: the core decodes before it locks the window, so
+ * [onSurfaceCleanup] waits for at most one frame being written, and
+ * [dispose] destroys the player off the main thread
+ * ([ADR 0027](docs/decisions/0027-cancellable-frames.md)).
  *
  * Lifecycle rules from spike B ([ADR 0005](docs/decisions/0005-no-ui-image-fallback.md)):
  * the producer uses `SurfaceLifecycle.resetInBackground`; [onSurfaceCleanup]
@@ -78,10 +80,11 @@ internal class StickerTexture(
         producer.setCallback(this)
         // SurfaceTexture-backed producers render nothing under Impeller
         // Vulkan (spike B finding 4); the class name makes that diagnosable.
-        Log.i(
-            TAG,
-            "anim $animId: ${producer.javaClass.simpleName} id=${producer.id()} ${width}x$height",
-        )
+        // Off unless `adb shell setprop log.tag.AnimatedStickers DEBUG`: a grid
+        // would log a line per sticker.
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "anim $animId: ${producer.javaClass.simpleName} id=${producer.id()} ${width}x$height")
+        }
         setSurface()
     }
 
@@ -136,12 +139,12 @@ internal class StickerTexture(
     }
 
     override fun onSurfaceAvailable() {
-        Log.i(TAG, "anim $animId: onSurfaceAvailable")
+        if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "anim $animId: onSurfaceAvailable")
         setSurface()
     }
 
     override fun onSurfaceCleanup() {
-        Log.i(TAG, "anim $animId: onSurfaceCleanup")
+        if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "anim $animId: onSurfaceCleanup")
         // The surface is destroyed after this returns, so the native window
         // must be released synchronously (waits for at most one frame write).
         if (handle != 0L) WtNative.nativeSetSurface(handle, null)

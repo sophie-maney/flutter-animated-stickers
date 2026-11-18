@@ -83,7 +83,7 @@ enum : jsize {
   kOutLength = 4,
 };
 
-// Delivers render-thread errors to listener.onNativeError(String, String).
+// Delivers scheduler-worker errors to listener.onNativeError(String, String).
 class ErrorRelay {
  public:
   ErrorRelay(JNIEnv* env, jobject listener) {

@@ -21,7 +21,6 @@ internal object WtNative {
 
     const val WT_OK = 0
     const val WT_ERR_INVALID_ARGUMENT = -1
-    const val WT_ERR_LIMIT = -6
 
     /**
      * Creates the decoder for [bytes] or [path] at [width] x [height] (0 x 0
@@ -79,8 +78,10 @@ internal object WtNative {
     @JvmStatic external fun nativeSeek(handle: Long, frame: Int): Int
 
     /**
-     * Takes the animation off the scheduler and frees everything; waits for a
-     * frame in flight. Main thread.
+     * Takes the animation off the scheduler and frees everything; cancels a
+     * frame in flight and waits for it to stop. Background thread: the caller
+     * releases the window (`nativeSetSurface(handle, null)`) and leaves any
+     * atlas on the main thread first (ADR 0027).
      */
     @JvmStatic external fun nativeDestroy(handle: Long)
 
@@ -139,7 +140,10 @@ internal object WtNative {
     /** Moves the animation back to its own surface. Returns a `wt_status`. Main thread. */
     @JvmStatic external fun nativeAtlasDetach(atlas: Long, anim: Long): Int
 
-    /** The page whose current surface shows [anim]'s slot, or -1 (`wt_atlas_shown_page`). */
+    /**
+     * The page whose current surface shows [anim]'s slot, or -1
+     * (`wt_atlas_shown_page`). Main thread.
+     */
     @JvmStatic external fun nativeAtlasShownPage(atlas: Long, anim: Long): Int
 
     /** Pages the atlas has created so far. Main thread. */
