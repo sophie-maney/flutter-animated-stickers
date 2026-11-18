@@ -111,6 +111,34 @@ class AtlasTest : public ::testing::Test {
   wt_status Detach(wt::Player* p) {
     return wt_atlas_detach(atlas_, reinterpret_cast<wt_player*>(p));
   }
+  // What happened on one page over `duration`.
+  struct Window {
+    double seconds = 0;
+    int presents = 0;      // Presents into `target`.
+    uint64_t drawn = 0;    // Frames the players drew into their slots.
+    uint64_t skipped = 0;  // Frames skipped to keep the content's time.
+  };
+  Window Measure(std::chrono::milliseconds duration, const FakeTarget& target) {
+    const auto drawn = [this] {
+      uint64_t n = 0;
+      for (const auto& log : logs_) n += log->draws;
+      return n;
+    };
+    Window w;
+    const int presents = target.presents();
+    const uint64_t drawn_before = drawn();
+    const uint64_t skipped = impl_->Stats().frames_skipped;
+    const auto start = std::chrono::steady_clock::now();
+    std::this_thread::sleep_for(duration);
+    w.seconds =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - start)
+            .count();
+    w.presents = target.presents() - presents;
+    w.drawn = drawn() - drawn_before;
+    w.skipped = impl_->Stats().frames_skipped - skipped;
+    return w;
+  }
+
   wt_atlas_page_info Page(uint32_t i) {
     wt_atlas_page_info info;
     EXPECT_EQ(wt_atlas_get_page(atlas_, i, &info), WT_OK);
@@ -548,6 +576,7 @@ TEST_F(AtlasTest, PresentsAtMostOncePerTick) {
   FakeTarget& target = Target(512, info.wanted_height);
   const wt_atlas_target t = target.target();
   ASSERT_EQ(wt_atlas_set_target(atlas_, 0, &t, info.wanted_height), WT_OK);
+  const uint64_t ticks = impl_->Stats().ticks;
   const auto start = std::chrono::steady_clock::now();
   for (wt::Player* p : ps) {
     wt_player_set_active(reinterpret_cast<wt_player*>(p), true);
@@ -557,9 +586,13 @@ TEST_F(AtlasTest, PresentsAtMostOncePerTick) {
   const double elapsed =
       std::chrono::duration<double>(std::chrono::steady_clock::now() - start)
           .count();
+  const uint64_t played = impl_->Stats().ticks - ticks;
   // The checker enforces the gap; here the total, plus one for the target.
   EXPECT_LE(target.presents(), static_cast<int>(elapsed * kFps) + 2);
-  EXPECT_GE(target.presents(), static_cast<int>(elapsed * kFps / 2));
+  // It presents: about once per tick that played frames. Counted against the
+  // ticks rather than the wall clock, because a loaded machine runs fewer.
+  ASSERT_GE(played, 5u);
+  EXPECT_GE(target.presents(), static_cast<int>(played / 2));
 }
 
 // ADR 0021: players of one page that start at different times still land
@@ -597,25 +630,21 @@ TEST_F(AtlasTest, PagePresentsAtTheContentRate) {
   }
   // Let the activations settle, then count.
   std::this_thread::sleep_for(milliseconds(200));
-  const int presents = target.presents();
-  uint64_t drawn = 0;
-  for (const auto& log : logs_) drawn += log->draws;
-  const auto start = std::chrono::steady_clock::now();
-  std::this_thread::sleep_for(milliseconds(1500));
-  const double elapsed =
-      std::chrono::duration<double>(std::chrono::steady_clock::now() - start)
-          .count();
-  const int counted = target.presents() - presents;
-  uint64_t drawn_after = 0;
-  for (const auto& log : logs_) drawn_after += log->draws;
+  const Window window = Measure(milliseconds(1500), target);
+  const double per_player = window.drawn / static_cast<double>(ps.size());
   // At most the content rate (plus timer slack); without beats it is about
   // the scheduler's 60.
-  EXPECT_LE(counted, static_cast<int>(elapsed * 30 * 1.1) + 3);
-  // Loaded CI machines wake late and skip frames; the point is the ceiling.
-  EXPECT_GE(counted, static_cast<int>(elapsed * 30 * 0.5));
-  // The players kept the content's pace: about 30 frames a second each.
-  EXPECT_GE(drawn_after - drawn,
-            static_cast<uint64_t>(elapsed * 30 * 0.5 * ps.size()));
+  EXPECT_LE(window.presents, static_cast<int>(window.seconds * 30 * 1.1) + 3);
+  // One present per frame of the content, however many players drew one:
+  // without beats it is about two, one per scheduler tick. Counted against
+  // the frames drawn rather than the wall clock, because a loaded machine
+  // wakes late, skips frames and so presents less.
+  EXPECT_LE(window.presents, static_cast<int>(per_player * 1.25) + 2);
+  EXPECT_GE(window.presents, static_cast<int>(per_player * 0.5));
+  // The players kept the content's pace, about 30 frames a second each,
+  // counting the frames skipped to keep it.
+  EXPECT_GE(window.drawn + window.skipped,
+            static_cast<uint64_t>(window.seconds * 30 * 0.75 * ps.size()));
 }
 
 // A page's beat is its fastest member's shortest frame: a 25-fps player
@@ -638,15 +667,28 @@ TEST_F(AtlasTest, MixedRatesShareTheFastestBeat) {
     std::this_thread::sleep_for(milliseconds(9));
   }
   std::this_thread::sleep_for(milliseconds(200));
-  const int presents = target.presents();
-  const auto start = std::chrono::steady_clock::now();
-  std::this_thread::sleep_for(milliseconds(1500));
-  const double elapsed =
-      std::chrono::duration<double>(std::chrono::steady_clock::now() - start)
-          .count();
-  const int counted = target.presents() - presents;
-  EXPECT_LE(counted, static_cast<int>(elapsed * 1000 / 33 * 1.1) + 3);
-  EXPECT_GE(counted, static_cast<int>(elapsed * 1000 / 33 * 0.5));
+  std::vector<uint32_t> fast_before;
+  for (size_t i = 0; i < ps.size(); i += 2) {
+    fast_before.push_back(logs_[i]->draws.load());
+  }
+  const Window window = Measure(milliseconds(1500), target);
+  // Frames drawn by each 30-fps player, on average.
+  double fast = 0;
+  for (size_t i = 0; i < ps.size(); i += 2) {
+    fast += logs_[i]->draws.load() - fast_before[i / 2];
+  }
+  fast /= static_cast<double>(fast_before.size());
+  EXPECT_LE(window.presents,
+            static_cast<int>(window.seconds * 1000 / 33 * 1.1) + 3);
+  // One present per frame of the 30-fps players: if the 25-fps ones kept
+  // beats of their own, it would be nearly two. Counted against the frames
+  // drawn rather than the wall clock, as above.
+  EXPECT_LE(window.presents, static_cast<int>(fast * 1.25) + 2);
+  EXPECT_GE(window.presents, static_cast<int>(fast * 0.5));
+  // Every player kept its content's pace, counting skipped frames.
+  const double content = window.seconds * (4 * 1000.0 / 33 + 4 * 1000.0 / 40);
+  EXPECT_GE(window.drawn + window.skipped,
+            static_cast<uint64_t>(content * 0.75));
 }
 
 TEST_F(AtlasTest, ShownPageWaitsForAPresentIntoTheCurrentTarget) {
