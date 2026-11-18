@@ -3,7 +3,7 @@
 // toggles, create/dispose cycles, and (T2.9) non-looping playback and seeks,
 // checked by comparing screenshots with frames decoded over FFI. Run with:
 //
-//   cd example && fvm flutter test integration_test/texture_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/texture_test.dart -d <device>
 // ignore_for_file: implementation_imports
 import 'dart:convert';
 import 'dart:ffi';

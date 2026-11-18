@@ -3,7 +3,7 @@
 // launch (and a chance of the simulator failing to start the app). Run one
 // file on its own while developing:
 //
-//   cd example && fvm flutter test integration_test/app_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/app_test.dart -d <device>
 import 'package:integration_test/integration_test.dart';
 
 import 'app_test.dart' as app;

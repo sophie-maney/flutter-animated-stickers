@@ -1,5 +1,5 @@
 // Structural checks on the native build wiring that CI can run without a
-// device: the iOS symlinks cover src/, and the example bundles the
+// device: the iOS symlinks cover src/, and the development app bundles the
 // corpus that integration_test/probe_test.dart probes.
 @TestOn('vm')
 library;
@@ -38,21 +38,21 @@ void main() {
     );
   });
 
-  test('the example bundles every corpus file', () {
+  test('the development app bundles every corpus file', () {
     final manifest = jsonDecode(
       File('test_assets/manifest.json').readAsStringSync(),
     ) as Map<String, dynamic>;
     final names = [
       for (final f in (manifest['files'] as List)) (f as Map)['name'] as String,
     ];
-    final pubspec = File('example/pubspec.yaml').readAsStringSync();
+    final pubspec = File('example_dev/pubspec.yaml').readAsStringSync();
     for (final name in ['manifest.json', ...names]) {
       expect(
         pubspec,
         contains('- test_assets/$name'),
-        reason: 'add test_assets/$name to example/pubspec.yaml assets',
+        reason: 'add test_assets/$name to example_dev/pubspec.yaml assets',
       );
     }
-    expect(Link('example/test_assets').targetSync(), '../test_assets');
+    expect(Link('example_dev/test_assets').targetSync(), '../test_assets');
   });
 }

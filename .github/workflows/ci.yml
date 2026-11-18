@@ -43,13 +43,16 @@ jobs:
       - name: Install pinned Flutter
         run: fvm install
 
+      # Also resolves example/, the published example.
       - run: fvm flutter pub get
-      # Spike B app (T0.8) is a separate Flutter app; analyze needs its deps.
+      # The development app, and the Spike B (T0.8) and C (T0.9) apps, are
+      # separate Flutter apps; analyze needs their deps.
       - run: fvm flutter pub get
-        working-directory: example/spike_b
-      # Spike C app (T0.9), same reason.
+        working-directory: example_dev
       - run: fvm flutter pub get
-        working-directory: example/spike_c
+        working-directory: spikes/spike_b
+      - run: fvm flutter pub get
+        working-directory: spikes/spike_c
       - run: fvm dart format --set-exit-if-changed .
       - run: fvm flutter analyze
       - run: fvm flutter test
@@ -170,6 +173,8 @@ jobs:
         run: ctest --test-dir build/tsan -R 'Sched|Timeline|SkipFrame|SanitizerTest|Atlas' --output-on-failure
 
   android:
+    # The published example (example/). The development app (example_dev/)
+    # is built by the integration jobs.
     name: Example APK (debug)
     needs: check
     runs-on: ubuntu-latest
@@ -216,6 +221,7 @@ jobs:
         working-directory: example
         run: fvm flutter build apk --debug
 
+  # The published example, like the android job.
   ios:
     name: Example iOS simulator build (debug)
     needs: check
@@ -256,10 +262,10 @@ jobs:
         working-directory: animated_stickers/example
         run: fvm flutter build ios --simulator --debug --no-codesign
 
-  # Screenshot goldens in example/integration_test/goldens/ were recorded on a
+  # Screenshot goldens in example_dev/integration_test/goldens/ were recorded on a
   # 1080x2400 Pixel 6 profile (Android) and an iPhone 17 simulator (iOS); keep
   # the devices below in sync, or the golden size check fails. Re-record with
-  # the command at the top of example/integration_test/app_test.dart.
+  # the command at the top of example_dev/integration_test/app_test.dart.
   integration-android:
     name: Integration tests (Android emulator)
     timeout-minutes: 30
@@ -319,7 +325,7 @@ jobs:
           target: google_apis
           profile: pixel_6
           disable-animations: true
-          working-directory: example
+          working-directory: example_dev
           script: fvm flutter test integration_test/all_test.dart -d emulator-5554
 
   integration-ios:
@@ -367,7 +373,7 @@ jobs:
           echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
 
       - name: Run integration tests
-        working-directory: animated_stickers/example
+        working-directory: animated_stickers/example_dev
         timeout-minutes: 30
         # One app launch for every test (all_test.dart); the script retries
         # the flaky simulator launches (see its header).

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs one integration test file on a device for CI, with retries.
 #
-#   tool/run_integration_ci.sh <device-id> <test file>   (from example/)
+#   tool/run_integration_ci.sh <device-id> <test file>   (from example_dev/)
 #
 # On GitHub's macOS runners the iOS simulator sometimes never starts the app,
 # fails to start the Dart Development Service, or leaves `flutter test` hanging

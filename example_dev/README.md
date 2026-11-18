@@ -1,9 +1,11 @@
-# animated_stickers_example
+# animated_stickers_dev
 
-Demo app for the `animated_stickers` plugin. Run it with `fvm flutter run` from this
-directory of a clone of the repository: the stickers come from the test corpus
-through the `test_assets/` symlink, which the published package doesn't
-include.
+The development app of the `animated_stickers` plugin: demo pages, and the
+integration tests and screenshot goldens in `integration_test/` (see the
+Integration tests row in `AGENTS.md`). It isn't published; the package's
+short example is in `../example`. Run it with `fvm flutter run` from this
+directory of a clone of the repository: the stickers come from the test
+corpus through the `test_assets/` symlink.
 
 | Page | What it shows |
 |---|---|

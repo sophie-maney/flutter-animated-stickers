@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: implementation_imports
 import 'package:animated_stickers/src/gen/messages.g.dart';
-import 'package:animated_stickers_example/main.dart';
-import 'package:animated_stickers_example/texture_demo.dart';
+import 'package:animated_stickers_dev/main.dart';
+import 'package:animated_stickers_dev/texture_demo.dart';
 
 const _prefix = 'dev.flutter.pigeon.animated_stickers.StickersHostApi';
 

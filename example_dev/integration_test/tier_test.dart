@@ -3,7 +3,7 @@
 // itself can't be toggled from a test: check it by hand (see
 // docs/decisions/0018-device-tiers.md). Run with:
 //
-//   cd example && fvm flutter test integration_test/tier_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/tier_test.dart -d <device>
 import 'dart:io';
 
 import 'package:flutter/services.dart';

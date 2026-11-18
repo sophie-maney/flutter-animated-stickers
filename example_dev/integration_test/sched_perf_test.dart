@@ -12,7 +12,7 @@
 //   while all are paused (TickerMode off), when it must be about the
 //   baseline.
 //
-//   cd example && fvm flutter test integration_test/sched_perf_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/sched_perf_test.dart -d <device>
 //
 // On Android add `--no-dds`: with DDS the app can't reach its own VM service
 // to record the timeline. flutter_tools then reports a loading error
@@ -29,7 +29,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers/animated_stickers.dart';
-import 'package:animated_stickers_example/stress_page.dart';
+import 'package:animated_stickers_dev/stress_page.dart';
 
 import 'perf_util.dart';
 

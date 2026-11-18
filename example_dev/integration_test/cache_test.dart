@@ -4,7 +4,7 @@
 // recently used file, a file over a quarter of the budget isn't written
 // (T6.1, ADR 0026), and clearCache() empties the directory. Run with:
 //
-//   cd example && fvm flutter test integration_test/cache_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/cache_test.dart -d <device>
 import 'dart:io';
 
 import 'package:flutter/services.dart';

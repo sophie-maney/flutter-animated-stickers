@@ -1,8 +1,7 @@
-name: animated_stickers_example
-description: "Demonstrates how to use the animated_stickers plugin."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+name: animated_stickers_dev
+description: "The development app of the animated_stickers plugin: demo pages and integration tests."
+# Never published: the root .pubignore leaves example_dev/ out of the package.
+publish_to: 'none'
 
 environment:
   sdk: ^3.13.4
@@ -18,11 +17,6 @@ dependencies:
     sdk: flutter
 
   animated_stickers:
-    # When depending on this package from a real application you should use:
-    #   animated_stickers: ^x.y.z
-    # See https://dart.dev/tools/pub/dependencies#version-constraints
-    # The example app is bundled with the plugin so we use a path dependency on
-    # the parent directory to use the current plugin's version.
     path: ../
 
   # The following adds the Cupertino Icons font to your application.

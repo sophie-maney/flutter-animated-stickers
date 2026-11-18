@@ -1,12 +1,12 @@
 // T2.5: in a 200-item list of Stickers, only the rows on screen report
 // active, as counted by the page's debug overlay. Run with:
 //
-//   cd example && fvm flutter test integration_test/visibility_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/visibility_test.dart -d <device>
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers/animated_stickers.dart';
-import 'package:animated_stickers_example/visibility_demo.dart';
+import 'package:animated_stickers_dev/visibility_demo.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

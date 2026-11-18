@@ -21,7 +21,7 @@
 //   on emulators that detect as low tier (15 fps).
 // - The whole app's CPU (getrusage), and the pages' memory.
 //
-//   cd example && fvm flutter test integration_test/atlas_perf_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/atlas_perf_test.dart -d <device>
 //
 // On Android add `--no-dds` (see sched_perf_test.dart): the app records the
 // timeline through its own VM service.
@@ -43,7 +43,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers/src/gen/messages.g.dart';
 import 'package:animated_stickers/src/sticker_atlas_scope.dart';
 import 'package:animated_stickers/animated_stickers.dart';
-import 'package:animated_stickers_example/stress_page.dart';
+import 'package:animated_stickers_dev/stress_page.dart';
 
 import 'perf_util.dart';
 

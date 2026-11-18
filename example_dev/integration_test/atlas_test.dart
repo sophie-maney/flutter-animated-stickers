@@ -3,7 +3,7 @@
 // animations join, switching every animation to a texture of its own and
 // back, and a slot showing exactly the decoded frame at 1:1. Run with:
 //
-//   cd example && fvm flutter test integration_test/atlas_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/atlas_test.dart -d <device>
 // ignore_for_file: implementation_imports
 import 'dart:convert';
 import 'dart:ffi';
@@ -18,7 +18,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers/src/gen/messages.g.dart';
 import 'package:animated_stickers/src/gen/wt_bindings.g.dart';
 import 'package:animated_stickers/src/native_library.dart';
-import 'package:animated_stickers_example/atlas_demo.dart';
+import 'package:animated_stickers_dev/atlas_demo.dart';
 
 import 'screenshots.dart';
 

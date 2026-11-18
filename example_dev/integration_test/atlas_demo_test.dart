@@ -2,7 +2,7 @@
 // page texture, and every one of them moves to a texture of its own and
 // back. Run with:
 //
-//   cd example && fvm flutter test integration_test/atlas_demo_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/atlas_demo_test.dart -d <device>
 //
 // With --dart-define=DUMP_SCREENSHOT=true it also prints a screenshot of the
 // page, base64 on lines starting with `ATLAS_PNG `, for the PR (decode with
@@ -12,7 +12,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:animated_stickers_example/atlas_demo.dart';
+import 'package:animated_stickers_dev/atlas_demo.dart';
 
 import 'screenshots.dart';
 

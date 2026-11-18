@@ -1,7 +1,7 @@
 // Probes every file of the test corpus through dart:ffi on a real device or
 // emulator (T1.8). Run with:
 //
-//   cd example && fvm flutter test integration_test/probe_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/probe_test.dart -d <device>
 import 'dart:convert';
 import 'dart:io';
 

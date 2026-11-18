@@ -11,7 +11,7 @@
 // - Playback advances on screen, holds when paused, and holds while the
 //   sticker is scrolled off screen or the app is backgrounded.
 //
-//   cd example && fvm flutter test integration_test/app_test.dart -d <device>
+//   cd example_dev && fvm flutter test integration_test/app_test.dart -d <device>
 //
 // Goldens live in `integration_test/goldens/<platform>/` and are bundled as
 // assets. To (re)record them, run with `--dart-define=UPDATE_GOLDENS=true`
@@ -31,10 +31,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers/src/sticker_atlas_scope.dart';
 import 'package:animated_stickers/animated_stickers.dart';
-import 'package:animated_stickers_example/checkerboard_page.dart';
-import 'package:animated_stickers_example/corpus.dart';
-import 'package:animated_stickers_example/main.dart';
-import 'package:animated_stickers_example/stress_page.dart';
+import 'package:animated_stickers_dev/checkerboard_page.dart';
+import 'package:animated_stickers_dev/corpus.dart';
+import 'package:animated_stickers_dev/main.dart';
+import 'package:animated_stickers_dev/stress_page.dart';
 
 import 'screenshots.dart';
 

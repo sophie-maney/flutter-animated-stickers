@@ -4,7 +4,7 @@
 //   tool/build_host_deps.sh && tool/build_host_ffi_lib.sh
 //   ANIMATED_STICKERS_LIB=build/ffi/src/libanimated_stickers.dylib fvm flutter test test/probe_test.dart
 //
-// The same expectations run on devices in example/integration_test/.
+// The same expectations run on devices in example_dev/integration_test/.
 @TestOn('vm')
 library;
 
@@ -15,7 +15,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 
-import '../example/integration_test/corpus_expectations.dart';
+import '../example_dev/integration_test/corpus_expectations.dart';
 
 void main() {
   final lib = Platform.environment['ANIMATED_STICKERS_LIB'];
