@@ -10,6 +10,9 @@ import 'sticker_config.dart';
 ///
 /// With [auto] the plugin picks one from the device and lowers it while the
 /// device is under pressure. Any other value is used as given.
+///
+/// Minor releases may add values (a tier between two others, say), so a
+/// `switch` over it in an app needs a default case.
 enum StickerTier {
   /// Detect the tier from the device and its current state.
   auto,

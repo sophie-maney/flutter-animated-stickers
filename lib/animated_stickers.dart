@@ -11,7 +11,7 @@ import 'src/sticker_source.dart';
 export 'src/sticker.dart'
     show Sticker, StickerController, StickerErrorWidgetBuilder;
 export 'src/sticker_atlas_scope.dart' show StickerAtlasScope;
-export 'src/sticker_cache.dart' show CacheStats;
+export 'src/sticker_cache.dart' show StickerCacheStats;
 export 'src/sticker_config.dart' show StickerConfig;
 export 'src/sticker_info.dart'
     show
@@ -64,22 +64,11 @@ abstract final class Stickers {
   /// or a negative [StickerConfig.maxConcurrent]. A relative
   /// [StickerConfig.cacheDirectory] fails with a `PlatformException`.
   static Future<void> configure(StickerConfig config) async {
-    // StickerConfig asserts these, but release builds drop asserts, and the
-    // platform would refuse the scheduler options without a word.
-    RangeError.checkNotNegative(config.diskBudgetBytes, 'diskBudgetBytes');
-    final maxFps = config.maxFps;
-    if (maxFps != null) {
-      RangeError.checkValueInInterval(maxFps, 1, 240, 'maxFps');
-    }
-    final maxConcurrent = config.maxConcurrent;
-    if (maxConcurrent != null) {
-      RangeError.checkValueInInterval(
-        maxConcurrent,
-        0,
-        0x7fffffff,
-        'maxConcurrent',
-      );
-    }
+    checkStickerConfigValues(
+      diskBudgetBytes: config.diskBudgetBytes,
+      maxFps: config.maxFps,
+      maxConcurrent: config.maxConcurrent,
+    );
     final runtime = StickerRuntime.instance;
     await Future.wait([
       runtime.cache.configure(config),
@@ -99,7 +88,7 @@ abstract final class Stickers {
   /// How many animations the frame cache holds and how much disk they use.
   ///
   /// Runs on a background isolate, so it is safe to call from the UI isolate.
-  static Future<CacheStats> cacheStats() =>
+  static Future<StickerCacheStats> cacheStats() =>
       StickerRuntime.instance.cache.stats();
 
   /// Deletes every cached frame file. Stickers that are playing carry on, and

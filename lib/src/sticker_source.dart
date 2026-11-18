@@ -102,6 +102,7 @@ final class AssetStickerSource extends StickerSource {
   final String? package;
 
   /// The key to load from the bundle, with the `packages/` prefix if needed.
+  @internal
   String get assetKey => package == null ? name : 'packages/$package/$name';
 
   @override

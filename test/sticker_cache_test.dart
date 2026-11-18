@@ -23,14 +23,17 @@ class FakeNative implements CacheNative {
   final List<(String, int)> applied = [];
   final List<String> cleared = [];
   final List<String> statted = [];
-  CacheStats result = const CacheStats(fileCount: 3, totalBytes: 1234);
+  StickerCacheStats result = const StickerCacheStats(
+    fileCount: 3,
+    totalBytes: 1234,
+  );
 
   @override
   Future<void> applyBudget(String directory, int budgetBytes) async =>
       applied.add((directory, budgetBytes));
 
   @override
-  Future<CacheStats> stats(String directory) async {
+  Future<StickerCacheStats> stats(String directory) async {
     statted.add(directory);
     return result;
   }
@@ -75,7 +78,7 @@ void main() {
       await cache.configure(const StickerConfig(cacheDirectory: '/elsewhere'));
       expect(
         await cache.stats(),
-        const CacheStats(fileCount: 3, totalBytes: 1234),
+        const StickerCacheStats(fileCount: 3, totalBytes: 1234),
       );
       await cache.clear();
       expect(native.statted, ['/elsewhere']);
@@ -121,14 +124,14 @@ void main() {
       expect(native.cleared, ['/x']);
     });
 
-    test('CacheStats compares by value', () {
+    test('StickerCacheStats compares by value', () {
       expect(
-        const CacheStats(fileCount: 1, totalBytes: 2),
-        const CacheStats(fileCount: 1, totalBytes: 2),
+        const StickerCacheStats(fileCount: 1, totalBytes: 2),
+        const StickerCacheStats(fileCount: 1, totalBytes: 2),
       );
       expect(
-        const CacheStats(fileCount: 1, totalBytes: 2),
-        isNot(const CacheStats(fileCount: 1, totalBytes: 3)),
+        const StickerCacheStats(fileCount: 1, totalBytes: 2),
+        isNot(const StickerCacheStats(fileCount: 1, totalBytes: 3)),
       );
     });
   });
@@ -167,7 +170,7 @@ void main() {
       make('notes.txt', 999, 0);
       expect(
         await cache.stats(),
-        const CacheStats(fileCount: 2, totalBytes: 150),
+        const StickerCacheStats(fileCount: 2, totalBytes: 150),
       );
     });
 
@@ -200,7 +203,7 @@ void main() {
       expect(names(), ['keep.txt']);
       expect(
         await cache.stats(),
-        const CacheStats(fileCount: 0, totalBytes: 0),
+        const StickerCacheStats(fileCount: 0, totalBytes: 0),
       );
     });
 
@@ -209,7 +212,7 @@ void main() {
       await cache.configure(StickerConfig(cacheDirectory: gone));
       expect(
         await cache.stats(),
-        const CacheStats(fileCount: 0, totalBytes: 0),
+        const StickerCacheStats(fileCount: 0, totalBytes: 0),
       );
       await cache.clear();
     });

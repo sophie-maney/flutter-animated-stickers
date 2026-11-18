@@ -1,0 +1,71 @@
+name: animated_stickers_dev
+description: "The development app of the animated_stickers plugin: demo pages and integration tests."
+# Never published: the root .pubignore leaves example_dev/ out of the package.
+publish_to: 'none'
+
+environment:
+  sdk: ^3.13.4
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  animated_stickers:
+    path: ../
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  # Already a dependency of the plugin; texture_test.dart decodes reference
+  # frames over FFI with it.
+  ffi: ^2.2.0
+  integration_test:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    # The corpus for integration_test/probe_test.dart, through the symlink to
+    # ../test_assets (no reference frames; they are host-test only).
+    - test_assets/manifest.json
+    - test_assets/vp9_alpha_512.webm
+    - test_assets/vp9_opaque_256.webm
+    - test_assets/vp8_alpha_256.webm
+    - test_assets/vp9_alpha_vfr.webm
+    - test_assets/vp9_odd_301x199.webm
+    - test_assets/vp9_single_frame.webm
+    - test_assets/vp9_with_audio.webm
+    - test_assets/vp9_2048.webm
+    - test_assets/truncated.webm
+    - test_assets/garbage.bin
+    - test_assets/anim.webp
+    - test_assets/anim_disposal.gif
+    # Screenshot goldens for integration_test/app_test.dart.
+    - integration_test/goldens/android/
+    - integration_test/goldens/ios/

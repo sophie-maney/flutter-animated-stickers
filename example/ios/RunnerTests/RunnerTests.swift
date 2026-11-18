@@ -1,5 +1,6 @@
 import XCTest
 
-// The plugin has no host-side unit tests: its behaviour is covered by the
-// integration tests in example/integration_test.
+// The example has no unit tests of its own: the plugin's behaviour is
+// covered by the development app's integration tests (example_dev/ in the
+// repository).
 class RunnerTests: XCTestCase {}

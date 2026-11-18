@@ -1,9 +1,9 @@
 // Rebuilds golden PNGs from `GOLDEN <platform>/<name> <i>/<n> <base64>` lines
-// on stdin (printed by example/integration_test/app_test.dart when run with
+// on stdin (printed by example_dev/integration_test/app_test.dart when run with
 // `--dart-define=UPDATE_GOLDENS=true`, or when a golden check fails) and writes
-// them under example/integration_test/goldens/.
+// them under example_dev/integration_test/goldens/.
 //
-//   cd example && fvm flutter test integration_test/app_test.dart -d <device> \
+//   cd example_dev && fvm flutter test integration_test/app_test.dart -d <device> \
 //     --dart-define=UPDATE_GOLDENS=true | fvm dart run ../tool/extract_goldens.dart
 import 'dart:convert';
 import 'dart:io';
@@ -22,7 +22,9 @@ void main() {
   }
   final root = Directory('integration_test/goldens');
   if (!root.existsSync()) {
-    stderr.writeln('run from example/ (integration_test/goldens not found)');
+    stderr.writeln(
+      'run from example_dev/ (integration_test/goldens not found)',
+    );
     exit(2);
   }
   var failed = false;

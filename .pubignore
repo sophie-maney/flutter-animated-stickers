@@ -48,11 +48,9 @@ build/
 /third_party/build/
 /third_party/test-deps.lock
 /tool/
-/example/spike_b/
-/example/spike_c/
-/example/integration_test/
-/example/test/
-/example/test_assets
+# The development app: demo pages, integration tests, goldens and the corpus
+# symlink. The published example is example/ (ADR 0029).
+/example_dev/
 /example/pubspec.lock
 /test/
 /pigeons/

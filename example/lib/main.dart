@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
+// A short tour of animated_stickers: one sticker, a sticker driven by a
+// StickerController, and a grid drawn through a StickerAtlasScope.
+//
+// The three stickers ship in assets/ (declared in pubspec.yaml): a VP9 WebM
+// with alpha, an animated WebP and a GIF.
 import 'package:animated_stickers/animated_stickers.dart';
+import 'package:flutter/material.dart';
 
-import 'atlas_demo.dart';
-import 'checkerboard_page.dart';
-import 'chat_page.dart';
-import 'probe_page.dart';
-import 'stress_page.dart';
-import 'texture_demo.dart';
-import 'visibility_demo.dart';
+const _webm = StickerSource.asset('assets/vp9_alpha_512.webm');
+const _webp = StickerSource.asset('assets/anim.webp');
+const _gif = StickerSource.asset('assets/anim_disposal.gif');
 
 void main() {
   runApp(const ExampleApp());
@@ -20,107 +21,139 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'animated_stickers',
     theme: ThemeData(colorSchemeSeed: Colors.indigo),
-    home: const _HomePage(),
+    home: const HomePage(),
   );
 }
 
-class _Entry {
-  const _Entry(this.key, this.title, this.subtitle, this.builder);
-
-  final String key;
-  final String title;
-  final String subtitle;
-  final WidgetBuilder builder;
-}
-
-final _entries = [
-  _Entry(
-    'openChat',
-    'Chat',
-    'Stickers mixed with text',
-    (_) => const ChatPage(),
-  ),
-  _Entry(
-    'openCheckerboard',
-    'Checkerboard',
-    'Alpha correctness over a checker pattern',
-    (_) => const CheckerboardPage(),
-  ),
-  _Entry(
-    'openStress',
-    'Stress',
-    '200 stickers in a grid, atlas or standalone',
-    (_) => const StressPage(),
-  ),
-  _Entry(
-    'openProbe',
-    'Probe',
-    'File info without decoding',
-    (_) => const ProbePage(),
-  ),
-  _Entry(
-    'openTextures',
-    'Textures (dev)',
-    'Raw platform texture glue',
-    (_) => const TextureDemoPage(),
-  ),
-  _Entry(
-    'openAtlas',
-    'Atlas (dev)',
-    '64 stickers through atlas page textures',
-    (_) => const AtlasDemoPage(),
-  ),
-  _Entry(
-    'openVisibility',
-    'Visibility (dev)',
-    '200-row list with an active counter',
-    (_) => const VisibilityDemoPage(),
-  ),
-];
-
-class _HomePage extends StatefulWidget {
-  const _HomePage();
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<_HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<_HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    // Reads the device and applies its tier; the label below follows Low
-    // Power Mode and thermal changes.
-    Stickers.configure(const StickerConfig());
-  }
+class _HomePageState extends State<HomePage> {
+  int _page = 0;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('animated_stickers'),
-      actions: [
-        ValueListenableBuilder<StickerTier>(
-          valueListenable: Stickers.debugTier,
-          builder: (_, tier, _) => Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Text('tier ${tier.name}', key: const Key('tierLabel')),
+    appBar: AppBar(title: const Text('animated_stickers')),
+    body: switch (_page) {
+      0 => const QuickStartPage(),
+      1 => const ControllerPage(),
+      _ => const AtlasGridPage(),
+    },
+    bottomNavigationBar: NavigationBar(
+      selectedIndex: _page,
+      onDestinationSelected: (page) => setState(() => _page = page),
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.play_circle), label: 'Sticker'),
+        NavigationDestination(icon: Icon(Icons.tune), label: 'Controller'),
+        NavigationDestination(icon: Icon(Icons.grid_view), label: 'Atlas'),
+      ],
+    ),
+  );
+}
+
+/// Each format in a plain [Sticker]: it loops while it is on screen.
+class QuickStartPage extends StatelessWidget {
+  const QuickStartPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Center(
+    child: Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: WrapAlignment.center,
+      children: [
+        Sticker(source: _webm, width: 160, height: 160),
+        Sticker(source: _webp, width: 160, height: 160),
+        Sticker(source: _gif, width: 160, height: 160),
+      ],
+    ),
+  );
+}
+
+/// A non-looping sticker on a [StickerController], with an error builder.
+class ControllerPage extends StatefulWidget {
+  const ControllerPage({super.key});
+
+  @override
+  State<ControllerPage> createState() => _ControllerPageState();
+}
+
+class _ControllerPageState extends State<ControllerPage> {
+  final _controller = StickerController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Sticker(
+          source: _webm,
+          width: 240,
+          height: 240,
+          controller: _controller,
+          loop: false,
+          placeholder: const Center(child: CircularProgressIndicator()),
+          errorBuilder: (context, error, stackTrace) =>
+              Center(child: Text('Can\'t play this sticker: $error')),
+        ),
+        const SizedBox(height: 16),
+        ListenableBuilder(
+          listenable: _controller,
+          builder: (context, _) => Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton.filled(
+                tooltip: _controller.isPlaying ? 'Pause' : 'Play',
+                icon: Icon(
+                  _controller.isPlaying ? Icons.pause : Icons.play_arrow,
+                ),
+                onPressed: _controller.isPlaying
+                    ? _controller.pause
+                    : _controller.play,
+              ),
+              const SizedBox(width: 8),
+              IconButton.outlined(
+                tooltip: 'Restart',
+                icon: const Icon(Icons.replay),
+                onPressed: () => _controller.seekToFrame(0),
+              ),
+            ],
           ),
         ),
       ],
     ),
-    body: ListView(
-      children: [
-        for (final e in _entries)
-          ListTile(
-            key: Key(e.key),
-            title: Text(e.title),
-            subtitle: Text(e.subtitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () =>
-                Navigator.of(context)
-                    .push(MaterialPageRoute<void>(builder: e.builder)),
-          ),
-      ],
+  );
+}
+
+/// 300 stickers in a grid, drawn through a few shared atlas textures instead
+/// of a texture each. Only the cells on screen hold an animation.
+class AtlasGridPage extends StatelessWidget {
+  const AtlasGridPage({super.key});
+
+  static const _sources = [_webm, _webp, _gif];
+
+  @override
+  Widget build(BuildContext context) => StickerAtlasScope(
+    child: GridView.builder(
+      padding: const EdgeInsets.all(8),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 96,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
+      itemCount: 300,
+      itemBuilder: (context, i) =>
+          Sticker(source: _sources[i % _sources.length]),
     ),
   );
 }

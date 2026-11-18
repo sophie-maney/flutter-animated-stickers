@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:animated_stickers/animated_stickers.dart' show Stickers;
 import 'package:animated_stickers/src/gen/messages.g.dart';
 import 'package:animated_stickers/src/sticker_config.dart';
 import 'package:animated_stickers/src/sticker_registry.dart';
@@ -346,44 +345,41 @@ void main() {
   );
 
   test('configure refuses out-of-range values, as in release builds', () {
-    // The constructor's asserts catch these in debug builds; configure must
-    // refuse them without asserts too, before anything is applied.
-    for (final config in const [
-      _Unchecked(diskBudget: -1),
-      _Unchecked(fps: 0),
-      _Unchecked(fps: 241),
-      _Unchecked(concurrent: -1),
-      _Unchecked(concurrent: 1 << 31),
+    // The constructor's asserts catch these in debug builds, so a test can't
+    // construct such a config; StickerConfig is final, so it can't fake one
+    // either. Stickers.configure runs this check before applying anything.
+    for (final (budget, fps, concurrent) in const [
+      (-1, null, null),
+      (StickerConfig.defaultDiskBudgetBytes, 0, null),
+      (StickerConfig.defaultDiskBudgetBytes, 241, null),
+      (StickerConfig.defaultDiskBudgetBytes, null, -1),
+      (StickerConfig.defaultDiskBudgetBytes, null, 1 << 31),
     ]) {
       expect(
-        Stickers.configure(config),
+        () => checkStickerConfigValues(
+          diskBudgetBytes: budget,
+          maxFps: fps,
+          maxConcurrent: concurrent,
+        ),
         throwsA(isA<RangeError>()),
-        reason: '$config',
+        reason: '($budget, $fps, $concurrent)',
       );
     }
-  });
-}
-
-/// A [StickerConfig] whose values skip the constructor's asserts, as they
-/// are in a release build.
-class _Unchecked extends StickerConfig {
-  const _Unchecked({
-    this.diskBudget = StickerConfig.defaultDiskBudgetBytes,
-    this.fps,
-    this.concurrent,
+    checkStickerConfigValues(
+      diskBudgetBytes: 0,
+      maxFps: 240,
+      maxConcurrent: 0x7fffffff,
+    );
   });
 
-  final int diskBudget;
-  final int? fps;
-  final int? concurrent;
-
-  @override
-  int get diskBudgetBytes => diskBudget;
-  @override
-  int? get maxFps => fps;
-  @override
-  int? get maxConcurrent => concurrent;
-
-  @override
-  String toString() => '_Unchecked($diskBudget, $fps, $concurrent)';
+  test('StickerConfig compares by value', () {
+    const a = StickerConfig(tier: StickerTier.mid, maxFps: 24);
+    expect(a, const StickerConfig(tier: StickerTier.mid, maxFps: 24));
+    expect(
+      a.hashCode,
+      const StickerConfig(tier: StickerTier.mid, maxFps: 24).hashCode,
+    );
+    expect(a, isNot(const StickerConfig(tier: StickerTier.mid, maxFps: 25)));
+    expect(a.toString(), contains('maxFps: 24'));
+  });
 }

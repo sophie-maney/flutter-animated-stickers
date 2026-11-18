@@ -195,14 +195,16 @@ void main() {
             child: sticker(
               '/bad',
               placeholder: const Text('wait'),
-              errorBuilder: (_, e) =>
-                  Text('error ${(e as StickerException).name}'),
+              errorBuilder: (_, e, stack) => Text(
+                'error ${(e as StickerException).name} ${stack == null}',
+              ),
             ),
           ),
         ),
       );
       await settle(tester);
-      expect(find.text('error WT_ERR_LIMIT'), findsOneWidget);
+      // A native status carries no stack trace.
+      expect(find.text('error WT_ERR_LIMIT true'), findsOneWidget);
       expect(host.created, isEmpty);
       await finish(tester);
     });
@@ -212,13 +214,15 @@ void main() {
     ) async {
       host.failWith = PlatformException(code: 'WT_ERR_DECODE', message: 'x');
       Object? error;
+      StackTrace? stackTrace = StackTrace.empty;
       await tester.pumpWidget(
         app(
           Center(
             child: sticker(
               '/a',
-              errorBuilder: (_, e) {
+              errorBuilder: (_, e, stack) {
                 error = e;
+                stackTrace = stack;
                 return const Text('error');
               },
             ),
@@ -233,13 +237,16 @@ void main() {
             .having((e) => e.code, 'code', -9)
             .having((e) => e.name, 'name', 'WT_ERR_DECODE'),
       );
+      expect(stackTrace, isNull);
       await finish(tester);
     });
 
     testWidgets('a new source clears the error', (tester) async {
       probes['/bad'] = const StickerException(-3, 'WT_ERR_INVALID_DATA');
       Widget build(String path) => app(
-        Center(child: sticker(path, errorBuilder: (_, _) => const Text('e'))),
+        Center(
+          child: sticker(path, errorBuilder: (_, _, _) => const Text('e')),
+        ),
       );
       await tester.pumpWidget(build('/bad'));
       await settle(tester);
@@ -855,18 +862,24 @@ void main() {
       tester,
     ) async {
       fetcher.failWith = StateError('offline');
+      StackTrace? stackTrace;
       await tester.pumpWidget(
         app(
           Center(
             child: networkSticker(
               'https://a',
-              errorBuilder: (_, e) => Text('failed: $e'),
+              errorBuilder: (_, e, stack) {
+                stackTrace = stack;
+                return Text('failed: $e');
+              },
             ),
           ),
         ),
       );
       await settle(tester);
       expect(find.textContaining('offline'), findsOneWidget);
+      // A Dart error keeps the stack trace it was thrown with.
+      expect(stackTrace, isNotNull);
       expect(host.created, isEmpty);
       await finish(tester);
     });
@@ -878,7 +891,7 @@ void main() {
           Center(
             child: networkSticker(
               'https://a',
-              errorBuilder: (_, e) => Text('${e.runtimeType}'),
+              errorBuilder: (_, e, _) => Text('${e.runtimeType}'),
             ),
           ),
         ),

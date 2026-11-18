@@ -12,9 +12,9 @@ import 'sticker_info.dart';
 
 /// How much the frame cache holds, from [Stickers.cacheStats].
 @immutable
-class CacheStats {
+final class StickerCacheStats {
   /// Creates statistics.
-  const CacheStats({required this.fileCount, required this.totalBytes});
+  const StickerCacheStats({required this.fileCount, required this.totalBytes});
 
   /// Number of cached animations (one file per animation and size).
   final int fileCount;
@@ -24,7 +24,7 @@ class CacheStats {
 
   @override
   bool operator ==(Object other) =>
-      other is CacheStats &&
+      other is StickerCacheStats &&
       other.fileCount == fileCount &&
       other.totalBytes == totalBytes;
 
@@ -32,7 +32,7 @@ class CacheStats {
   int get hashCode => Object.hash(fileCount, totalBytes);
 
   @override
-  String toString() => 'CacheStats($fileCount files, $totalBytes bytes)';
+  String toString() => 'StickerCacheStats($fileCount files, $totalBytes bytes)';
 }
 
 /// The cache directory functions of the native core, on background isolates.
@@ -42,7 +42,7 @@ abstract interface class CacheNative {
   Future<void> applyBudget(String directory, int budgetBytes);
 
   /// Counts the cache files in [directory].
-  Future<CacheStats> stats(String directory);
+  Future<StickerCacheStats> stats(String directory);
 
   /// Deletes every cache file in [directory].
   Future<void> clear(String directory);
@@ -76,7 +76,7 @@ class FfiCacheNative implements CacheNative {
   }
 
   @override
-  Future<CacheStats> stats(String directory) => Isolate.run(() {
+  Future<StickerCacheStats> stats(String directory) => Isolate.run(() {
     final b = loadBindings();
     return _withDir(b, directory, (dir, out) => b.wt_cache_get_stats(dir, out));
   });
@@ -87,7 +87,7 @@ class FfiCacheNative implements CacheNative {
     _withDir(b, directory, (dir, out) => b.wt_cache_clear(dir, out));
   });
 
-  static CacheStats _withDir(
+  static StickerCacheStats _withDir(
     WtBindings b,
     String directory,
     int Function(Pointer<Char> dir, Pointer<wt_cache_stats> out) call,
@@ -97,7 +97,7 @@ class FfiCacheNative implements CacheNative {
       final out = arena<wt_cache_stats>();
       final status = call(directory.toNativeUtf8(allocator: arena).cast(), out);
       if (status < 0) throw StickerException(status, statusName(b, status));
-      return CacheStats(
+      return StickerCacheStats(
         fileCount: out.ref.file_count,
         totalBytes: out.ref.total_bytes,
       );
@@ -130,7 +130,7 @@ class StickerCache {
   }
 
   /// What the cache holds now.
-  Future<CacheStats> stats() async =>
+  Future<StickerCacheStats> stats() async =>
       _native.stats(await _host.configureCache(null));
 
   /// Deletes every cached frame file. Playing animations carry on; they
