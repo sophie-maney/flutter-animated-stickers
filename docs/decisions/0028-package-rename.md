@@ -48,8 +48,11 @@ uses it too.
   Rename them with the next change to `third_party/build/`.
 - The C ABI (`wt_*`, `src/api/wt_api.h`) and the internal SwiftPM targets
   `wt_core` and `wt_ios`.
-- The GitHub repository `sophie-maney/flutter-webm-texture`: its URL appears
-  in `pubspec.yaml`, `fetch_prebuilts.dart` (`defaultRepo`) and `release.yml`.
+- The GitHub repository name, at first. The owner renamed it afterwards to
+  `sophie-maney/flutter-animated-stickers` (GitHub redirects the old URLs);
+  `pubspec.yaml`, `fetch_prebuilts.dart` (`defaultRepo`), `release.yml` (the
+  publish job's `github.repository` guard, which doesn't follow redirects) and
+  ADR 0024's setup steps name the new one.
 - ADRs 0001–0027 and the spike reports are history and keep the old names;
   read `WebmSticker` as `Sticker` and so on. `EXECUTION_PLAN.md` carries a
   note to the same effect. The spike apps (`example/spike_b`, `spike_c`,

@@ -33,7 +33,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 /// Repository the release lives in unless `--repo` says otherwise.
-const defaultRepo = 'sophie-maney/flutter-webm-texture';
+const defaultRepo = 'sophie-maney/flutter-animated-stickers';
 
 /// Name of the checksum file attached to every deps release.
 const checksumsAsset = 'SHA256SUMS';
