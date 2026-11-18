@@ -191,7 +191,8 @@ class Scheduler {
   // acquire and release must be set.
   wt_status AddPlayer(std::unique_ptr<FrameSource>* source, bool loop,
                       const wt_sink& sink, Player** out);
-  // Waits for the player's frame in flight, then frees it and its source.
+  // Cancels the player's frame in flight and waits for it to stop (ADR
+  // 0027), then frees the player and its source.
   void RemovePlayer(Player* player);
 
   void SetActive(Player* player, bool active);
@@ -202,12 +203,12 @@ class Scheduler {
   // Whether the player is playing now (for tests and diagnostics).
   bool IsRunning(const Player* player) const;
 
-  // Moves the player to `sink` and `group` (nullptr: none), waiting for its
-  // frame in flight, and asks for the frame that should be showing (as
-  // Redraw). Fails with WT_ERR_INVALID_ARGUMENT, changing nothing, when the
-  // sink lacks acquire or release, the player is being removed or
-  // retargeted, or its group isn't `expect`. *previous (may be null)
-  // receives the sink it had.
+  // Moves the player to `sink` and `group` (nullptr: none), cancelling its
+  // frame in flight and waiting for it to stop (ADR 0027), and asks for the
+  // frame that should be showing (as Redraw). Fails with
+  // WT_ERR_INVALID_ARGUMENT, changing nothing, when the sink lacks acquire or
+  // release, the player is being removed or retargeted, or its group isn't
+  // `expect`. *previous (may be null) receives the sink it had.
   wt_status Retarget(Player* player, const wt_sink& sink, Group* group,
                      Group* expect, wt_sink* previous);
 

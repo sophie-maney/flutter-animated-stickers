@@ -1,7 +1,6 @@
 // Implementation of the C ABI in wt_api.h.
 //
-// Every function checks its arguments first; those whose work belongs to a
-// later task then return WT_ERR_UNIMPLEMENTED. Nothing here may throw: the
+// Every function checks its arguments first. Nothing here may throw: the
 // core builds with -fno-exceptions and every failure is a wt_status.
 
 #include "api/wt_api.h"
