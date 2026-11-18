@@ -399,8 +399,10 @@ If a task fails its acceptance checks twice, rerun it one model tier or one effo
 
 **Accept:** a manual dispatch produces a correct report.
 
-### [ ] T6.6 Final review
+### [x] T6.6 Final review
 **Model** Opus 5.5 · `xhigh` · **Depends** T6.1–T6.5 · **Track** A
 - Review the whole package for API consistency, dead code, threading docs and test gaps. File follow-up issues, and fix anything small inline.
 
 **Accept:** 🛑 the human signs off on 1.0.0.
+
+**Done:** the owner signed off on 1.0.0 on 2026-11-18. Review, decisions D1–D10 and the release checklist are in [`docs/release-1.0-review.md`](docs/release-1.0-review.md); the decisions are recorded in [ADR 0029](docs/decisions/0029-owner-decisions-for-1-0.md).

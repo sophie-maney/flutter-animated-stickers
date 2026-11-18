@@ -255,10 +255,11 @@ In order:
    in `task/T6.6c-owner-decisions`, with `CHANGELOG.md` updated.
 2. [x] **Enable private vulnerability reporting.** Done by the owner;
    `SECURITY.md` and `docs/security.md` send reporters there.
-3. [ ] **Merge** #45, then this PR, then the decisions PR, into `main`. Then
+3. [x] **Merge** #45, then this PR, then the decisions PR, into `main`. Then
    confirm pana scores 160/160 on `main`: the repository check reads
-   `pubspec.yaml` from the default branch.
-4. [ ] **Release PR.** Change `## 1.0.0 (unreleased)` in `CHANGELOG.md` to
+   `pubspec.yaml` from the default branch. Merged; pana 0.23.19 on `main`
+   (`fd037d4`) scores 160/160.
+4. [x] **Release PR.** Change `## 1.0.0 (unreleased)` in `CHANGELOG.md` to
    `## 1.0.0 - <date>`: `release.yml` rejects a heading that contains
    "unreleased". In the same PR, tick T6.6 in `EXECUTION_PLAN.md`.
 5. [x] **GitHub `pub-dev` environment.** Done by the owner: the owner is the
