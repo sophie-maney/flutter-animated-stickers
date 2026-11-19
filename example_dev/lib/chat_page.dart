@@ -1,5 +1,5 @@
 // Chat: stickers mixed with text bubbles, the way a messenger shows them.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';

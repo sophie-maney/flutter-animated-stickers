@@ -1,7 +1,7 @@
 // Checkerboard: alpha correctness. Premultiplied stickers over a checker
 // pattern should show it through their transparent parts, with no dark or
 // light fringes on the edges.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';

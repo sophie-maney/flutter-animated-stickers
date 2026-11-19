@@ -1,6 +1,6 @@
 // Probe: pick a corpus file and read its metadata through
 // `Stickers.probe`, without decoding pixels.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';

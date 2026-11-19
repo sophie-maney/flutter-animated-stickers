@@ -9,7 +9,7 @@
 // `grep '^ATLAS_PNG ' log | cut -c11- | tr -d '\n' | base64 -d > shot.png`).
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:animated_stickers_dev/atlas_demo.dart';
