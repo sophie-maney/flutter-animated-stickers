@@ -1,4 +1,88 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2563eb"/>
-  <text x="32" y="32" dy="0.35em" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#ffffff">FW</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>animated_stickers</title>
+  <defs>
+    <path id="body" d="M924.0 512.0L923.9 616.9L923.6 650.4L923.2 674.7L922.6 694.5L921.8 711.4L920.8 726.3L919.7 739.7L918.3 751.9L916.8 763.2L915.1 773.7L913.2 783.4L911.2 792.6L908.9 801.2L906.4 809.3L903.8 817.0L901.0 824.2L897.9 831.1L894.7 837.7L891.2 843.9L887.6 849.8L883.7 855.4L879.6 860.8L875.2 865.8L870.7 870.7L865.8 875.2L860.8 879.6L855.4 883.7L849.8 887.6L843.9 891.2L837.7 894.7L831.1 897.9L824.2 901.0L817.0 903.8L809.3 906.4L801.2 908.9L792.6 911.2L783.4 913.2L773.7 915.1L763.2 916.8L751.9 918.3L739.7 919.7L726.3 920.8L711.4 921.8L694.5 922.6L674.7 923.2L650.4 923.6L616.9 923.9L512.0 924.0L407.1 923.9L373.6 923.6L349.3 923.2L329.5 922.6L312.6 921.8L297.7 920.8L284.3 919.7L272.1 918.3L260.8 916.8L250.3 915.1L240.6 913.2L231.4 911.2L222.8 908.9L214.7 906.4L207.0 903.8L199.8 901.0L192.9 897.9L186.3 894.7L180.1 891.2L174.2 887.6L168.6 883.7L163.2 879.6L158.2 875.2L153.3 870.7L148.8 865.8L144.4 860.8L140.3 855.4L136.4 849.8L132.8 843.9L129.3 837.7L126.1 831.1L123.0 824.2L120.2 817.0L117.6 809.3L115.1 801.2L112.8 792.6L110.8 783.4L108.9 773.7L107.2 763.2L105.7 751.9L104.3 739.7L103.2 726.3L102.2 711.4L101.4 694.5L100.8 674.7L100.4 650.4L100.1 616.9L100.0 512.0L100.1 407.1L100.4 373.6L100.8 349.3L101.4 329.5L102.2 312.6L103.2 297.7L104.3 284.3L105.7 272.1L107.2 260.8L108.9 250.3L110.8 240.6L112.8 231.4L115.1 222.8L117.6 214.7L120.2 207.0L123.0 199.8L126.1 192.9L129.3 186.3L132.8 180.1L136.4 174.2L140.3 168.6L144.4 163.2L148.8 158.2L153.3 153.3L158.2 148.8L163.2 144.4L168.6 140.3L174.2 136.4L180.1 132.8L186.3 129.3L192.9 126.1L199.8 123.0L207.0 120.2L214.7 117.6L222.8 115.1L231.4 112.8L240.6 110.8L250.3 108.9L260.8 107.2L272.1 105.7L284.3 104.3L297.7 103.2L312.6 102.2L329.5 101.4L349.3 100.8L373.6 100.4L407.1 100.1L512.0 100.0L616.9 100.1L650.4 100.4L674.7 100.8L694.5 101.4L711.4 102.2L726.3 103.2L739.7 104.3L751.9 105.7L763.2 107.2L773.7 108.9L783.4 110.8L792.6 112.8L801.2 115.1L809.3 117.6L817.0 120.2L824.2 123.0L831.1 126.1L837.7 129.3L843.9 132.8L849.8 136.4L855.4 140.3L860.8 144.4L865.8 148.8L870.7 153.3L875.2 158.2L879.6 163.2L883.7 168.6L887.6 174.2L891.2 180.1L894.7 186.3L897.9 192.9L901.0 199.8L903.8 207.0L906.4 214.7L908.9 222.8L911.2 231.4L913.2 240.6L915.1 250.3L916.8 260.8L918.3 272.1L919.7 284.3L920.8 297.7L921.8 312.6L922.6 329.5L923.2 349.3L923.6 373.6L923.9 407.1Z"/>
+    <path id="sticker" d="M374.0 252.0H650.0A112.0 112.0 0 0 1 762.0 364.0V602.0L612.0 752.0H374.0A112.0 112.0 0 0 1 262.0 640.0V364.0A112.0 112.0 0 0 1 374.0 252.0Z"/>
+    <path id="panel" d="M374.0 282.0H650.0A82.0 82.0 0 0 1 732.0 364.0V589.6L599.6 722.0H374.0A82.0 82.0 0 0 1 292.0 640.0V364.0A82.0 82.0 0 0 1 374.0 282.0Z"/>
+    <clipPath id="bodyClip"><use href="#body"/></clipPath>
+    <clipPath id="panelClip"><use href="#panel"/></clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D7BFF"/>
+      <stop offset="0.55" stop-color="#4B3FE0"/>
+      <stop offset="1" stop-color="#2A1A8C"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#fff" stop-opacity="0.15"/>
+      <stop offset="0.7" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.6"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="0.5" cy="0.15" r="0.75">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.4"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="frost" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#E4E9FF" stop-opacity="0.82"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB240"/>
+      <stop offset="0.5" stop-color="#FF6A3D"/>
+      <stop offset="1" stop-color="#E8335E"/>
+    </linearGradient>
+    <linearGradient id="flapFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C9D2F2"/>
+      <stop offset="0.6" stop-color="#F4F6FF"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <filter id="iconShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="70"/>
+    </filter>
+    <filter id="stickerShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- Icon body: Liquid Glass squircle -->
+  <use href="#body" fill="#0B1240" opacity="0.35" transform="translate(0 14)" filter="url(#iconShadow)"/>
+  <g clip-path="url(#bodyClip)">
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+    <g filter="url(#soft)">
+      <circle cx="250" cy="230" r="190" fill="#6FD3FF" opacity="0.75"/>
+      <circle cx="820" cy="820" r="230" fill="#FF6FB1" opacity="0.55"/>
+      <circle cx="840" cy="250" r="150" fill="#8F7BFF" opacity="0.6"/>
+    </g>
+    <ellipse cx="512" cy="150" rx="520" ry="300" fill="url(#sheen)"/>
+  </g>
+  <use href="#body" fill="none" stroke="url(#rim)" stroke-width="10"/>
+
+  <!-- Sticker -->
+  <g transform="rotate(-8 512 502)">
+    <use href="#sticker" fill="#0B1240" opacity="0.45" transform="translate(6 26)" filter="url(#stickerShadow)"/>
+    <use href="#sticker" fill="url(#frost)"/>
+    <use href="#panel" fill="url(#ink)"/>
+    <g clip-path="url(#panelClip)">
+      <ellipse cx="470" cy="300" rx="330" ry="150" fill="url(#sheen)"/>
+    </g>
+    <use href="#panel" fill="none" stroke="#fff" stroke-opacity="0.45" stroke-width="4"/>
+    <g font-family="'SF Pro Rounded', ui-rounded, 'Arial Rounded MT Bold', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="180" font-weight="800" text-anchor="middle" letter-spacing="-2">
+      <text x="506" y="566" fill="#7A1230" opacity="0.4" filter="url(#textShadow)">FAS</text>
+      <text x="506" y="556" fill="#fff">FAS</text>
+    </g>
+    <path d="M762 602L612 752C602 692 626 636 618 608C646 616 702 592 762 602Z" fill="#0B1240" opacity="0.3" transform="translate(-10 -6)" filter="url(#textShadow)"/>
+    <path d="M762 602L612 752C602 692 626 636 618 608C646 616 702 592 762 602Z" fill="url(#flapFill)"/>
+    <use href="#sticker" fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="3"/>
+  </g>
+
+  <!-- Motion sparkles -->
+  <path d="M800 178C803.828 223.24 812.76 232.172 858 236C812.76 239.828 803.828 248.76 800 294C796.172 248.76 787.24 239.828 742 236C787.24 232.172 796.172 223.24 800 178Z" fill="#fff" opacity="0.95"/>
+  <path d="M222 752C224.508 781.64 230.36 787.492 260 790C230.36 792.508 224.508 798.36 222 828C219.492 798.36 213.64 792.508 184 790C213.64 787.492 219.492 781.64 222 752Z" fill="#fff" opacity="0.8"/>
+  <path d="M868 336C869.716 356.28 873.72 360.284 894 362C873.72 363.716 869.716 367.72 868 388C866.284 367.72 862.28 363.716 842 362C862.28 360.284 866.284 356.28 868 336Z" fill="#fff" opacity="0.7"/>
 </svg>
