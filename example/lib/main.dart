@@ -4,7 +4,7 @@
 // The three stickers ship in assets/ (declared in pubspec.yaml): a VP9 WebM
 // with alpha, an animated WebP and a GIF.
 import 'package:animated_stickers/animated_stickers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _webm = StickerSource.asset('assets/vp9_alpha_512.webm');
 const _webp = StickerSource.asset('assets/anim.webp');

@@ -1,7 +1,7 @@
 // The example against a fake platform: the landing page, and the Textures
 // page giving every playable sticker a Texture and the oversized one its
 // error code.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: implementation_imports

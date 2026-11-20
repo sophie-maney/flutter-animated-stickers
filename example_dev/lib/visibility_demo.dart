@@ -1,6 +1,6 @@
 // A 200-item list of `Sticker`s with a debug overlay that counts the
 // stickers reporting active (T2.5). Only the rows on screen should count.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 

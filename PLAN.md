@@ -8,7 +8,7 @@ A Flutter plugin (Android + iOS) that plays animated stickers inline the way Tel
 
 | Topic | Decision |
 |---|---|
-| Flutter | `fvm` pinned to **3.47.9** (latest stable as of 2026-11-09), committed in `.fvmrc` |
+| Flutter | `fvm` pinned to **3.50.0** (latest stable as of 2026-11-19), committed in `.fvmrc`. The example apps and tests import Material from the `material_ui` package, not `package:flutter/material.dart` ([ADR 0030](docs/decisions/0030-material-ui-package.md)) |
 | Scope | **Playback only.** No encoding. `probe()` exposes metadata, and safety limits reject hostile files. |
 | Formats | VP9 WebM (with alpha), VP8 WebM (with alpha), animated WebP, GIF |
 | Density | Inline chat stickers (1–10 on screen) **and** picker grids (30–60+ on screen) |
@@ -99,7 +99,7 @@ Stickers.debugActiveCount;                           // ValueListenable<int>: wi
 
 ## Repository layout
 ```
-.fvmrc                     # flutter 3.47.9
+.fvmrc                     # flutter 3.50.0
 pubspec.yaml               # package: animated_stickers (ADR 0028)
 lib/                       # public API, registry, visibility, pigeon + ffigen bindings
 pigeons/                   # Pigeon definitions

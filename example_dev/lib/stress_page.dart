@@ -6,7 +6,7 @@
 // same file share one. The grid button makes the cells small enough for 60+
 // on a phone screen, the T3.3 budget (integration_test/sched_perf_test.dart,
 // atlas_perf_test.dart).
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:animated_stickers/animated_stickers.dart';
 
 import 'corpus.dart';
