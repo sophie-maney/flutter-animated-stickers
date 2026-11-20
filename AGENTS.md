@@ -31,9 +31,8 @@ test/                Dart unit/widget tests
 test_assets/         Generated corpus (tool/gen_corpus.sh) + reference frames
 example/             Published example: a short main.dart + 3 stickers in assets/
 example_dev/         Development app (unpublished): demo pages, integration_test/, goldens
-spikes/              Spike code: alpha/ (host), spike_b/ and spike_c/ (Flutter apps)
 tool/                fetch_prebuilts.dart, build_host_deps.sh, gen_corpus.sh, bench scripts
-docs/                spikes/, decisions/, cache-format.md
+docs/                decisions/ (ADRs), spikes/ (spike reports), cache-format.md, security.md
 ```
 
 ## Commands

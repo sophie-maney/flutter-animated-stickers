@@ -44,14 +44,9 @@ jobs:
 
       # Also resolves example/, the published example.
       - run: fvm flutter pub get
-      # The development app, and the Spike B (T0.8) and C (T0.9) apps, are
-      # separate Flutter apps; analyze needs their deps.
+      # The development app is a separate Flutter app; analyze needs its deps.
       - run: fvm flutter pub get
         working-directory: example_dev
-      - run: fvm flutter pub get
-        working-directory: spikes/spike_b
-      - run: fvm flutter pub get
-        working-directory: spikes/spike_c
       - run: fvm dart format --set-exit-if-changed .
       - run: fvm flutter analyze
       - run: fvm flutter test

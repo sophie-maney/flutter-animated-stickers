@@ -3,7 +3,7 @@
 - **Task:** T0.7 🛑 · **Status:** done. **Decision:** our own minimal EBML reader ([ADR 0004](../decisions/0004-own-webm-demuxer.md))
 - **Date:** 2026-11-09
 - **Host:** Apple M4 Max, macOS 27.2, Apple clang 21. The libraries are pinned in `third_party/versions.lock`: libvpx 1.17.0, libwebm 1.0.0.32 and libyuv 1980. libvpx is built decoder-only with `--size-limit=1024x1024`, as for mobile.
-- **Code:** [`spikes/alpha/`](../../spikes/alpha/) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
+- **Code:** [`spikes/alpha/`](https://github.com/sophie-maney/flutter-animated-stickers/tree/archive/plan-and-spikes/spikes/alpha) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
 
 ## Summary
 
@@ -182,6 +182,8 @@ Follow-up:
 3. The checks in the pitfalls above belong in T1.3/T1.4. T1.3 also ships a demux fuzz target.
 
 ## Reproducing
+
+The spike code and its raw data were removed from `main` after 1.0. Run these commands from a checkout of the `archive/plan-and-spikes` tag (`git checkout archive/plan-and-spikes`). The spike was written against Flutter 3.47.9, and the tag pins a newer one in `.fvmrc`.
 
 ```sh
 spikes/alpha/build-host-deps.sh       # host libvpx/libwebm/libyuv from versions.lock (~15 s)

@@ -2,8 +2,8 @@
 
 - **Task:** T0.8 🛑 · **Status:** done. **Decision:** the Dart `ui.Image` fallback (T4.4) is not needed ([ADR 0005](../decisions/0005-no-ui-image-fallback.md))
 - **Date:** 2026-11-09 · **Flutter:** 3.47.9 (`.fvmrc`)
-- **Code:** [`example/spike_b/`](../../example/spike_b/) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
-- **Screenshots:** [`B-texture-alpha/`](B-texture-alpha/). They are cropped to the tiles and status text but keep their original geometry, so `tool/sample.py` can re-sample them. Every sample result is in [`results.jsonl`](B-texture-alpha/results.jsonl).
+- **Code:** [`spikes/spike_b/`](https://github.com/sophie-maney/flutter-animated-stickers/tree/archive/plan-and-spikes/spikes/spike_b) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
+- **Screenshots:** [`B-texture-alpha/`](https://github.com/sophie-maney/flutter-animated-stickers/tree/archive/plan-and-spikes/docs/spikes/B-texture-alpha). They are cropped to the tiles and status text but keep their original geometry, so `tool/sample.py` can re-sample them. Every sample result is in [`results.jsonl`](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/results.jsonl).
 
 > [!WARNING]
 > **Emulators and the simulator only.** The task asks for 3+ physical Android devices (one low-end) and a physical iPhone. The project owner asked for this run to use emulators on both platforms instead, so every row below is an emulator or simulator. The emulator GPUs are software or translated: Vulkan is **lavapipe** on every AVD, GLES is **SwiftShader** (`swangle`) on API 37 and the host GPU on API 29/24. That means no vendor driver (Adreno, Mali, PowerVR, Apple GPU on device) was exercised. The owner accepted this evidence for the gate decision ([ADR 0005](../decisions/0005-no-ui-image-fallback.md)). Real-device rows are optional follow-up (see [Optional follow-up on real hardware](#optional-follow-up-on-real-hardware)).
@@ -30,7 +30,7 @@ Host: Apple M4 Max, macOS 27.2, Android emulator 37.2.13. No iOS 15 simulator ru
 
 ## Method
 
-The test pattern is 256×128 px of 32-px uniform blocks (8 × 4), premultiplied RGBA, generated in Dart ([`main.dart`](../../example/spike_b/lib/main.dart)):
+The test pattern is 256×128 px of 32-px uniform blocks (8 × 4), premultiplied RGBA, generated in Dart ([`main.dart`](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/spikes/spike_b/lib/main.dart)):
 
 | Row | Blocks |
 |---|---|
@@ -50,7 +50,7 @@ Each run lays out four rows (checkerboard with 16-px cells, magenta→cyan→yel
 
 All geometry is in physical pixels, and textures are drawn 1:1 with `FilterQuality.none`.
 
-[`tool/sample.py`](../../example/spike_b/tool/sample.py) samples each block at 4 points (the centres of the checker cells inside it) in all three tiles. A block **passes** when every channel of texture vs Flutter is within ±3. It also computes the expected value under premultiplied (`s + C·(1−a)`) and straight (`s·a + C·(1−a)`) blending from the control tile, and labels each partial-alpha or probe block with the closer one. A run **passes** at 120/120 valid blocks (30 valid blocks × 4 backgrounds).
+[`tool/sample.py`](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/spikes/spike_b/tool/sample.py) samples each block at 4 points (the centres of the checker cells inside it) in all three tiles. A block **passes** when every channel of texture vs Flutter is within ±3. It also computes the expected value under premultiplied (`s + C·(1−a)`) and straight (`s·a + C·(1−a)`) blending from the control tile, and labels each partial-alpha or probe block with the closer one. A run **passes** at 120/120 valid blocks (30 valid blocks × 4 backgrounds).
 
 Each configuration is screenshotted twice: 6 s after launch, then again after going to the home screen for 5 s and coming back.
 
@@ -62,23 +62,23 @@ Each configuration is screenshotted twice: 6 s after launch, then again after go
 
 | Device | Backend | Producer | Lifecycle | Launch | After background | Screenshots |
 |---|---|---|---|---|---|---|
-| api37 | Impeller **auto → OpenGLES** | ImageReader | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/api37_auto.launch.png) · [resume](B-texture-alpha/api37_auto.resume.png) |
-| api37 | Impeller Vulkan | ImageReader | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api37_vulkan.launch.png) · [resume](B-texture-alpha/api37_vulkan.resume.png) |
-| api37 | Skia GLES | ImageReader | manual | ✅ 120/120, max 0 | ❌ **static texture opaque black** | [launch](B-texture-alpha/api37_skia.launch.png) · [resume](B-texture-alpha/api37_skia.resume.png) |
-| api37 | Skia GLES | ImageReader | manual + redraw on resume | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api37_skia_redraw.launch.png) · [resume](B-texture-alpha/api37_skia_redraw.resume.png) |
-| api37 | Impeller Vulkan | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api37_vulkan_reset.launch.png) · [resume](B-texture-alpha/api37_vulkan_reset.resume.png) |
-| api37 | Impeller OpenGLES | ImageReader | resetInBackground | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/api37_gles_reset.launch.png) · [resume](B-texture-alpha/api37_gles_reset.resume.png) |
-| api37 | Skia GLES | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api37_skia_reset.launch.png) · [resume](B-texture-alpha/api37_skia_reset.resume.png) |
-| api37 | Impeller OpenGLES | SurfaceTexture (forced) | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/api37_gles_st.launch.png) · [resume](B-texture-alpha/api37_gles_st.resume.png) |
-| api37 | Skia GLES | SurfaceTexture (forced) | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api37_skia_st.launch.png) · [resume](B-texture-alpha/api37_skia_st.resume.png) |
-| api37 | Impeller Vulkan | SurfaceTexture (forced) | manual | ❌ **nothing rendered** | ❌ nothing rendered | [launch](B-texture-alpha/api37_vulkan_st.launch.png) · [resume](B-texture-alpha/api37_vulkan_st.resume.png) |
-| api29 | Impeller **auto → OpenGLES** | ImageReader | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/api29_auto.launch.png) · [resume](B-texture-alpha/api29_auto.resume.png) |
-| api29 | Impeller Vulkan | ImageReader | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api29_vulkan.launch.png) · [resume](B-texture-alpha/api29_vulkan.resume.png) |
-| api29 | Skia GLES | ImageReader | manual | ✅ 120/120, max 0 | ❌ **static texture opaque black** | [launch](B-texture-alpha/api29_skia.launch.png) · [resume](B-texture-alpha/api29_skia.resume.png) |
-| api29 | Skia GLES | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api29_skia_reset.launch.png) · [resume](B-texture-alpha/api29_skia_reset.resume.png) |
-| api29 | Impeller auto → OpenGLES | ImageReader | resetInBackground | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/api29_auto_reset.launch.png) · [resume](B-texture-alpha/api29_auto_reset.resume.png) |
-| api24 | **Skia GLES** (Impeller needs API 29+) | SurfaceTexture (only option < API 29) | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api24_default.launch.png) · [resume](B-texture-alpha/api24_default.resume.png) |
-| api24 | Skia GLES | SurfaceTexture | resetInBackground (no effect) | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](B-texture-alpha/api24_reset.launch.png) · [resume](B-texture-alpha/api24_reset.resume.png) |
+| api37 | Impeller **auto → OpenGLES** | ImageReader | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_auto.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_auto.resume.png) |
+| api37 | Impeller Vulkan | ImageReader | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan.resume.png) |
+| api37 | Skia GLES | ImageReader | manual | ✅ 120/120, max 0 | ❌ **static texture opaque black** | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia.resume.png) |
+| api37 | Skia GLES | ImageReader | manual + redraw on resume | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_redraw.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_redraw.resume.png) |
+| api37 | Impeller Vulkan | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan_reset.resume.png) |
+| api37 | Impeller OpenGLES | ImageReader | resetInBackground | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_gles_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_gles_reset.resume.png) |
+| api37 | Skia GLES | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_reset.resume.png) |
+| api37 | Impeller OpenGLES | SurfaceTexture (forced) | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_gles_st.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_gles_st.resume.png) |
+| api37 | Skia GLES | SurfaceTexture (forced) | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_st.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_skia_st.resume.png) |
+| api37 | Impeller Vulkan | SurfaceTexture (forced) | manual | ❌ **nothing rendered** | ❌ nothing rendered | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan_st.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api37_vulkan_st.resume.png) |
+| api29 | Impeller **auto → OpenGLES** | ImageReader | manual | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_auto.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_auto.resume.png) |
+| api29 | Impeller Vulkan | ImageReader | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_vulkan.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_vulkan.resume.png) |
+| api29 | Skia GLES | ImageReader | manual | ✅ 120/120, max 0 | ❌ **static texture opaque black** | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_skia.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_skia.resume.png) |
+| api29 | Skia GLES | ImageReader | resetInBackground | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_skia_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_skia_reset.resume.png) |
+| api29 | Impeller auto → OpenGLES | ImageReader | resetInBackground | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_auto_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api29_auto_reset.resume.png) |
+| api24 | **Skia GLES** (Impeller needs API 29+) | SurfaceTexture (only option < API 29) | manual | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api24_default.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api24_default.resume.png) |
+| api24 | Skia GLES | SurfaceTexture | resetInBackground (no effect) | ✅ 120/120, max 0 | ✅ 120/120, max 0 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api24_reset.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/api24_reset.resume.png) |
 
 The two Skia `manual` failures turn 116 of 120 blocks wrong. The 4 that "pass" are the clear block on the black background, which is correct by accident. `api37_skia` was run twice with the same result (`api37_skia_rerun` and `api37_auto_rerun` are kept out of the committed screenshots).
 
@@ -88,8 +88,8 @@ On the API 37 and API 29 emulators, auto-selection picked **OpenGLES over Vulkan
 
 | Device | Backend | Producer | `textureFrameAvailable` from | Launch | After background | Screenshots |
 |---|---|---|---|---|---|---|
-| ios (simulator) | Impeller Metal | `CVPixelBuffer` BGRA, IOSurface, Metal-compatible, from a `CVPixelBufferPool` | background serial queue | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/ios_bg.launch.png) · [resume](B-texture-alpha/ios_bg.resume.png) |
-| ios (simulator) | Impeller Metal | same | main queue | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](B-texture-alpha/ios_main.launch.png) · [resume](B-texture-alpha/ios_main.resume.png) |
+| ios (simulator) | Impeller Metal | `CVPixelBuffer` BGRA, IOSurface, Metal-compatible, from a `CVPixelBufferPool` | background serial queue | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/ios_bg.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/ios_bg.resume.png) |
+| ios (simulator) | Impeller Metal | same | main queue | ✅ 120/120, max 1 | ✅ 120/120, max 1 | [launch](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/ios_main.launch.png) · [resume](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/B-texture-alpha/ios_main.resume.png) |
 
 `FLTEnableWideGamut` was left at its default. Even so, texture and canvas colours agree to ±1, so the BGRA buffer is treated as sRGB like the rest of the frame.
 
@@ -136,7 +136,7 @@ On the API 37 and API 29 emulators, auto-selection picked **OpenGLES over Vulkan
 
 ## Optional follow-up on real hardware
 
-The gate is closed without these, but anyone with devices can run `tool/run_android.sh` and `tool/run_ios.sh` (see the [README](../../example/spike_b/README.md)) and add rows here for:
+The gate is closed without these, but anyone with devices can run `tool/run_android.sh` and `tool/run_ios.sh` (see the [README](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/spikes/spike_b/README.md)) and add rows here for:
 1. Physical Android phones, especially a low-end one (e.g. Mali or PowerVR, Android 9–11) and a Huawei on API 29 (finding 4). Use auto backend, Vulkan, OpenGLES and Skia with `manual` and `reset`.
 2. A physical iPhone.
 
@@ -150,8 +150,10 @@ Every production renderer and producer composites premultiplied alpha correctly.
 
 ## Reproducing
 
+The spike code and its raw data were removed from `main` after 1.0. Run these commands from a checkout of the `archive/plan-and-spikes` tag (`git checkout archive/plan-and-spikes`). The spike was written against Flutter 3.47.9, and the tag pins a newer one in `.fvmrc`.
+
 ```sh
-cd example/spike_b && fvm flutter pub get
+cd spikes/spike_b && fvm flutter pub get
 # Android (one emulator or device attached; AD = the agent-device command from T3's device panel)
 tool/run_android.sh api37_auto   out
 tool/run_android.sh api37_vulkan out spikeBackend=vulkan

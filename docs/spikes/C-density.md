@@ -2,8 +2,8 @@
 
 - **Task:** T0.9 🛑 · **Status:** done. **Decision:** grids use atlas mode ([ADR 0006](../decisions/0006-atlas-for-grids.md)).
 - **Date:** 2026-11-09 · **Flutter:** 3.47.9 (`.fvmrc`)
-- **Code:** [`example/spike_c/`](../../example/spike_c/) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
-- **Data:** every run's result is one line in [`C-density/results.jsonl`](C-density/results.jsonl). The tables below come from `tool/table.py` on that file.
+- **Code:** [`spikes/spike_c/`](https://github.com/sophie-maney/flutter-animated-stickers/tree/archive/plan-and-spikes/spikes/spike_c) (throwaway). Reproduce with the commands in [Reproducing](#reproducing).
+- **Data:** every run's result is one line in [`C-density/results.jsonl`](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/results.jsonl). The tables below come from `tool/table.py` on that file.
 
 > [!WARNING]
 > **Emulators and the simulator only.** The task asks for a low-end Android phone and an iPhone 12 or older. As with spike B, the owner asked for emulators and the simulator instead. That limits the evidence in three ways:
@@ -35,7 +35,7 @@ Host: Apple M4 Max, macOS 27.2. The API 24 (Skia + `SurfaceTexture`) set was sta
    - iOS cycled 2 pool buffers, so **32 MB**.
    - Sixty 128-px textures use 9–22 MB in total.
    - A **2048×512** page (64 slots of 128 px) gives the same raster and CPU results as 2048² at **one quarter of the memory**: 20–24 MB on Android, 8 MB on iOS. Atlas pages must therefore be sized to what they hold, not fixed at 2048².
-4. **The atlas needs a gutter.** When slots are packed edge to edge, bilinear sampling at any non-1:1 scale pulls in the neighbouring slot's edge pixels. This showed as faint lines along every tile's bottom edge on both platforms. A 2-px transparent border around each slot, cleared on every write, removes it ([before](C-density/bleed_api37_atlas_g0.png) / [after](C-density/bleed_api37_atlas_g2.png) on Android, [before](C-density/bleed_ios_atlas_g0.png) / [after](C-density/bleed_ios_atlas_g2.png) on iOS). The gutter did not change the cost measurably.
+4. **The atlas needs a gutter.** When slots are packed edge to edge, bilinear sampling at any non-1:1 scale pulls in the neighbouring slot's edge pixels. This showed as faint lines along every tile's bottom edge on both platforms. A 2-px transparent border around each slot, cleared on every write, removes it ([before](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/bleed_api37_atlas_g0.png) / [after](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/bleed_api37_atlas_g2.png) on Android, [before](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/bleed_ios_atlas_g0.png) / [after](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/bleed_ios_atlas_g2.png) on iOS). The gutter did not change the cost measurably.
 5. **No drift over 2 minutes.** In every run, raster p90 and CPU per 30-s window stayed within run-to-run noise. On emulators and the simulator this mostly shows that the harness is stable. Real thermal throttling can't appear here.
 
 ## Method
@@ -140,7 +140,7 @@ On the emulator this includes GPU emulation done on the host CPU, so it says lit
 
 ### Screenshots
 
-The modes look the same apart from gutter bleed: [api37 textures](C-density/api37_auto_tex.png) · [api37 atlas](C-density/api37_auto_atlas.png) · [iOS textures](C-density/ios_tex.png) · [iOS atlas](C-density/ios_atlas.png).
+The modes look the same apart from gutter bleed: [api37 textures](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/api37_auto_tex.png) · [api37 atlas](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/api37_auto_atlas.png) · [iOS textures](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/ios_tex.png) · [iOS atlas](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/spikes/C-density/ios_atlas.png).
 
 ## Implications for later tasks
 
@@ -160,7 +160,7 @@ These hold whichever default the owner picks:
 
 ## Optional follow-up on real hardware
 
-The comparison above is consistent, but every absolute number comes from an emulator or the simulator. Anyone with devices can run `tool/matrix_android.sh <prefix> out lowend` and `tool/matrix_ios.sh` (see the [README](../../example/spike_c/README.md)) to add rows for:
+The comparison above is consistent, but every absolute number comes from an emulator or the simulator. Anyone with devices can run `tool/matrix_android.sh <prefix> out lowend` and `tool/matrix_ios.sh` (see the [README](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/spikes/spike_c/README.md)) to add rows for:
 1. A low-end Android phone (Mali or PowerVR, Android 9–11). This shows whether textures mode's lock/post cost and the atlas's 10–12 ms raster cluster are emulator artefacts.
 2. An iPhone 12 or older, for raster p90 and `phys_footprint` with real IOSurface accounting.
 3. Battery and thermal drift: a 10-minute run per mode with the screen at fixed brightness, recording battery % and `thermalState`.
@@ -178,8 +178,10 @@ The rules under [Implications for later tasks](#implications-for-later-tasks) mo
 
 ## Reproducing
 
+The spike code and its raw data were removed from `main` after 1.0. Run these commands from a checkout of the `archive/plan-and-spikes` tag (`git checkout archive/plan-and-spikes`). The spike was written against Flutter 3.47.9, and the tag pins a newer one in `.fvmrc`.
+
 ```sh
-cd example/spike_c && fvm flutter pub get
+cd spikes/spike_c && fvm flutter pub get
 # Android (one emulator attached; AD = the agent-device command from T3's device panel)
 emulator -avd Medium_Phone_API_37.0 -cores 4 &      # api37
 AD=<agent-device> tool/matrix_android.sh api37 out full
