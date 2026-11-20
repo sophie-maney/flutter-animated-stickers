@@ -63,8 +63,9 @@ class WtBindings {
 
   /// Like wt_anim_create, backed by the frame cache file at cache_path (UTF-8):
   /// one animation at one output size, in the format of docs/cache-format.md.
-  /// The caller names the file after the content and the size (PLAN.md:
-  /// "<hash>_<w>x<h>_v1.wsc") in a directory that exists.
+  /// The caller names the file after the content and the size,
+  /// "<hash>_<w>x<h>_v1.wsc" (docs/architecture.md, "Frame cache"), in a
+  /// directory that exists.
   ///
   /// - A valid cache for this source (checked by size and CRC-32) at this size
   /// replaces decoding: frames are decompressed from it, never decoded.
@@ -1571,9 +1572,9 @@ final class wt_sched_hooks extends ffi.Struct {
     ..ref.thread_stop = thread_stop;
 }
 
-/// Tunables of a scheduler; device tiers (PLAN.md, "Tiers") set them. Start
-/// from wt_sched_options_init_default. Zero is invalid for worker_count and
-/// max_fps.
+/// Tunables of a scheduler; device tiers (docs/architecture.md, "Tiers") set
+/// them. Start from wt_sched_options_init_default. Zero is invalid for
+/// worker_count and max_fps.
 final class wt_sched_options extends ffi.Struct {
   /// Threads that decode frames, 1..WT_SCHED_MAX_WORKERS. Default: half the
   /// CPU cores, between 1 and 4.

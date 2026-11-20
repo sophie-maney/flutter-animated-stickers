@@ -38,8 +38,9 @@ const _columns = 6;
 const _rows = 10;
 const _visible = _columns * _rows;
 
-/// iOS simulator raster p90 budget (EXECUTION_PLAN.md, T3.3; spike C
-/// measured 5.9 ms for 60 textures).
+/// iOS simulator raster p90 budget, set by task T3.3 (spike C measured
+/// 5.9 ms for 60 textures). Real-device budgets wait for benchmarks on
+/// devices (#69).
 const _rasterBudgetMs = 8.0;
 
 /// Paused, the app may use at most this share of one core: what a debug

@@ -40,7 +40,7 @@
 
 namespace wt {
 
-// 200 MiB, PLAN.md "Frame cache".
+// 200 MiB, docs/architecture.md "Frame cache".
 constexpr uint64_t kDefaultCacheBudget = uint64_t{200} << 20;
 
 // The most one cache file may take whatever the budget (ADR 0026): 3 s of

@@ -325,7 +325,8 @@ TEST(LimitTest, MaxTotalPixels) {
       << "the budget is at source size, whatever the output size";
 }
 
-// The default budget is what PLAN.md promises: 600 frames at 512 x 512.
+// The default budget (docs/architecture.md, "Safety"): 600 frames at
+// 512 x 512.
 TEST(LimitTest, DefaultBudgetCoversTheLongestDefaultSticker) {
   const wt_limits limits = DefaultLimits();
   EXPECT_GE(limits.max_total_pixels, uint64_t{512} * 512 * limits.max_frames);

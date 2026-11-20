@@ -59,8 +59,8 @@ const _contentFps = 30.0;
 /// fraction: timer slack, and the 33/34 ms frames of 30-fps WebM.
 const _rateTolerance = 0.1;
 
-/// iOS simulator raster p90 budget (EXECUTION_PLAN.md, T4.3; spike C
-/// measured 2.0 ms).
+/// iOS simulator raster p90 budget, set by task T4.3 (spike C measured
+/// 2.0 ms). Real-device budgets wait for benchmarks on devices (#69).
 const _rasterBudgetMs = 3.0;
 
 const _warmUp = Duration(seconds: 8);

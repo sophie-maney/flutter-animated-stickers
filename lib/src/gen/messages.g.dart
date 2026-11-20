@@ -214,8 +214,8 @@ class AnimationHandleMessage {
   }
 }
 
-/// Inputs to tier detection (PLAN.md "Tiers"). [lowPower] and [thermal] can
-/// change at runtime, so Dart polls this when the app resumes.
+/// Inputs to tier detection (docs/architecture.md, "Tiers"). [lowPower] and
+/// [thermal] can change at runtime, so Dart polls this when the app resumes.
 class DeviceSignalsMessage {
   DeviceSignalsMessage({
     required this.ramMb,

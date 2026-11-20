@@ -6,9 +6,10 @@
 // output size (the size bucket), which is also the shape the frame cache
 // (T3.1) will store, then converts it straight into the caller's buffer.
 //
-// Scaling happens before premultiplying, on straight alpha, as PLAN.md's
-// pipeline has it (scale to the bucket -> YUVA420 -> premultiplied RGBA).
-// Every routine here is libyuv, so ARM builds get its NEON paths.
+// Scaling happens before premultiplying, on straight alpha, as the pipeline
+// in docs/architecture.md has it (scale to the bucket -> YUVA420 ->
+// premultiplied RGBA). Every routine here is libyuv, so ARM builds get its NEON
+// paths.
 //
 // Thread: none of this has shared state. A YuvaImage is not thread-safe.
 #ifndef WT_CONVERT_YUVA_H_

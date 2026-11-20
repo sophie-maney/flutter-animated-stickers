@@ -349,6 +349,13 @@ the files they use.
 - Frames are premultiplied, so stickers composite correctly on any
   background.
 
+## Contributing
+
+[`docs/architecture.md`](docs/architecture.md) explains how the plugin works
+and why, with the decision records in [`docs/decisions/`](docs/decisions/).
+[`AGENTS.md`](AGENTS.md) has the build and test commands and the rules for
+changes. Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
+
 ## License
 
 This package is BSD-3-Clause licensed. The native libraries it bundles

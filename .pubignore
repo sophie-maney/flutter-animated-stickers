@@ -36,8 +36,6 @@ build/
 /.github/
 /.fvmrc
 /AGENTS.md
-/PLAN.md
-/EXECUTION_PLAN.md
 /CMakeLists.txt
 /native_test/
 /fuzz/
