@@ -678,13 +678,15 @@ TEST(SchedulerTest, ReportsTheFirstDecodeErrorOnly) {
   auto a = f.Add(Frames(4, 40));  // Slower than the clock: nothing skipped.
   a->log->broken_frame = 2;
   f.sched->SetActive(a->player, true);
-  Sleep(700);  // About four loops over the broken frame.
+  // Three loops over the broken frame (0, 1, 3 each), counted in frames
+  // rather than wall-clock time: a stalled runner plays fewer in a fixed
+  // window, and the stall rule (ADR 0017) gives up the lost time.
+  EXPECT_TRUE(a->sink->WaitShown(9, milliseconds(5000))) << "plays on past it";
   f.sched->SetActive(a->player, false);
   EXPECT_EQ(a->sink->errors(), 1);
   EXPECT_EQ(a->sink->first_error(), WT_ERR_DECODE);
   const std::vector<uint32_t> shown = a->sink->shown();
   EXPECT_EQ(std::count(shown.begin(), shown.end(), 2u), 0);
-  EXPECT_GE(shown.size(), 6u) << "plays on past it";
   f.Remove(a.get());
 }
 
