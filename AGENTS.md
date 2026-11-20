@@ -1,20 +1,23 @@
 # AGENTS.md
 
-Instructions for any coding agent working in this repository.
+Instructions for any coding agent working in this repository. Human contributors will find the same commands and rules useful.
 
 ## What this is
-`animated_stickers` is a Flutter plugin for **Android and iOS only**. It plays animated stickers inline, the way Telegram does: VP9/VP8 WebM with alpha, animated WebP and GIF. A shared C++ core decodes in software, caches frames, and renders them into Flutter `Texture`s.
+`animated_stickers` is a Flutter plugin for **Android and iOS only**, published on pub.dev. It plays animated stickers inline, the way Telegram does: VP9/VP8 WebM with alpha, animated WebP and GIF. A shared C++ core decodes in software, caches frames, and renders them into Flutter `Texture`s.
 
-- **Why**: [`PLAN.md`](PLAN.md) holds the architecture, decisions and risks.
-- **What to do next**: [`EXECUTION_PLAN.md`](EXECUTION_PLAN.md) lists the ordered tasks, each with acceptance criteria and a recommended model and effort level.
+- **How it works and why**: [`docs/architecture.md`](docs/architecture.md). The decisions behind it are the ADRs in [`docs/decisions/`](docs/decisions/README.md).
+- **Security**: the threat model and review findings are in [`docs/security.md`](docs/security.md).
+- **What to do next**: open GitHub issues, especially those labelled `follow-up`.
+- **History**: the package was built from a plan whose task IDs (`T2.2`, `T6.1`, …) still appear in code comments and ADRs. The plan, the task list and the spike code are kept at the `archive/plan-and-spikes` tag (see [`docs/decisions/README.md`](docs/decisions/README.md#reading-older-adrs)).
 
 ## Ground rules
-1. **Always run Flutter/Dart through `fvm`** (`fvm flutter …`, `fvm dart …`). The SDK version is pinned in `.fvmrc`; never change it unless a task tells you to.
-2. **Work on exactly one task from `EXECUTION_PLAN.md` at a time**, on its own branch named `task/<ID>-<slug>` (e.g. `task/T1.3-webm-demuxer`). Don't start a task until its dependencies are ticked.
-3. **A task is done only when every acceptance check passes.** Run them, and paste the command output summary into the PR description. Then tick the task's checkbox in `EXECUTION_PLAN.md` in the same PR.
-4. **Stop at 🛑 gates.** Spike tasks end with a written report in `docs/spikes/` and a human decision. Don't make that decision yourself, and don't start dependent tasks.
-5. **Decisions go in writing.** Any deviation from `PLAN.md` (library choice, API shape, file format) gets a short ADR in `docs/decisions/NNNN-title.md`, and `PLAN.md` is updated in the same PR.
-6. **Stay in scope.** Don't add desktop/web platforms, encoding, audio, Lottie/TGS, or new dependencies that aren't in `PLAN.md` without an ADR.
+1. **Always run Flutter/Dart through `fvm`** (`fvm flutter …`, `fvm dart …`). The SDK version is pinned in `.fvmrc`. Change it only in a PR that is about upgrading Flutter.
+2. **One change per branch and PR.** Name the branch `<kind>/<slug>` (`fix/…`, `feat/…`, `chore/…`, `docs/…`) and link the issue it addresses.
+3. **A change is done only when its checks pass.** Run format, analyze and the tests that cover what you touched (see Commands), and paste a summary of the output into the PR description.
+4. **Some decisions belong to the owner.** These include changes to the public API, the scope, the `StickerLimits` defaults, and choices between designs with real trade-offs. Write up the options and ask; don't decide them yourself.
+5. **Decisions go in writing.** Any change to the design in `docs/architecture.md` (library choice, API shape, file format, limits) gets a short ADR in `docs/decisions/NNNN-title.md` (see [its README](docs/decisions/README.md)). Update `docs/architecture.md` in the same PR.
+6. **Stay in scope.** Don't add desktop/web platforms, encoding, audio, Lottie/TGS, or new dependencies without an ADR.
+7. **User-visible changes go in `CHANGELOG.md`** under the next version. Follow semver: breaking public API changes need a major version.
 
 ## Repository map
 ```
@@ -36,32 +39,30 @@ docs/                decisions/ (ADRs), spikes/ (spike reports), cache-format.md
 ```
 
 ## Commands
-Each command works once the task that introduces it has landed (that task's ID is in brackets).
-
 | Purpose | Command |
 |---|---|
 | Deps | `fvm flutter pub get` |
 | Format | `fvm dart format --set-exit-if-changed .` · `clang-format --dry-run -Werror $(git ls-files 'src/*.cc' 'src/*.h' 'native_test/*.cc' 'native_test/*.c' 'native_test/*.h' 'fuzz/*.cc' 'android/src/main/cpp/*.cc' 'android/src/main/cpp/*.h')` (clang-format 23.1.5, as in CI) |
 | Analyze | `fvm flutter analyze` |
 | Dart tests | `fvm flutter test` |
-| Build iOS prebuilts [T0.4] | `third_party/build/build-ios.sh` (macOS + Xcode, `brew install cmake nasm`) → `third_party/prebuilt/ios/WebmTextureDeps.xcframework` |
-| Build Android prebuilts [T0.5] | `third_party/build/build-android.sh [--with-x86]` (NDK r30 for the plugin, [ADR 0009](docs/decisions/0009-ffi-loading-and-native-wiring.md); the script itself accepts r28+, `cmake`, `nasm`) → `third_party/prebuilt/android/{include,<abi>/libwebm_texture_deps.a}` |
-| Vendor + archive [T6.4] | `fvm dart run tool/vendor_prebuilts.dart vendor` (fetch, verify, size-check the prebuilts) · `fvm dart run tool/vendor_prebuilts.dart archive --out build/release/animated_stickers.tar.gz` (dry run, then the archive pub would upload) · `fvm dart pub global activate pana 0.23.19 && fvm dart pub global run pana .`. Release flow and one-time pub.dev setup: [ADR 0024](docs/decisions/0024-publish-pipeline.md) |
-| Third-party licenses [T0.4] | `third_party/build/collect-licenses.sh` → `third_party/LICENSES.md` (commit it) |
-| Fetch native libs [T0.6] | `fvm dart run tool/fetch_prebuilts.dart` |
-| Host deps [T1.1] | `tool/build_host_deps.sh` (`cmake`, `nasm` on x86_64) → `build/deps/host-core/prefix`; rerun after `versions.lock` or `test-deps.lock` changes |
-| Native host tests [T1.1] | `cmake -S . -B build/host -DWT_HOST_TESTS=ON -DWT_SANITIZE=ON && cmake --build build/host -j && ctest --test-dir build/host --output-on-failure` |
-| Scheduler race check [T3.3] | `cmake -S . -B build/tsan -DWT_HOST_TESTS=ON -DWT_TSAN=ON && cmake --build build/tsan -j && ctest --test-dir build/tsan -R 'Sched\|Timeline\|SkipFrame\|SanitizerTest\|Atlas' --output-on-failure` (ThreadSanitizer; can't share a build with `WT_SANITIZE`. Includes the 500-animation scheduler stress test, the atlas churn test [T4.2] and the cancellation stress test [T6.1]) |
-| Fuzz (60 s smoke) [T1.7] | `cmake -S . -B build/fuzz -DWT_FUZZ=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && cmake --build build/fuzz -j && tool/fuzz.sh 60` (runs `fuzz_sniff`, `fuzz_probe`, `fuzz_webm`, `fuzz_webp`, `fuzz_gif` and `fuzz_wsc` in parallel; findings go to `build/fuzz/artifacts/<target>/`. LLVM clang; Apple clang has no libFuzzer, so on macOS use `brew install llvm` and `/opt/homebrew/opt/llvm/bin/clang++`) |
-| Regenerate bindings [T1.8, T2.1] | `fvm dart run pigeon --input pigeons/messages.dart` · `fvm dart run ffigen --config ffigen.yaml` (needs libclang: `brew install llvm`) |
-| Dart tests against the core [T1.8, T3.2] | `tool/build_host_ffi_lib.sh` → `ANIMATED_STICKERS_LIB=build/ffi/src/libanimated_stickers.dylib fvm flutter test test/probe_test.dart test/sticker_cache_test.dart` (`.so` on Linux; the test skips without it) |
-| Regenerate corpus [T0.3] | `tool/gen_corpus.sh` (needs `ffmpeg` with libvpx + libopus, `img2webp`, `gif2webp`, `gifsicle`, `jq`) · validate: `tool/gen_corpus.sh --check` |
+| Build iOS prebuilts | `third_party/build/build-ios.sh` (macOS + Xcode, `brew install cmake nasm`) → `third_party/prebuilt/ios/WebmTextureDeps.xcframework` |
+| Build Android prebuilts | `third_party/build/build-android.sh [--with-x86]` (NDK r30 for the plugin, [ADR 0009](docs/decisions/0009-ffi-loading-and-native-wiring.md); the script itself accepts r28+, `cmake`, `nasm`) → `third_party/prebuilt/android/{include,<abi>/libwebm_texture_deps.a}` |
+| Vendor + archive | `fvm dart run tool/vendor_prebuilts.dart vendor` (fetch, verify, size-check the prebuilts) · `fvm dart run tool/vendor_prebuilts.dart archive --out build/release/animated_stickers.tar.gz` (dry run, then the archive pub would upload) · `fvm dart pub global activate pana 0.23.19 && fvm dart pub global run pana .`. Release flow and one-time pub.dev setup: [ADR 0024](docs/decisions/0024-publish-pipeline.md) |
+| Third-party licenses | `third_party/build/collect-licenses.sh` → `third_party/LICENSES.md` (commit it) |
+| Fetch native libs | `fvm dart run tool/fetch_prebuilts.dart` |
+| Host deps | `tool/build_host_deps.sh` (`cmake`, `nasm` on x86_64) → `build/deps/host-core/prefix`; rerun after `versions.lock` or `test-deps.lock` changes |
+| Native host tests | `cmake -S . -B build/host -DWT_HOST_TESTS=ON -DWT_SANITIZE=ON && cmake --build build/host -j && ctest --test-dir build/host --output-on-failure` |
+| Scheduler race check | `cmake -S . -B build/tsan -DWT_HOST_TESTS=ON -DWT_TSAN=ON && cmake --build build/tsan -j && ctest --test-dir build/tsan -R 'Sched\|Timeline\|SkipFrame\|SanitizerTest\|Atlas' --output-on-failure` (ThreadSanitizer; can't share a build with `WT_SANITIZE`. Includes the 500-animation scheduler stress test, the atlas churn test and the cancellation stress test) |
+| Fuzz (60 s smoke) | `cmake -S . -B build/fuzz -DWT_FUZZ=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ && cmake --build build/fuzz -j && tool/fuzz.sh 60` (runs `fuzz_sniff`, `fuzz_probe`, `fuzz_webm`, `fuzz_webp`, `fuzz_gif` and `fuzz_wsc` in parallel; findings go to `build/fuzz/artifacts/<target>/`. LLVM clang; Apple clang has no libFuzzer, so on macOS use `brew install llvm` and `/opt/homebrew/opt/llvm/bin/clang++`) |
+| Regenerate bindings | `fvm dart run pigeon --input pigeons/messages.dart` · `fvm dart run ffigen --config ffigen.yaml` (needs libclang: `brew install llvm`) |
+| Dart tests against the core | `tool/build_host_ffi_lib.sh` → `ANIMATED_STICKERS_LIB=build/ffi/src/libanimated_stickers.dylib fvm flutter test test/probe_test.dart test/sticker_cache_test.dart` (`.so` on Linux; the test skips without it) |
+| Regenerate corpus | `tool/gen_corpus.sh` (needs `ffmpeg` with libvpx + libopus, `img2webp`, `gif2webp`, `gifsicle`, `jq`) · validate: `tool/gen_corpus.sh --check` |
 | Android build | `cd example && fvm flutter build apk --debug` (the published example) · `cd example_dev && fvm flutter build apk --debug` (the development app) |
 | iOS build | `cd example && fvm flutter build ios --simulator --debug` · the same in `example_dev` |
-| Integration tests | `cd example_dev && fvm flutter test integration_test/all_test.dart -d <device>` (one app launch for every file below, which is what CI runs; pass a single file instead while developing. `probe_test.dart` [T1.8] probes the corpus over FFI; `cache_test.dart` [T3.2] checks the frame cache files, budget eviction and `clearCache()` through the glue; `texture_test.dart` [T2.2, T2.3] drives the texture glue; `tier_test.dart` [T3.4] checks the device signals and scheduler options; `visibility_test.dart` [T2.5] checks that only on-screen stickers in a 200-item list report active; `atlas_test.dart` [T4.2] plays 64 animations through one atlas page texture, switches them to their own textures and back, and compares a slot with the decoded frame at 1:1; `atlas_demo_test.dart` [T4.2] drives the development app's Atlas page (add `--dart-define=DUMP_SCREENSHOT=true` to print a screenshot, see the file header); `app_test.dart` [T2.8, T4.3] holds the per-platform checkerboard and Stress-atlas screenshot goldens (the atlas also against the same grid standalone) and the playback/pause tests: re-record goldens with `--dart-define=UPDATE_GOLDENS=true … \| fvm dart run ../tool/extract_goldens.dart`, see the file header). Not in `all_test.dart`: `sched_perf_test.dart` [T3.3] measures raster p90 with 60+ visible standalone stickers and the app's CPU playing and paused, printing a `SCHED_PERF {json}` line; `atlas_perf_test.dart` [T4.3] checks that 60 visible stickers in a `StickerAtlasScope` present and render at the content rate (30 fps) and iOS raster p90 ≤ 3 ms, printing an `ATLAS_PERF {json}` line. On Android run both with `--no-dds` |
+| Integration tests | `cd example_dev && fvm flutter test integration_test/all_test.dart -d <device>` (one app launch for every file below, which is what CI runs; pass a single file instead while developing. `probe_test.dart` probes the corpus over FFI; `cache_test.dart` checks the frame cache files, budget eviction and `clearCache()` through the glue; `texture_test.dart` drives the texture glue; `tier_test.dart` checks the device signals and scheduler options; `visibility_test.dart` checks that only on-screen stickers in a 200-item list report active; `atlas_test.dart` plays 64 animations through one atlas page texture, switches them to their own textures and back, and compares a slot with the decoded frame at 1:1; `atlas_demo_test.dart` drives the development app's Atlas page (add `--dart-define=DUMP_SCREENSHOT=true` to print a screenshot, see the file header); `app_test.dart` holds the per-platform checkerboard and Stress-atlas screenshot goldens (the atlas also against the same grid standalone) and the playback/pause tests: re-record goldens with `--dart-define=UPDATE_GOLDENS=true … \| fvm dart run ../tool/extract_goldens.dart`, see the file header). Not in `all_test.dart`: `sched_perf_test.dart` measures raster p90 with 60+ visible standalone stickers and the app's CPU playing and paused, printing a `SCHED_PERF {json}` line; `atlas_perf_test.dart` checks that 60 visible stickers in a `StickerAtlasScope` present and render at the content rate (30 fps) and iOS raster p90 ≤ 3 ms, printing an `ATLAS_PERF {json}` line. On Android run both with `--no-dds` |
 
 ## Conventions
-- **Dart**: `flutter_lints` plus the rules in `analysis_options.yaml`. Public API is documented with dartdoc. Don't export anything from `lib/src/` unless the API in `PLAN.md` lists it.
+- **Dart**: `flutter_lints` plus the rules in `analysis_options.yaml`. Public API is documented with dartdoc. The public API is what `lib/animated_stickers.dart` exports. Don't export anything more from `lib/src/` without an ADR.
 - **C++17**: Google style via `.clang-format`. Build with `-fno-exceptions -fno-rtti` and use no exceptions across the C ABI; return `wt_status` codes.
   - Every allocation is bounded by `StickerLimits`, and every buffer write is bounds-checked.
   - Use RAII inside the core. `wt_api.h` stays plain C with explicit `*_create`/`*_destroy` pairs.
@@ -69,7 +70,7 @@ Each command works once the task that introduces it has landed (that task's ID i
 - **Threads**: never decode on the platform main thread or the Flutter UI/raster threads. Document the thread affinity of every `wt_api.h` function in its header comment.
 - **Pixel formats**: frames are **premultiplied**. Android writes RGBA_8888 and iOS writes BGRA (in libyuv naming, `ABGR` and `ARGB` respectively).
 - **Generated code** gets committed and must not be edited by hand. Regenerate it with the commands above.
-- **Commits**: imperative subject ≤ 72 chars, with the task ID in the body (e.g. `Task: T1.3`).
+- **Commits**: imperative subject ≤ 72 chars. Reference the issue in the body when there is one (e.g. `Fixes #51`).
 
 ## Security
 Sticker files come from other users, so treat every input as hostile.
@@ -85,4 +86,4 @@ Sticker files come from other users, so treat every input as hostile.
 
 ## Devices
 - Prefer the Android emulator (API 24 and the latest) and the latest iOS Simulator. No iOS 15 simulator runtime is available, so skip iOS 15.
-- Tasks marked **needs real device** (transparency and performance spikes, benchmarks) must say which device was used. If you have no device, stop and ask; don't substitute an emulator silently.
+- Work that needs a **real device** (performance budgets, benchmarks such as #69) must say which device was used. If you have no device, stop and ask; don't substitute an emulator silently.

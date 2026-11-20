@@ -292,8 +292,8 @@ struct AnimationHandleMessage: Hashable, CustomStringConvertible {
   }
 }
 
-/// Inputs to tier detection (PLAN.md "Tiers"). [lowPower] and [thermal] can
-/// change at runtime, so Dart polls this when the app resumes.
+/// Inputs to tier detection (docs/architecture.md, "Tiers"). [lowPower] and
+/// [thermal] can change at runtime, so Dart polls this when the app resumes.
 ///
 /// Generated class from Pigeon that represents data sent in messages.
 struct DeviceSignalsMessage: Hashable, CustomStringConvertible {

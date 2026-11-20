@@ -5,7 +5,7 @@
 
 ## Context
 
-T5.1 plays animated WebP through the same YUVA cache path as WebM ([PLAN.md](../../PLAN.md), Phase 5). GIF (T5.2) will produce the same kind of data: a full RGBA canvas per frame, composited by the decoder. `WebPAnimDecoder` is sequential and yields a straight-alpha RGBA canvas. WebM's libvpx path yields YUVA 4:2:0 with exact alpha. Four things needed deciding.
+T5.1 plays animated WebP through the same YUVA cache path as WebM ([PLAN.md](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/PLAN.md), Phase 5). GIF (T5.2) will produce the same kind of data: a full RGBA canvas per frame, composited by the decoder. `WebPAnimDecoder` is sequential and yields a straight-alpha RGBA canvas. WebM's libvpx path yields YUVA 4:2:0 with exact alpha. Four things needed deciding.
 
 ## Decision
 

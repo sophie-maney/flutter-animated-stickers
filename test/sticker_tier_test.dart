@@ -143,7 +143,7 @@ void main() {
   group('limits', () {
     const auto = StickerConfig();
 
-    test('the tiers of PLAN.md', () {
+    test('the tiers of docs/architecture.md', () {
       expect(
         StickerTiers.limits(StickerTier.high, 8, auto),
         const TierLimits(workerCount: 4, maxFps: 60, maxConcurrent: 0),

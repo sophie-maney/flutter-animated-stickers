@@ -9,9 +9,9 @@ import android.os.Build
 import android.os.PowerManager
 
 /**
- * Reads the inputs to tier detection (PLAN.md, "Tiers") and reports when
- * battery saver or the thermal status changes. The tier rules themselves live
- * in Dart (`StickerTiers`); this only reports facts.
+ * Reads the inputs to tier detection (docs/architecture.md, "Tiers") and
+ * reports when battery saver or the thermal status changes. The tier rules
+ * themselves live in Dart (`StickerTiers`); this only reports facts.
  */
 internal class DeviceSignals(private val context: Context) {
     private val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager

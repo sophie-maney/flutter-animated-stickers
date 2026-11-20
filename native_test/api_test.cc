@@ -68,7 +68,8 @@ TEST(ApiTest, UnknownStatusString) {
   EXPECT_STREQ(wt_status_string(99), "WT_ERR_?");
 }
 
-// The defaults PLAN.md's StickerLimits documents: 1024 px, 10 s, 2 MiB.
+// The default StickerLimits (docs/architecture.md, "Safety"): 1024 px,
+// 10 s, 2 MiB.
 TEST(ApiTest, DefaultLimits) {
   wt_limits limits;
   std::memset(&limits, 0xAB, sizeof(limits));

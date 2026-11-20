@@ -340,8 +340,9 @@ WT_API wt_status wt_anim_create(wt_source* source, uint32_t width,
 /*
  * Like wt_anim_create, backed by the frame cache file at cache_path (UTF-8):
  * one animation at one output size, in the format of docs/cache-format.md.
- * The caller names the file after the content and the size (PLAN.md:
- * "<hash>_<w>x<h>_v1.wsc") in a directory that exists.
+ * The caller names the file after the content and the size,
+ * "<hash>_<w>x<h>_v1.wsc" (docs/architecture.md, "Frame cache"), in a
+ * directory that exists.
  *
  * - A valid cache for this source (checked by size and CRC-32) at this size
  *   replaces decoding: frames are decompressed from it, never decoded.
@@ -505,9 +506,9 @@ WT_API wt_status wt_cache_clear(const char* dir, wt_cache_stats* out_removed);
 
 /*
  * The scheduler plays every animation in the process on one clock thread and
- * a few worker threads (PLAN.md, "Scheduler"; ADR 0017). The platform glue
- * creates one wt_sched and turns each animation into a wt_player, giving it a
- * wt_sink: callbacks that hand out a destination buffer (a locked
+ * a few worker threads (docs/architecture.md, "Scheduler"; ADR 0017). The
+ * platform glue creates one wt_sched and turns each animation into a wt_player,
+ * giving it a wt_sink: callbacks that hand out a destination buffer (a locked
  * ANativeWindow buffer, a pool CVPixelBuffer) and show it once drawn.
  *
  * - The clock runs at most options.max_fps rounds a second, and only while a
@@ -535,9 +536,9 @@ typedef struct wt_player wt_player;
 #define WT_SCHED_MAX_WORKERS 8
 
 /*
- * Tunables of a scheduler; device tiers (PLAN.md, "Tiers") set them. Start
- * from wt_sched_options_init_default. Zero is invalid for worker_count and
- * max_fps.
+ * Tunables of a scheduler; device tiers (docs/architecture.md, "Tiers") set
+ * them. Start from wt_sched_options_init_default. Zero is invalid for
+ * worker_count and max_fps.
  */
 typedef struct wt_sched_options {
   /* Threads that decode frames, 1..WT_SCHED_MAX_WORKERS. Default: half the
@@ -742,12 +743,12 @@ WT_API void wt_player_redraw(wt_player* player);
 /* ------------------------------------------------------------------------- */
 
 /*
- * An atlas shows many players through a few platform textures (PLAN.md,
- * "Two render modes"; ADR 0006, ADR 0020). It is a set of pages; each page is
- * one platform buffer queue (an ANativeWindow, a CVPixelBufferPool) that the
- * glue hands over as a wt_atlas_target. A player attached to the atlas draws
- * into a slot of a page (wt::SlotAllocator, ADR 0019) instead of its own
- * sink:
+ * An atlas shows many players through a few platform textures
+ * (docs/architecture.md, "Two render modes"; ADR 0006, ADR 0020). It is a set
+ * of pages; each page is one platform buffer queue (an ANativeWindow, a
+ * CVPixelBufferPool) that the glue hands over as a wt_atlas_target. A player
+ * attached to the atlas draws into a slot of a page (wt::SlotAllocator, ADR
+ * 0019) instead of its own sink:
  *
  * - Workers write each decoded frame into a CPU copy of the slot, so every
  *   slot always has its latest frame at hand.

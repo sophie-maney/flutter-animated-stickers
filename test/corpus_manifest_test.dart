@@ -9,7 +9,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// The committed corpus must stay under 5 MB (see EXECUTION_PLAN.md, T0.3).
+/// The committed corpus must stay under 5 MB, so the repository stays cheap to
+/// clone (a limit set when the corpus was planned, task T0.3).
 const _maxCorpusBytes = 5000000;
 
 void main() {

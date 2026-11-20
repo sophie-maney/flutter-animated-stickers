@@ -5,7 +5,7 @@
 
 ## Context
 
-The 1.0 release review ([`docs/release-1.0-review.md`](../release-1.0-review.md))
+The 1.0 release review ([`docs/release-1.0-review.md`](https://github.com/sophie-maney/flutter-animated-stickers/blob/archive/plan-and-spikes/docs/release-1.0-review.md))
 put ten decisions to the owner. Three of them settle where the code had
 drifted from `PLAN.md` and [ADR 0013](0013-sources-and-fetcher.md) without a
 record, and one changes the repository's layout. This ADR records those,
