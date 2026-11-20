@@ -114,7 +114,6 @@ android/                   # Kotlin plugin, JNI bridge, CMake → libanimated_st
 ios/animated_stickers/      # Package.swift (SwiftPM only); Sources/animated_stickers = Swift, Sources/wt_ios = ObjC++ shim, Sources/wt_core = symlinks to src/ (ADR 0009)
 example/                   # the published example: a short main.dart and 3 small stickers (ADR 0029)
 example_dev/               # unpublished development app: chat list, picker grid, stress test, integration_test/
-spikes/                    # spike code: alpha/ (host), spike_b/ and spike_c/ (Flutter apps)
 test/                      # Dart unit/widget tests
 native_test/               # GoogleTest host tests, golden frame checksums
 fuzz/                      # libFuzzer targets + seed corpus

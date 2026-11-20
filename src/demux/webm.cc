@@ -1,4 +1,5 @@
-// WebM demuxer (see webm.h). Ported from spikes/alpha/demux_mini_ebml.cc and
+// WebM demuxer (see webm.h). Ported from Spike A's minimal EBML reader
+// (ADR 0004; the spike code is at the archive/plan-and-spikes tag) and
 // hardened with the checks listed under "Pitfalls" in docs/spikes/A-alpha.md.
 #include "demux/webm.h"
 

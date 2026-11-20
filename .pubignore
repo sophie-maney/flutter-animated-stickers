@@ -41,10 +41,7 @@ build/
 /CMakeLists.txt
 /native_test/
 /fuzz/
-/spikes/
 /test_assets/
-/docs/spikes/
-/docs/screenshots/
 /third_party/build/
 /third_party/test-deps.lock
 /tool/
