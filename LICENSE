@@ -129,7 +129,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ================================================================================
-libyuv 9e8c1ef826ea1f6cc624855555c36c4d38e72818 (BSD-3-Clause)
+libyuv 8a0ee9fbd26ee2fc4e198907ed5b14a89a292a6b (BSD-3-Clause)
 ================================================================================
 
 File: LICENSE
@@ -227,7 +227,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ================================================================================
-lz4 1.11.0 (BSD-2-Clause)
+lz4 1.11.1 (BSD-2-Clause)
 ================================================================================
 
 File: lib/LICENSE
