@@ -9,10 +9,10 @@ third-party code.
 |---|---|---|---|
 | libvpx | `1.17.0` | BSD-3-Clause | https://github.com/webmproject/libvpx/archive/refs/tags/v1.17.0.tar.gz |
 | libwebm | `1.0.0.32` | BSD-3-Clause | https://github.com/webmproject/libwebm/archive/refs/tags/libwebm-1.0.0.32.tar.gz |
-| libyuv | `9e8c1ef826ea1f6cc624855555c36c4d38e72818` | BSD-3-Clause | https://chromium.googlesource.com/libyuv/libyuv |
+| libyuv | `8a0ee9fbd26ee2fc4e198907ed5b14a89a292a6b` | BSD-3-Clause | https://chromium.googlesource.com/libyuv/libyuv |
 | libwebp | `1.6.0` | BSD-3-Clause | https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0.tar.gz |
 | giflib | `6.1.3` | MIT | https://downloads.sourceforge.net/project/giflib/giflib-6.x/giflib-6.1.3.tar.gz |
-| lz4 | `1.11.0` | BSD-2-Clause | https://github.com/lz4/lz4/releases/download/v1.11.0/lz4-1.11.0.tar.gz |
+| lz4 | `1.11.1` | BSD-2-Clause | https://github.com/lz4/lz4/releases/download/v1.11.1/lz4-1.11.1.tar.gz |
 
 ## libvpx
 

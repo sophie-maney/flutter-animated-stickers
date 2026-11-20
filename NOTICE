@@ -21,7 +21,7 @@ Copyright: Copyright (c) 2010, Google Inc. All rights reserved.
 
 --------------------------------------------------------------------------------
 Library:   libyuv
-Version:   9e8c1ef826ea1f6cc624855555c36c4d38e72818
+Version:   8a0ee9fbd26ee2fc4e198907ed5b14a89a292a6b
 License:   BSD-3-Clause
 Upstream:  https://chromium.googlesource.com/libyuv/libyuv
 Copyright: Copyright 2011 The LibYuv Project Authors. All rights reserved.
@@ -42,7 +42,7 @@ Copyright: Copyright (c) 1997 Eric S. Raymond
 
 --------------------------------------------------------------------------------
 Library:   lz4
-Version:   1.11.0
+Version:   1.11.1
 License:   BSD-2-Clause
 Upstream:  https://github.com/lz4/lz4
 Copyright: Copyright (c) 2011-2020, Yann Collet
